@@ -55,7 +55,8 @@ function ConfirmationContent() {
           }
         } else {
           // Guest user: use RPC functions to bypass RLS
-          const { data: guestOrder } = await supabase.rpc('get_guest_order_by_id', {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: guestOrder } = await (supabase.rpc as any)('get_guest_order_by_id', {
             p_order_id: orderId,
           });
 
@@ -63,7 +64,8 @@ function ConfirmationContent() {
             const orderData = guestOrder[0];
 
             // Get order items separately
-            const { data: items } = await supabase.rpc('get_guest_order_items', {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: items } = await (supabase.rpc as any)('get_guest_order_items', {
               p_order_id: orderId,
             });
 

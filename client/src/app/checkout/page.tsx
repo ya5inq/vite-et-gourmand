@@ -171,13 +171,13 @@ export default function CheckoutPage() {
 
         const { data: order, error: orderError } = await supabase
           .from('orders')
-          .insert(orderData)
+          .insert(orderData as never)
           .select('id')
           .single();
 
         if (orderError) throw orderError;
         if (!order) throw new Error('No order returned');
-        orderId = order.id;
+        orderId = (order as { id: string }).id;
 
         // Create order items for authenticated user
         const orderItems = items.map((item) => ({
@@ -189,12 +189,13 @@ export default function CheckoutPage() {
 
         const { error: itemsError } = await supabase
           .from('order_items')
-          .insert(orderItems);
+          .insert(orderItems as never);
 
         if (itemsError) throw itemsError;
       } else {
         // Guest user: use RPC functions to bypass RLS
-        const { data: guestOrderId, error: guestOrderError } = await supabase.rpc(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: guestOrderId, error: guestOrderError } = await (supabase.rpc as any)(
           'create_guest_order',
           {
             p_guest_name: data.guest_name!,
@@ -222,7 +223,8 @@ export default function CheckoutPage() {
           unit_price: item.unitPrice,
         }));
 
-        const { error: itemsError } = await supabase.rpc('add_guest_order_items', {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: itemsError } = await (supabase.rpc as any)('add_guest_order_items', {
           p_order_id: orderId,
           p_items: orderItemsJson,
         });

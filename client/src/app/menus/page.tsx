@@ -12,7 +12,7 @@ const HEADER_IMAGE = 'https://images.unsplash.com/photo-1414235077428-338989a2e8
 export default async function MenusPage() {
   const supabase = await createClient();
 
-  const { data: menus } = await supabase
+  const { data: menusData } = await supabase
     .from('menus')
     .select(`
       *,
@@ -22,6 +22,9 @@ export default async function MenusPage() {
     `)
     .eq('is_available', true)
     .order('price', { ascending: true });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const menus = menusData as any[] | null;
 
   const { data: regimes } = await supabase
     .from('dietary_regimes')

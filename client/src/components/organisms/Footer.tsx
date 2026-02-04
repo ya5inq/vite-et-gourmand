@@ -14,10 +14,13 @@ const DAY_NAMES = [
 export async function Footer() {
   const supabase = await createClient();
 
-  const { data: hours } = await supabase
+  const { data: hoursData } = await supabase
     .from('operating_hours')
     .select('*')
     .order('day_of_week');
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hours = hoursData as any[] | null;
 
   const { data: footerContent } = await supabase
     .from('page_contents')
@@ -26,12 +29,12 @@ export async function Footer() {
     .eq('section', 'footer')
     .single();
 
-  const footer = footerContent?.content as {
+  const footer = (footerContent as { content?: {
     description?: string;
     email?: string;
     phone?: string;
     address?: string;
-  } | null;
+  } } | null)?.content ?? null;
 
   return (
     <footer className="bg-foreground text-background">

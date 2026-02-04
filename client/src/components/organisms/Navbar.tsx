@@ -1,100 +1,21 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import { usePathname } from 'next/navigation';
 import { Menu, X, User as UserIcon, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { CartIcon } from '@/components/molecules/CartIcon';
 import { CartDrawer } from '@/components/molecules/CartDrawer';
 
-interface Profile {
-  first_name: string | null;
-  last_name: string | null;
-}
-
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const { user, profile, isLoading, isAuthenticated, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const supabase = createClient();
-    let isMounted = true;
-
-    async function loadUserAndProfile() {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-
-        if (!isMounted) return;
-
-        if (error || !user) {
-          setUser(null);
-          setProfile(null);
-          return;
-        }
-
-        setUser(user);
-
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('id', user.id)
-          .single();
-
-        if (isMounted) {
-          setProfile(profileData);
-        }
-      } catch {
-        if (isMounted) {
-          setUser(null);
-          setProfile(null);
-        }
-      }
-    }
-
-    loadUserAndProfile();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return;
-
-      if (event === 'SIGNED_OUT' || !session?.user) {
-        setUser(null);
-        setProfile(null);
-        return;
-      }
-
-      setUser(session.user);
-
-      try {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('id', session.user.id)
-          .single();
-
-        if (isMounted) {
-          setProfile(profileData);
-        }
-      } catch {
-        // Profile fetch failed, keep user but no profile
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -107,23 +28,6 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  async function handleLogout() {
-    const supabase = createClient();
-    setProfileMenuOpen(false);
-
-    try {
-      await supabase.auth.signOut();
-    } catch {
-      // Ignore signout errors
-    }
-
-    setUser(null);
-    setProfile(null);
-
-    // Force a full page reload to clear all cached state
-    window.location.href = '/';
-  }
-
   function getInitials(): string {
     if (profile?.first_name || profile?.last_name) {
       const first = profile.first_name?.charAt(0)?.toUpperCase() || '';
@@ -134,6 +38,13 @@ export function Navbar() {
       return user.email.charAt(0).toUpperCase();
     }
     return '?';
+  }
+
+  function getDisplayName(): string {
+    if (profile?.first_name || profile?.last_name) {
+      return [profile.first_name, profile.last_name].filter(Boolean).join(' ');
+    }
+    return user?.email || '';
   }
 
   const navLinks = [
@@ -182,7 +93,10 @@ export function Navbar() {
 
             <div className="flex items-center gap-3">
               <CartIcon onClick={() => setCartOpen(true)} />
-              {user ? (
+
+              {isLoading ? (
+                <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
+              ) : isAuthenticated ? (
                 <div className="relative" ref={profileMenuRef}>
                   <button
                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}
@@ -195,10 +109,10 @@ export function Navbar() {
                     <div className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-1 z-50">
                       <div className="px-4 py-2 border-b border-border">
                         <p className="text-sm font-medium text-foreground truncate">
-                          {profile?.first_name} {profile?.last_name}
+                          {getDisplayName()}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {user.email}
+                          {user?.email}
                         </p>
                       </div>
                       <Link
@@ -210,7 +124,10 @@ export function Navbar() {
                         Mon compte
                       </Link>
                       <button
-                        onClick={handleLogout}
+                        onClick={() => {
+                          setProfileMenuOpen(false);
+                          signOut();
+                        }}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors"
                       >
                         <LogOut size={16} />
@@ -233,7 +150,7 @@ export function Navbar() {
           {/* Mobile icons */}
           <div className="md:hidden flex items-center gap-2">
             <CartIcon onClick={() => setCartOpen(true)} />
-            {user && (
+            {!isLoading && isAuthenticated && (
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-xs">
                 {getInitials()}
               </div>
@@ -264,7 +181,7 @@ export function Navbar() {
               </Link>
             ))}
             <div className="pt-3 border-t border-border space-y-3">
-              {user ? (
+              {isAuthenticated ? (
                 <>
                   <Link
                     href="/dashboard"
@@ -275,8 +192,8 @@ export function Navbar() {
                   </Link>
                   <button
                     onClick={() => {
-                      handleLogout();
                       setMobileOpen(false);
+                      signOut();
                     }}
                     className="block py-2 text-sm font-medium text-muted-foreground hover:text-destructive"
                   >

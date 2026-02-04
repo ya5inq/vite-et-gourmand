@@ -14,7 +14,7 @@ export default async function MentionsLegalesPage() {
     .eq('section', 'main')
     .single();
 
-  const pageContent = content?.content as { title?: string; body?: string } | null;
+  const pageContent = (content as { content?: { title?: string; body?: string } } | null)?.content ?? null;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

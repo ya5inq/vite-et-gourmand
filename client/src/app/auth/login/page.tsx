@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +17,8 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const supabase = useMemo(() => createClient(), []);
+
   const {
     register,
     handleSubmit,
@@ -28,16 +30,22 @@ export default function LoginPage() {
   async function onSubmit(data: LoginForm) {
     setIsLoading(true);
     try {
-      const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === 'Invalid login credentials') {
+          toast.error('Email ou mot de passe incorrect');
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
 
       toast.success('Connexion reussie !');
-      // Force full page navigation to ensure cookies are properly set
+      // Use window.location for full page reload to ensure auth state is properly initialized
       window.location.href = '/dashboard';
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Erreur de connexion';

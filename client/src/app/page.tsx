@@ -22,17 +22,20 @@ interface CmsContent {
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const { data: pageContents } = await supabase
+  const { data: pageContentsData } = await supabase
     .from('page_contents')
     .select('*')
     .eq('page', 'home');
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pageContents = pageContentsData as any[] | null;
 
   const sections: Record<string, CmsContent> = {};
   pageContents?.forEach((item) => {
     sections[item.section] = item.content as CmsContent;
   });
 
-  const { data: menus } = await supabase
+  const { data: menusData } = await supabase
     .from('menus')
     .select(`
       *,
@@ -43,6 +46,9 @@ export default async function HomePage() {
     .eq('is_available', true)
     .order('created_at', { ascending: false })
     .limit(4);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const menus = menusData as any[] | null;
 
   const menusWithRegimes = menus?.map((menu) => ({
     ...menu,

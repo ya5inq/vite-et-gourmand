@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,8 +25,9 @@ const registerSchema = z
 type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const supabase = useMemo(() => createClient(), []);
+
   const {
     register,
     handleSubmit,
@@ -39,7 +39,6 @@ export default function RegisterPage() {
   async function onSubmit(data: RegisterForm) {
     setIsLoading(true);
     try {
-      const supabase = createClient();
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -52,10 +51,18 @@ export default function RegisterPage() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('already registered')) {
+          toast.error('Cet email est deja utilise');
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
 
       toast.success('Compte cree avec succes ! Verifiez votre email pour confirmer votre inscription.');
-      router.push('/auth/login');
+      // Redirect to login page
+      window.location.href = '/auth/login';
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Erreur lors de la creation du compte';
       toast.error(message);

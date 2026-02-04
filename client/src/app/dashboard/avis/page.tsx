@@ -100,7 +100,7 @@ export default function AvisPage() {
         order_id: data.order_id,
         rating: data.rating,
         comment: data.comment || null,
-      });
+      } as never);
 
       if (error) throw error;
 

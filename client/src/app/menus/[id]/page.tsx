@@ -51,7 +51,8 @@ const ALLERGEN_ICONS: Record<string, string> = {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: menu } = await supabase.from('menus').select('name, description').eq('id', id).single();
+  const { data } = await supabase.from('menus').select('name, description').eq('id', id).single();
+  const menu = data as { name: string; description: string | null } | null;
 
   if (!menu) return { title: 'Menu introuvable' };
 
@@ -65,7 +66,7 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: menu } = await supabase
+  const { data } = await supabase
     .from('menus')
     .select(`
       *,
@@ -83,6 +84,9 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
     `)
     .eq('id', id)
     .single();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const menu = data as any;
 
   if (!menu) notFound();
 
@@ -190,9 +194,9 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
                     description: string | null;
                     dish_allergens?: Array<{ allergens: { id: string; name: string; icon: string | null } | null }>;
                   }>).map((dish) => {
-                    const allergens = dish.dish_allergens
+                    const allergens = (dish.dish_allergens
                       ?.map((da) => da.allergens)
-                      .filter(Boolean) ?? [];
+                      .filter((a): a is { id: string; name: string; icon: string | null } => a !== null)) ?? [];
 
                     return (
                       <div key={dish.id} className="pl-4">
@@ -202,7 +206,7 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
                         )}
                         {allergens.length > 0 && (
                           <div className="flex gap-1.5 mt-1">
-                            {allergens.map((a: { id: string; name: string; icon: string | null }) => {
+                            {allergens.map((a) => {
                               const icon = a.icon || ALLERGEN_ICONS[a.name.toLowerCase()] || null;
                               return (
                                 <span

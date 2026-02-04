@@ -42,7 +42,7 @@ export default function ContactPage() {
         phone: data.phone || null,
         subject: data.subject || null,
         message: data.message,
-      });
+      } as never);
 
       if (error) throw error;
 
