@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <!-- Background -->
+  <rect width="192" height="192" rx="40" fill="#E67E22"/>
+
+  <!-- Fork -->
+  <g transform="translate(40, 50)">
+    <path d="M20 10v20M20 40v52M10 10v15c0 5 4 10 10 10s10-5 10-10V10" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Knife -->
+  <g transform="translate(90, 50)">
+    <path d="M20 10c0 20 10 30 10 40v52M20 10c10 0 22 10 22 30 0 5-3 10-12 10" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

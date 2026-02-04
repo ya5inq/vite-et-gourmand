@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <!-- Fork icon -->
+  <g transform="translate(10, 8)">
+    <path d="M8 4v8M8 16v24M4 4v6c0 2 1.5 4 4 4s4-2 4-4V4" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Knife icon -->
+  <g transform="translate(26, 8)">
+    <path d="M4 4c0 8 4 12 4 16v20M4 4c4 0 8 4 8 12 0 2-1 4-4 4" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Text "Vite" -->
+  <text x="52" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#1a1a1a">
+    Vite
+  </text>
+
+  <!-- Ampersand -->
+  <text x="102" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" fill="#E67E22">
+    &amp;
+  </text>
+
+  <!-- Text "Gourmand" -->
+  <text x="52" y="52" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#1a1a1a">
+    Gourmand
+  </text>
+</svg>

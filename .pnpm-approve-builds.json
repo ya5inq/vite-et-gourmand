@@ -1,0 +1,7 @@
+{
+  "supabase@1.226.4": true,
+  "esbuild@0.25.12": true,
+  "@swc/core@1.15.11": true,
+  "unrs-resolver@1.11.1": true,
+  "sharp@0.34.5": true
+}

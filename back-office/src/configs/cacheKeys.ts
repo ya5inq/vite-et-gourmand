@@ -1,0 +1,18 @@
+export const CacheKeys = {
+  MENUS: () => ['menus'] as const,
+  MENU: (id: string) => ['menus', 'detail', id] as const,
+  DISHES: () => ['dishes'] as const,
+  DISH: (id: string) => ['dishes', 'detail', id] as const,
+  ALLERGENS: () => ['allergens'] as const,
+  DIETARY_REGIMES: () => ['dietary-regimes'] as const,
+  ORDERS: () => ['orders'] as const,
+  ORDER: (id: string) => ['orders', 'detail', id] as const,
+  REVIEWS: () => ['reviews'] as const,
+  USERS: () => ['users'] as const,
+  DELIVERY_ZONES: () => ['delivery-zones'] as const,
+  OPERATING_HOURS: () => ['operating-hours'] as const,
+  CONTACT_MESSAGES: () => ['contact-messages'] as const,
+  PAGE_CONTENT: (page: string, section: string) => ['page-content', page, section] as const,
+  PAGE_CONTENTS: (page: string) => ['page-contents', page] as const,
+  DASHBOARD_STATS: () => ['dashboard-stats'] as const,
+};
