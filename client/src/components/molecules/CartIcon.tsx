@@ -14,7 +14,7 @@ export function CartIcon({ onClick }: CartIconProps) {
   return (
     <button
       onClick={onClick}
-      className="relative p-2 text-foreground hover:text-primary transition-colors"
+      className="relative p-2 text-foreground hover:text-primary transition-colors cursor-pointer"
       aria-label={`Panier (${count} article${count !== 1 ? 's' : ''})`}
     >
       <ShoppingCart size={24} />

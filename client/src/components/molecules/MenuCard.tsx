@@ -125,7 +125,7 @@ export function MenuCard({
           <button
             onClick={handleAddToCart}
             disabled={showSuccess}
-            className={`w-full flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+            className={`w-full flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
               showSuccess
                 ? 'bg-green-500 text-white'
                 : 'bg-primary text-primary-foreground hover:opacity-90'

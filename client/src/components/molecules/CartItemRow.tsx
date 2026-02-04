@@ -27,7 +27,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
       <div className="flex items-center gap-2">
         <button
           onClick={() => updateQuantity(item.menuId, item.quantity - 1)}
-          className="p-1 rounded-md border border-border hover:bg-accent transition-colors"
+          className="p-1 rounded-md border border-border hover:bg-accent transition-colors cursor-pointer"
           aria-label="Diminuer la quantite"
         >
           <Minus size={16} />
@@ -36,7 +36,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
         <button
           onClick={() => updateQuantity(item.menuId, item.quantity + 1)}
           disabled={item.maxPersons !== null && item.quantity >= item.maxPersons}
-          className="p-1 rounded-md border border-border hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-1 rounded-md border border-border hover:bg-accent transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Augmenter la quantite"
         >
           <Plus size={16} />
@@ -47,7 +47,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
         <p className="font-semibold text-foreground">{subtotal.toFixed(2)} &euro;</p>
         <button
           onClick={() => removeItem(item.menuId)}
-          className="text-destructive hover:text-destructive/80 transition-colors mt-1"
+          className="text-destructive hover:text-destructive/80 transition-colors mt-1 cursor-pointer"
           aria-label="Supprimer du panier"
         >
           <Trash2 size={16} />

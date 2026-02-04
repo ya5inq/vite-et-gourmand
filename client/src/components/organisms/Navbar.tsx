@@ -100,7 +100,7 @@ export function Navbar() {
                 <div className="relative" ref={profileMenuRef}>
                   <button
                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer"
                     aria-label="Menu profil"
                   >
                     {getInitials()}
@@ -118,7 +118,7 @@ export function Navbar() {
                       <Link
                         href="/dashboard"
                         onClick={() => setProfileMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors cursor-pointer"
                       >
                         <UserIcon size={16} />
                         Mon compte
@@ -128,7 +128,7 @@ export function Navbar() {
                           setProfileMenuOpen(false);
                           signOut();
                         }}
-                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors"
+                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors cursor-pointer"
                       >
                         <LogOut size={16} />
                         Deconnexion
@@ -157,7 +157,7 @@ export function Navbar() {
             )}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 text-foreground"
+              className="p-2 text-foreground cursor-pointer"
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}

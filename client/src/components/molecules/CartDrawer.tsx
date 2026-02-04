@@ -51,7 +51,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           <h2 className="text-lg font-semibold text-foreground">Mon panier</h2>
           <button
             onClick={onClose}
-            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             aria-label="Fermer le panier"
           >
             <X size={24} />
@@ -81,7 +81,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               {items.length > 0 && (
                 <button
                   onClick={clearCart}
-                  className="mt-4 text-sm text-muted-foreground hover:text-destructive transition-colors"
+                  className="mt-4 text-sm text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                 >
                   Vider le panier
                 </button>

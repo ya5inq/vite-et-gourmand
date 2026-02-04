@@ -60,7 +60,7 @@ export function AddToCartButton({ menu }: AddToCartButtonProps) {
           <button
             onClick={handleDecrement}
             disabled={quantity <= menu.min_persons}
-            className="p-2 rounded-lg border border-border hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-lg border border-border hover:bg-accent transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Diminuer"
           >
             <Minus size={18} />
@@ -69,7 +69,7 @@ export function AddToCartButton({ menu }: AddToCartButtonProps) {
           <button
             onClick={handleIncrement}
             disabled={menu.max_persons !== null && quantity >= menu.max_persons}
-            className="p-2 rounded-lg border border-border hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-lg border border-border hover:bg-accent transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Augmenter"
           >
             <Plus size={18} />
@@ -91,7 +91,7 @@ export function AddToCartButton({ menu }: AddToCartButtonProps) {
       <button
         onClick={handleAddToCart}
         disabled={showSuccess}
-        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-lg font-semibold transition-all ${
+        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-lg font-semibold transition-all cursor-pointer ${
           showSuccess
             ? 'bg-green-500 text-white'
             : 'bg-primary text-primary-foreground hover:opacity-90'
