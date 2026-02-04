@@ -103,7 +103,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const getItemCount = useCallback(() => {
-    return items.reduce((sum, item) => sum + item.quantity, 0);
+    return items.length;
   }, [items]);
 
   return (
