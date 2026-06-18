@@ -39,6 +39,7 @@ export class EnvConfig implements EnvConfigInterface {
 
   // URLs
   readonly frontendUrl: string;
+  readonly backOfficeUrl: string;
 
   constructor() {
     const config = this.buildConfig();
@@ -74,6 +75,7 @@ export class EnvConfig implements EnvConfigInterface {
 
     // URLs
     this.frontendUrl = config.FRONTEND_URL;
+    this.backOfficeUrl = config.BACK_OFFICE_URL;
   }
 
   private ConfigParser = z.object({
@@ -102,13 +104,14 @@ export class EnvConfig implements EnvConfigInterface {
     RESET_TOKEN_SECRET: z.string(),
     RESET_TOKEN_EXPIRATION: parseNumber(z.number()).default(1800),
 
-    // Email - placeholder for future phases
+    // Email
     RESEND_API_KEY: z.string().default(''),
     FROM_EMAIL: z.string().default('no-reply@vite-et-gourmand.com'),
     CONTACT_EMAIL: z.string().default('contact@vite-et-gourmand.com'),
 
     // URLs
     FRONTEND_URL: z.string().default('http://localhost:3000'),
+    BACK_OFFICE_URL: z.string().default('http://localhost:5173'),
   });
 
   /**
