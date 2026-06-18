@@ -6,16 +6,19 @@ import { I18nInterface } from '@/application/i18n/i18n.interface';
 import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.interface';
 import { LoggerInterface } from '@/domain/interfaces/logger/logger.interface';
 import { ClientDatabaseInterface } from '@/infrastructure/database/clientDatabase/clientDatabase.interface';
+import { MongoClientInterface } from '@/infrastructure/mongo/mongoClient.interface';
 
 import { AppError } from '@/application/errors/app.error';
 import { errorTranslations, customValidationTranslations, successTranslations } from '@/application/i18n/translations';
 import { mainContainer } from '@/configuration/di/mainContainer';
 import { TYPES } from '@/configuration/di/types';
+import { ensureMongoIndexes } from '@/infrastructure/mongo/ensureIndexes';
 
 import { bootstrap } from './loader/server';
 import { runShutdownCallbacks } from './loader/shutdownRegistry';
 
 let clientDatabase: ClientDatabaseInterface;
+let mongoClient: MongoClientInterface;
 let server: ServerType;
 let appLogger: LoggerInterface;
 
@@ -28,6 +31,12 @@ const shutdownGracefully = async (error?: Error) => {
     if (clientDatabase) {
       await clientDatabase.disconnect().catch((err) => {
         appLogger?.error('Error disconnecting database', err);
+      });
+    }
+
+    if (mongoClient) {
+      await mongoClient.disconnect().catch((err) => {
+        appLogger?.error('Error disconnecting MongoDB', err);
       });
     }
 
@@ -59,6 +68,7 @@ process.on('SIGINT', () => {
 const init = async () => {
   try {
     clientDatabase = mainContainer.get<ClientDatabaseInterface>(TYPES.ClientDatabase);
+    mongoClient = mainContainer.get<MongoClientInterface>(TYPES.MongoClient);
     const envConfig = mainContainer.get<EnvConfigInterface>(TYPES.EnvConfig);
     appLogger = mainContainer.get<LoggerInterface>(TYPES.Logger);
     const i18n = mainContainer.get<I18nInterface>(TYPES.I18n);
@@ -70,6 +80,21 @@ const init = async () => {
     await i18n.init({ errorTranslations, customValidationTranslations, successTranslations });
 
     await clientDatabase.connect(envConfig.dbUrl);
+
+    // MongoDB powers analytics/audit (a derived view). A failure here must not
+    // prevent the API from starting — writes are fault-tolerant and no-op.
+    if (envConfig.mongoUrl) {
+      try {
+        await mongoClient.connect(envConfig.mongoUrl);
+        await ensureMongoIndexes(mongoClient);
+      } catch (mongoError) {
+        appLogger.warn('MongoDB unavailable at startup — analytics/audit disabled', {
+          error: mongoError instanceof Error ? mongoError.message : 'unknown',
+        });
+      }
+    } else {
+      appLogger.warn('MONGO_URL not set — analytics/audit disabled');
+    }
 
     const bootstrapData = bootstrap();
 
