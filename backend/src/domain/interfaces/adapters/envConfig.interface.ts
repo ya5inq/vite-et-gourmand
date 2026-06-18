@@ -24,11 +24,12 @@ export interface EnvConfigInterface {
   resetTokenSecret: string;
   resetTokenExpiration: number;
 
-  // Email - placeholder for future phases
+  // Email
   resendApiKey: string;
   fromEmail: string;
   contactEmail: string;
 
   // URLs
   frontendUrl: string;
+  backOfficeUrl: string;
 }

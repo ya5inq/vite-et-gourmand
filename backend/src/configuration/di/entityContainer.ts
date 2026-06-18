@@ -1,12 +1,18 @@
 import { ContainerModule, interfaces } from 'inversify';
 
-/**
- * Domain entities container.
- * Empty in Phase 0 (scaffold) — entities are bound in later phases.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const entityContainer = new ContainerModule((_bind: interfaces.Bind) => {
-  // No bindings yet.
+import { UserInterface } from '@/domain/entities/user/user.entity.interface';
+import { UserTokenInterface } from '@/domain/entities/userToken/userToken.entity.interface';
+
+import { User } from '@/domain/entities/user/user.entity';
+import { UserToken } from '@/domain/entities/userToken/userToken.entity';
+
+import { TYPES } from './types';
+
+const entityContainer = new ContainerModule((bind: interfaces.Bind) => {
+  bind<UserInterface>(TYPES.UserEntity as interfaces.ServiceIdentifier<UserInterface>).to(
+    User as unknown as interfaces.Newable<UserInterface>,
+  );
+  bind<UserTokenInterface>(TYPES.UserTokenEntity).to(UserToken);
 });
 
 export { entityContainer };

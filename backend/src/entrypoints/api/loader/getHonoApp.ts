@@ -3,16 +3,17 @@ import { Env } from 'hono';
 import { ZodError } from 'zod';
 
 import { ScopedTranslatorInterface } from '@/application/i18n/i18n.interface';
+import { UserPayloadOptions } from '@/application/services/authToken/authToken.service.interface';
 
 import { AppErrorCodes } from '@/application/errors/app.error.codes';
+import { User } from '@/domain/entities/user/user.entity';
 
 export interface CustomEnvInterface extends Env {
   Variables: {
-    /**
-     * Authenticated user, set by the authentication middleware (added in a later phase).
-     * Phase 0 keeps it as `unknown` since no user entity exists yet.
-     */
-    currentUser?: unknown;
+    /** Decoded JWT payload, set by the authentication middleware. */
+    jwtPayload?: UserPayloadOptions;
+    /** Authenticated user, loaded by the authorization middleware. */
+    currentUser?: User;
     userLanguage?: string | null;
     /**
      * Request-scoped translator.

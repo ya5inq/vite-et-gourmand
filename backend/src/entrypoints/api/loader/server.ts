@@ -17,6 +17,7 @@ import { CustomEnvInterface, getHonoApp } from './getHonoApp';
 import { acceptLanguageMiddleware } from '../middlewares/acceptLanguage/acceptLanguage.middleware';
 import { apiDocMiddleware } from '../middlewares/apiDoc/apiDoc.middleware';
 import { appErrorMiddleware } from '../middlewares/appError/appError.middleware';
+import { authenticationMiddleware } from '../middlewares/authentication/authentication.middleware';
 import { requestIdMiddleware } from '../middlewares/requestId/requestId.middleware';
 import { routes } from '../routes/router';
 
@@ -27,22 +28,32 @@ interface BootstrapOptionsInterface {
 export const bootstrap = (
   options?: BootstrapOptionsInterface,
 ): { app: OpenAPIHono<CustomEnvInterface>; server: ServerType } => {
+  const envConfig = mainContainer.get<EnvConfigInterface>(TYPES.EnvConfig);
+
+  // Allowed CORS origins: the public frontend and the back-office.
+  const allowedOrigins = [envConfig.frontendUrl, envConfig.backOfficeUrl].filter(Boolean);
+
   const app = getHonoApp();
   app
     .use(compress())
-    .use(cors())
+    .use(
+      '*',
+      cors({
+        origin: (origin) => (allowedOrigins.includes(origin) ? origin : allowedOrigins[0] ?? null),
+        credentials: true,
+      }),
+    )
     .use(logger())
     .use(prettyJSON())
     .use(requestIdMiddleware)
     .use(acceptLanguageMiddleware)
+    .use(authenticationMiddleware)
     .route('/api', routes);
 
   app.onError(appErrorMiddleware);
   app.doc('api/doc', apiDocMiddleware);
   app.get('/ui', swaggerUI({ url: '/api/doc' }));
   app.get('/reference', apiReference({ spec: { url: '/api/doc' } }));
-
-  const envConfig = mainContainer.get<EnvConfigInterface>(TYPES.EnvConfig);
   const appLogger = mainContainer.get<LoggerInterface>(TYPES.Logger);
 
   const port = options?.port ?? envConfig.port;
