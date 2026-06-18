@@ -1,0 +1,10 @@
+{
+  "INTERNAL_SERVER_ERROR": "Erreur interne du serveur",
+  "BAD_REQUEST": "La requête est invalide",
+  "BAD_REQUEST_INVALID_DATA": "Données fournies invalides",
+  "UNAUTHORIZED": "Vous devez être connecté pour accéder à cette ressource",
+  "FORBIDDEN": "Vous n'avez pas les permissions nécessaires pour accéder à cette ressource",
+  "NOT_FOUND": "La ressource demandée n'a pas été trouvée",
+  "CONFLICT": "Un conflit a été détecté",
+  "TOO_MANY_REQUESTS": "Trop de requêtes ont été envoyées"
+}
