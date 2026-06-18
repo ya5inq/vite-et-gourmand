@@ -4,14 +4,17 @@ import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.inter
 import { LoggerInterface } from '@/domain/interfaces/logger/logger.interface';
 import { ClientDatabaseInterface } from '@/infrastructure/database/clientDatabase/clientDatabase.interface';
 import { TemplateMailerInterface } from '@/infrastructure/mailer/templateMailer.interface';
+import { MongoClientInterface } from '@/infrastructure/mongo/mongoClient.interface';
 
 import { ClientDatabase } from '@/infrastructure/database/clientDatabase/clientDatabase';
 import { ResendTemplateMailer } from '@/infrastructure/mailer/providers/resend/resendTemplateMailer';
+import { MongoClient } from '@/infrastructure/mongo/mongoClient';
 
 import { TYPES } from './types';
 
 const infraContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<ClientDatabaseInterface>(TYPES.ClientDatabase).to(ClientDatabase).inSingletonScope();
+  bind<MongoClientInterface>(TYPES.MongoClient).to(MongoClient).inSingletonScope();
 
   // TemplateMailer - Resend. In dev (no API key or non-production) emails are
   // logged instead of being sent over the network.

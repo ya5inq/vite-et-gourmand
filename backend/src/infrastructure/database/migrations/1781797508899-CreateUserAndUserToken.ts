@@ -1,13 +1,13 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateUserAndUserToken1781797508899 implements MigrationInterface {
-    name = 'CreateUserAndUserToken1781797508899'
+  name = 'CreateUserAndUserToken1781797508899';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TYPE "public"."user_role_enum" AS ENUM('USER', 'EMPLOYEE', 'ADMIN')
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "user" (
                 "id" uuid NOT NULL,
                 "email" character varying(255) NOT NULL,
@@ -30,7 +30,7 @@ export class CreateUserAndUserToken1781797508899 implements MigrationInterface {
                 CONSTRAINT "pk_e8701ad4_user_id" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "user_token" (
                 "id" uuid NOT NULL,
                 "user_id" uuid NOT NULL,
@@ -44,25 +44,24 @@ export class CreateUserAndUserToken1781797508899 implements MigrationInterface {
                 CONSTRAINT "pk_767768b1_user_token_id" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "user_token"
             ADD CONSTRAINT "fk_9fe210f3_user_token_user_id" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             ALTER TABLE "user_token" DROP CONSTRAINT "fk_9fe210f3_user_token_user_id"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "user_token"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "user"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TYPE "public"."user_role_enum"
         `);
-    }
-
+  }
 }

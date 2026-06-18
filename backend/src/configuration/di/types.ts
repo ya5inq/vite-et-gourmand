@@ -16,6 +16,8 @@ const TYPES = {
 
   // Adapters
   MailSender: Symbol.for('MailSender'),
+  AnalyticsRepository: Symbol.for('AnalyticsRepository'),
+  AuditLogRepository: Symbol.for('AuditLogRepository'),
 
   // Repositories
   UserRepository: Symbol.for('UserRepository'),
@@ -38,6 +40,7 @@ const TYPES = {
   // Infra
   ClientDatabase: Symbol.for('ClientDatabase'),
   TemplateMailer: Symbol.for('TemplateMailer'),
+  MongoClient: Symbol.for('MongoClient'),
 };
 
 export { TYPES };
