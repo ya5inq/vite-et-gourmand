@@ -9,6 +9,10 @@ import { authResetPasswordRoute } from './authResetPassword';
 import { authResetPasswordRequestRoute } from './authResetPasswordRequest';
 import { authValidateAccountRoute } from './authValidateAccount';
 import { healthcheckRoute } from './healthcheck';
+import { publicAllergenGetAllRoute } from './publicAllergenGetAll';
+import { publicDietaryRegimeGetAllRoute } from './publicDietaryRegimeGetAll';
+import { publicMenuGetAllRoute } from './publicMenuGetAll';
+import { publicMenuGetOneRoute } from './publicMenuGetOne';
 
 const publicRouter = getHonoApp();
 
@@ -22,6 +26,12 @@ publicRouter
   .route('/auth', authResetPasswordRoute)
   .route('/auth', authValidateAccountRoute)
   .route('/auth', authResendValidationRoute)
+
+  // Catalog (public, used by the storefront + filters)
+  .route('/', publicMenuGetAllRoute)
+  .route('/', publicMenuGetOneRoute)
+  .route('/', publicAllergenGetAllRoute)
+  .route('/', publicDietaryRegimeGetAllRoute)
 
   // Healthcheck routes
   .route('/healthcheck', healthcheckRoute);

@@ -6,6 +6,10 @@ import { AuditLogRepositoryInterface } from '@/domain/interfaces/adapters/auditL
 import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.interface';
 import { MailSenderInterface } from '@/domain/interfaces/adapters/mailSender.interface';
 import { LoggerInterface } from '@/domain/interfaces/logger/logger.interface';
+import { AllergenRepositoryInterface } from '@/domain/interfaces/repositories/allergen.repository.interface';
+import { DietaryRegimeRepositoryInterface } from '@/domain/interfaces/repositories/dietaryRegime.repository.interface';
+import { DishRepositoryInterface } from '@/domain/interfaces/repositories/dish.repository.interface';
+import { MenuRepositoryInterface } from '@/domain/interfaces/repositories/menu.repository.interface';
 import { UserRepositoryInterface } from '@/domain/interfaces/repositories/user.repository.interface';
 import { UserTokenRepositoryInterface } from '@/domain/interfaces/repositories/userToken.repository.interface';
 
@@ -14,6 +18,10 @@ import { AuditLogRepository } from '@/adapters/auditLog/auditLog.repository';
 import { EnvConfig } from '@/adapters/envConfig/envConfig';
 import { Logger } from '@/adapters/logger/logger';
 import { MailSender } from '@/adapters/mailSender/mailSender';
+import { AllergenRepository } from '@/adapters/repositories/allergenRepository/allergen.repository';
+import { DietaryRegimeRepository } from '@/adapters/repositories/dietaryRegimeRepository/dietaryRegime.repository';
+import { DishRepository } from '@/adapters/repositories/dishRepository/dish.repository';
+import { MenuRepository } from '@/adapters/repositories/menuRepository/menu.repository';
 import { UserRepository } from '@/adapters/repositories/userRepository/user.repository';
 import { UserTokenRepository } from '@/adapters/repositories/userTokenRepository/userToken.repository';
 import { i18n } from '@/application/i18n/i18n';
@@ -24,6 +32,10 @@ const adaptersContainer = new ContainerModule((bind: interfaces.Bind) => {
   // Repositories
   bind<UserRepositoryInterface>(TYPES.UserRepository).to(UserRepository);
   bind<UserTokenRepositoryInterface>(TYPES.UserTokenRepository).to(UserTokenRepository);
+  bind<AllergenRepositoryInterface>(TYPES.AllergenRepository).to(AllergenRepository);
+  bind<DietaryRegimeRepositoryInterface>(TYPES.DietaryRegimeRepository).to(DietaryRegimeRepository);
+  bind<DishRepositoryInterface>(TYPES.DishRepository).to(DishRepository);
+  bind<MenuRepositoryInterface>(TYPES.MenuRepository).to(MenuRepository);
 
   // Adapters
   bind<MailSenderInterface>(TYPES.MailSender).to(MailSender);
