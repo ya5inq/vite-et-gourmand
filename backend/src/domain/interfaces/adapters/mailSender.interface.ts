@@ -21,6 +21,7 @@ export interface SendContactEmailOptionsInterface {
   fromEmail: string;
   message: string;
   phone?: string;
+  subject?: string;
 }
 
 export interface SendOrderConfirmationEmailOptions {
@@ -71,4 +72,6 @@ export interface MailSenderInterface {
   sendMaterialReturnEmail: (options: SendMaterialReturnEmailOptions) => Promise<void>;
   sendOrderCompletedEmail: (options: SendOrderCompletedEmailOptions) => Promise<void>;
   sendMaterialPenaltyEmail: (options: SendMaterialPenaltyEmailOptions) => Promise<void>;
+  /** Sent to the company inbox when a visitor submits the contact form. */
+  sendContactEmail: (options: SendContactEmailOptionsInterface) => Promise<void>;
 }

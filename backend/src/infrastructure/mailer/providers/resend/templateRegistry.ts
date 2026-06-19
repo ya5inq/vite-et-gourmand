@@ -145,4 +145,24 @@ export const RESEND_TEMPLATE_REGISTRY: Record<string, TemplateRenderer> = {
           </td></tr>`,
       ),
     }) satisfies RenderedTemplate,
+
+  contact: (variables) =>
+    ({
+      subject: variables.subject ? `Contact : ${variables.subject}` : 'Nouveau message de contact — Vite & Gourmand',
+      html: baseLayout(
+        'Nouveau message de contact',
+        `<tr><td style="color:#444;line-height:1.6;padding-bottom:16px;">
+            Un visiteur a envoyé un message depuis le formulaire de contact.
+          </td></tr>
+          <tr><td style="color:#444;line-height:1.8;padding-bottom:16px;">
+            <strong>Nom&nbsp;:</strong> ${variables.fromName ?? ''}<br/>
+            <strong>Email&nbsp;:</strong> ${variables.fromEmail ?? ''}<br/>
+            ${variables.phone ? `<strong>Téléphone&nbsp;:</strong> ${variables.phone}<br/>` : ''}
+            ${variables.subject ? `<strong>Sujet&nbsp;:</strong> ${variables.subject}<br/>` : ''}
+          </td></tr>
+          <tr><td style="color:#444;line-height:1.6;padding-bottom:24px;white-space:pre-wrap;">
+            ${variables.message ?? ''}
+          </td></tr>`,
+      ),
+    }) satisfies RenderedTemplate,
 };

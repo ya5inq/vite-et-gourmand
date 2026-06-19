@@ -39,12 +39,15 @@ import { DeliveryZoneSchema } from '@/infrastructure/database/schema/deliveryZon
 import { DietaryRegimeSchema } from '@/infrastructure/database/schema/dietaryRegime.schema';
 import { DishSchema } from '@/infrastructure/database/schema/dish.schema';
 import { MenuSchema } from '@/infrastructure/database/schema/menu.schema';
+import { OperatingHoursSchema } from '@/infrastructure/database/schema/operatingHours.schema';
 import { OrderSchema } from '@/infrastructure/database/schema/order.schema';
 import { OrderHistorySchema } from '@/infrastructure/database/schema/orderHistory.schema';
 import { OrderItemSchema } from '@/infrastructure/database/schema/orderItem.schema';
+import { PageContentSchema } from '@/infrastructure/database/schema/pageContent.schema';
 import { UserSchema } from '@/infrastructure/database/schema/user.schema';
 
 import { ALLERGENS, DIETARY_REGIMES, DISHES, MENUS } from '../data/catalog.data';
+import { OPERATING_HOURS, PAGE_CONTENTS } from '../data/cms.data';
 import { DELIVERY_ZONES } from '../data/deliveryZone.data';
 
 const ADMIN_EMAIL = 'admin@viteetgourmand.fr';
@@ -283,6 +286,34 @@ const setupFixtures = async (): Promise<void> => {
       demoOrderCount += 1;
     }
     console.log(`✅ ${demoOrderCount} demo orders inserted`);
+
+    // 9. Operating hours (idempotent: truncate then insert the 7 days).
+    await dataSource.query('TRUNCATE "operating_hours" RESTART IDENTITY CASCADE');
+    const operatingHoursRepository = dataSource.getRepository(OperatingHoursSchema);
+    for (const fixture of OPERATING_HOURS) {
+      await operatingHoursRepository.save({
+        id: uuidv4(),
+        dayOfWeek: fixture.dayOfWeek,
+        openTime: fixture.openTime,
+        closeTime: fixture.closeTime,
+        isClosed: fixture.isClosed,
+      });
+    }
+    console.log(`✅ ${OPERATING_HOURS.length} operating hours inserted`);
+
+    // 10. Page contents (idempotent: truncate then insert each section).
+    await dataSource.query('TRUNCATE "page_contents" RESTART IDENTITY CASCADE');
+    const pageContentRepository = dataSource.getRepository(PageContentSchema);
+    for (const fixture of PAGE_CONTENTS) {
+      await pageContentRepository.save({
+        id: uuidv4(),
+        page: fixture.page,
+        section: fixture.section,
+        content: fixture.content,
+        updatedBy: null,
+      });
+    }
+    console.log(`✅ ${PAGE_CONTENTS.length} page contents inserted`);
 
     console.log('✅ Catalog fixtures setup completed.');
   } catch (error) {

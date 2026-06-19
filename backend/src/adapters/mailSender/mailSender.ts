@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.interface';
 import {
   MailSenderInterface,
+  SendContactEmailOptionsInterface,
   SendEmployeeSetPasswordEmailOptions,
   SendMaterialPenaltyEmailOptions,
   SendMaterialReturnEmailOptions,
@@ -118,6 +119,27 @@ export class MailSender implements MailSenderInterface {
         customerName: customerName ?? '',
         orderId,
         penaltyAmount: penaltyAmount.toFixed(2),
+      },
+    });
+  }
+
+  async sendContactEmail({
+    fromName,
+    fromEmail,
+    message,
+    phone,
+    subject,
+  }: SendContactEmailOptionsInterface): Promise<void> {
+    await this.templateMailer.sendTemplateEmail({
+      to: [this.envConfig.contactEmail],
+      replyTo: fromEmail,
+      template: { type: 'alias', value: 'contact' },
+      templateVariables: {
+        fromName,
+        fromEmail,
+        phone: phone ?? '',
+        subject: subject ?? '',
+        message,
       },
     });
   }

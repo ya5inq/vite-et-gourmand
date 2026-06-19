@@ -5,6 +5,9 @@ import { adminAllergenCreateRoute } from './adminAllergenCreate';
 import { adminAllergenDeleteRoute } from './adminAllergenDelete';
 import { adminAllergenGetAllRoute } from './adminAllergenGetAll';
 import { adminAllergenUpdateRoute } from './adminAllergenUpdate';
+import { adminContactMessageDeleteRoute } from './adminContactMessageDelete';
+import { adminContactMessageGetAllRoute } from './adminContactMessageGetAll';
+import { adminContactMessageMarkReadRoute } from './adminContactMessageMarkRead';
 import { adminDeliveryZoneCreateRoute } from './adminDeliveryZoneCreate';
 import { adminDeliveryZoneDeleteRoute } from './adminDeliveryZoneDelete';
 import { adminDeliveryZoneGetAllRoute } from './adminDeliveryZoneGetAll';
@@ -23,9 +26,16 @@ import { adminMenuDeleteRoute } from './adminMenuDelete';
 import { adminMenuGetAllRoute } from './adminMenuGetAll';
 import { adminMenuGetOneRoute } from './adminMenuGetOne';
 import { adminMenuUpdateRoute } from './adminMenuUpdate';
+import { adminOperatingHoursGetAllRoute } from './adminOperatingHoursGetAll';
+import { adminOperatingHoursUpsertRoute } from './adminOperatingHoursUpsert';
 import { adminOrderGetAllRoute } from './adminOrderGetAll';
 import { adminOrderGetOneRoute } from './adminOrderGetOne';
 import { adminOrderUpdateStatusRoute } from './adminOrderUpdateStatus';
+import { adminPageContentGetAllRoute } from './adminPageContentGetAll';
+import { adminPageContentUpsertRoute } from './adminPageContentUpsert';
+import { adminReviewApproveRoute } from './adminReviewApprove';
+import { adminReviewDeleteRoute } from './adminReviewDelete';
+import { adminReviewGetAllRoute } from './adminReviewGetAll';
 
 const adminRouter = getHonoApp();
 
@@ -68,6 +78,22 @@ adminRouter
   // Order
   .route('/', adminOrderGetAllRoute)
   .route('/', adminOrderGetOneRoute)
-  .route('/', adminOrderUpdateStatusRoute);
+  .route('/', adminOrderUpdateStatusRoute)
+
+  // Review (moderation)
+  .route('/', adminReviewGetAllRoute)
+  .route('/', adminReviewApproveRoute)
+  .route('/', adminReviewDeleteRoute)
+
+  // Contact messages
+  .route('/', adminContactMessageGetAllRoute)
+  .route('/', adminContactMessageMarkReadRoute)
+  .route('/', adminContactMessageDeleteRoute)
+
+  // CMS (page content + operating hours)
+  .route('/', adminPageContentGetAllRoute)
+  .route('/', adminPageContentUpsertRoute)
+  .route('/', adminOperatingHoursGetAllRoute)
+  .route('/', adminOperatingHoursUpsertRoute);
 
 export { adminRouter };
