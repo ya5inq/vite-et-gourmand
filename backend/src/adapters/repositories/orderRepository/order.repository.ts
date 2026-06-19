@@ -7,10 +7,12 @@ import {
   FindAllOrdersParamsInterface,
   FindOrdersByUserParamsInterface,
   OrderRepositoryInterface,
+  UpdateStatusWithHistoryPayloadInterface,
 } from '@/domain/interfaces/repositories/order.repository.interface';
 import { ClientDatabaseInterface } from '@/infrastructure/database/clientDatabase/clientDatabase.interface';
 
 import { TYPES } from '@/configuration/di/types';
+import { OrderStatusEnum } from '@/domain/entities/order/orderStatus';
 import { MenuSchema } from '@/infrastructure/database/schema/menu.schema';
 import { OrderSchema } from '@/infrastructure/database/schema/order.schema';
 import { OrderHistorySchema } from '@/infrastructure/database/schema/orderHistory.schema';
@@ -94,7 +96,8 @@ export class OrderRepository implements OrderRepositoryInterface {
   async findById(id: string): Promise<OrderInterface | null> {
     return this.repository.findOne({
       where: { id },
-      relations: ['orderItems', 'orderItems.menu'],
+      relations: ['orderItems', 'orderItems.menu', 'history', 'user'],
+      order: { history: { createdAt: 'ASC' } },
     });
   }
 
@@ -195,5 +198,49 @@ export class OrderRepository implements OrderRepositoryInterface {
     if (Object.keys(scalarData).length > 0) {
       await this.repository.update(id, scalarData);
     }
+  }
+
+  async updateStatusWithHistory(payload: UpdateStatusWithHistoryPayloadInterface): Promise<OrderInterface> {
+    const { orderId, orderUpdate, history } = payload;
+
+    await this.clientDatabase.getDataSource().transaction(async (manager) => {
+      const orderRepository = manager.getRepository(OrderSchema);
+      const orderHistoryRepository = manager.getRepository(OrderHistorySchema);
+
+      // Strip relations; only scalar columns are updatable here.
+      const scalarData: Partial<OrderInterface> = { ...orderUpdate };
+      delete scalarData.orderItems;
+      delete scalarData.user;
+      delete scalarData.deliveryZone;
+      delete scalarData.history;
+
+      if (Object.keys(scalarData).length > 0) {
+        await orderRepository.update(orderId, scalarData);
+      }
+
+      await orderHistoryRepository.save({
+        ...(history.id ? { id: history.id } : {}),
+        orderId,
+        oldStatus: history.oldStatus,
+        newStatus: history.newStatus,
+        changedBy: history.changedBy,
+        reason: history.reason,
+        contactMode: history.contactMode,
+      });
+    });
+
+    const updated = await this.findById(orderId);
+    // findById always resolves right after a successful commit.
+    return updated as OrderInterface;
+  }
+
+  async findOverdueMaterialReturns(now: Date): Promise<OrderInterface[]> {
+    return this.repository
+      .createQueryBuilder('order')
+      .where('order.status = :status', { status: OrderStatusEnum.AWAITING_MATERIAL_RETURN })
+      .andWhere('order.material_return_deadline IS NOT NULL')
+      .andWhere('order.material_return_deadline < :now', { now })
+      .andWhere('order.material_penalty_applied = false')
+      .getMany();
   }
 }

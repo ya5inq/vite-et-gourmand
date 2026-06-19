@@ -23,6 +23,9 @@ import { adminMenuDeleteRoute } from './adminMenuDelete';
 import { adminMenuGetAllRoute } from './adminMenuGetAll';
 import { adminMenuGetOneRoute } from './adminMenuGetOne';
 import { adminMenuUpdateRoute } from './adminMenuUpdate';
+import { adminOrderGetAllRoute } from './adminOrderGetAll';
+import { adminOrderGetOneRoute } from './adminOrderGetOne';
+import { adminOrderUpdateStatusRoute } from './adminOrderUpdateStatus';
 
 const adminRouter = getHonoApp();
 
@@ -60,6 +63,11 @@ adminRouter
   .route('/', adminDeliveryZoneGetAllRoute)
   .route('/', adminDeliveryZoneCreateRoute)
   .route('/', adminDeliveryZoneUpdateRoute)
-  .route('/', adminDeliveryZoneDeleteRoute);
+  .route('/', adminDeliveryZoneDeleteRoute)
+
+  // Order
+  .route('/', adminOrderGetAllRoute)
+  .route('/', adminOrderGetOneRoute)
+  .route('/', adminOrderUpdateStatusRoute);
 
 export { adminRouter };

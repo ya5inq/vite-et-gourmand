@@ -24,6 +24,8 @@ const buildSchema = (): OrderInterface => ({
   rejectedBy: null,
   rejectedAt: null,
   materialReturnDeadline: null,
+  materialPenaltyApplied: false,
+  penaltyAmount: null,
   createdAt: faker.date.recent(),
   updatedAt: faker.date.recent(),
   orderItems: [],

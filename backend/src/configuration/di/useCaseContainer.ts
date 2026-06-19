@@ -30,9 +30,12 @@ import { DeleteMenuUseCaseInterface } from '@/application/useCases/menu/deleteMe
 import { GetAllMenusUseCaseInterface } from '@/application/useCases/menu/getAllMenus/getAllMenus.useCase.interface';
 import { GetMenuUseCaseInterface } from '@/application/useCases/menu/getMenu/getMenu.useCase.interface';
 import { UpdateMenuUseCaseInterface } from '@/application/useCases/menu/updateMenu/updateMenu.useCase.interface';
+import { ApplyMaterialReturnPenaltiesUseCaseInterface } from '@/application/useCases/order/applyMaterialReturnPenalties/applyMaterialReturnPenalties.useCase.interface';
 import { CreateOrderUseCaseInterface } from '@/application/useCases/order/createOrder/createOrder.useCase.interface';
+import { GetAllOrdersUseCaseInterface } from '@/application/useCases/order/getAllOrders/getAllOrders.useCase.interface';
 import { GetOrderUseCaseInterface } from '@/application/useCases/order/getOrder/getOrder.useCase.interface';
 import { GetUserOrdersUseCaseInterface } from '@/application/useCases/order/getUserOrders/getUserOrders.useCase.interface';
+import { UpdateOrderStatusUseCaseInterface } from '@/application/useCases/order/updateOrderStatus/updateOrderStatus.useCase.interface';
 import { GetUserUseCaseInterface } from '@/application/useCases/user/getUser/getUser.useCase.interface';
 import { UpdateUserUseCaseInterface } from '@/application/useCases/user/updateUser/updateUser.useCase.interface';
 
@@ -66,9 +69,12 @@ import { DeleteMenuUseCase } from '@/application/useCases/menu/deleteMenu/delete
 import { GetAllMenusUseCase } from '@/application/useCases/menu/getAllMenus/getAllMenus.useCase';
 import { GetMenuUseCase } from '@/application/useCases/menu/getMenu/getMenu.useCase';
 import { UpdateMenuUseCase } from '@/application/useCases/menu/updateMenu/updateMenu.useCase';
+import { ApplyMaterialReturnPenaltiesUseCase } from '@/application/useCases/order/applyMaterialReturnPenalties/applyMaterialReturnPenalties.useCase';
 import { CreateOrderUseCase } from '@/application/useCases/order/createOrder/createOrder.useCase';
+import { GetAllOrdersUseCase } from '@/application/useCases/order/getAllOrders/getAllOrders.useCase';
 import { GetOrderUseCase } from '@/application/useCases/order/getOrder/getOrder.useCase';
 import { GetUserOrdersUseCase } from '@/application/useCases/order/getUserOrders/getUserOrders.useCase';
+import { UpdateOrderStatusUseCase } from '@/application/useCases/order/updateOrderStatus/updateOrderStatus.useCase';
 import { GetUserUseCase } from '@/application/useCases/user/getUser/getUser.useCase';
 import { UpdateUserUseCase } from '@/application/useCases/user/updateUser/updateUser.useCase';
 
@@ -127,6 +133,11 @@ const useCaseContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<CreateOrderUseCaseInterface>(TYPES.CreateOrderUseCase).to(CreateOrderUseCase);
   bind<GetUserOrdersUseCaseInterface>(TYPES.GetUserOrdersUseCase).to(GetUserOrdersUseCase);
   bind<GetOrderUseCaseInterface>(TYPES.GetOrderUseCase).to(GetOrderUseCase);
+  bind<GetAllOrdersUseCaseInterface>(TYPES.GetAllOrdersUseCase).to(GetAllOrdersUseCase);
+  bind<UpdateOrderStatusUseCaseInterface>(TYPES.UpdateOrderStatusUseCase).to(UpdateOrderStatusUseCase);
+  bind<ApplyMaterialReturnPenaltiesUseCaseInterface>(TYPES.ApplyMaterialReturnPenaltiesUseCase).to(
+    ApplyMaterialReturnPenaltiesUseCase,
+  );
 });
 
 export { useCaseContainer };

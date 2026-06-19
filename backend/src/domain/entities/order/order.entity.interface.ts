@@ -31,6 +31,10 @@ export interface OrderInterface {
   rejectedBy: string | null;
   rejectedAt: Date | null;
   materialReturnDeadline: Date | null;
+  /** True once the 600€ material-return penalty has been applied (idempotency guard). */
+  materialPenaltyApplied: boolean;
+  /** Penalty charged on top of the order total (600€ for an overdue material return). */
+  penaltyAmount: number | null;
 
   createdAt: Date;
   updatedAt: Date;

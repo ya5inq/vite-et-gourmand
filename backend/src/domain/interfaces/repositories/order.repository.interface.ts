@@ -39,6 +39,16 @@ export interface CreateOrderPayloadInterface {
   stockUpdates: StockUpdateInterface[];
 }
 
+/**
+ * Atomically updates an order's scalar columns and appends a history row.
+ * Used by the order state machine (Phase 6).
+ */
+export interface UpdateStatusWithHistoryPayloadInterface {
+  orderId: string;
+  orderUpdate: Partial<OrderInterface>;
+  history: OrderHistoryInterface;
+}
+
 export interface OrderRepositoryInterface {
   /**
    * Inserts the order, its items and the initial history row, and applies the
@@ -52,4 +62,11 @@ export interface OrderRepositoryInterface {
   findAll: (params?: FindAllOrdersParamsInterface) => Promise<OrderInterface[]>;
   countFindAll: (params?: FindAllOrdersParamsInterface) => Promise<number>;
   updateOne: (id: string, data: Partial<OrderInterface>) => Promise<void>;
+  /** Updates the order status (+ related columns) and appends a history row in one transaction. */
+  updateStatusWithHistory: (payload: UpdateStatusWithHistoryPayloadInterface) => Promise<OrderInterface>;
+  /**
+   * Orders stuck in AWAITING_MATERIAL_RETURN whose deadline has passed and on
+   * which the material penalty has not been applied yet.
+   */
+  findOverdueMaterialReturns: (now: Date) => Promise<OrderInterface[]>;
 }

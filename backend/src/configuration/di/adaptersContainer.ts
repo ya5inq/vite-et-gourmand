@@ -5,6 +5,7 @@ import { AnalyticsRepositoryInterface } from '@/domain/interfaces/adapters/analy
 import { AuditLogRepositoryInterface } from '@/domain/interfaces/adapters/auditLog.repository.interface';
 import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.interface';
 import { MailSenderInterface } from '@/domain/interfaces/adapters/mailSender.interface';
+import { QueueManagerInterface } from '@/domain/interfaces/adapters/queueManager.interface';
 import { LoggerInterface } from '@/domain/interfaces/logger/logger.interface';
 import { AllergenRepositoryInterface } from '@/domain/interfaces/repositories/allergen.repository.interface';
 import { DeliveryZoneRepositoryInterface } from '@/domain/interfaces/repositories/deliveryZone.repository.interface';
@@ -20,6 +21,7 @@ import { AuditLogRepository } from '@/adapters/auditLog/auditLog.repository';
 import { EnvConfig } from '@/adapters/envConfig/envConfig';
 import { Logger } from '@/adapters/logger/logger';
 import { MailSender } from '@/adapters/mailSender/mailSender';
+import { QueueManager } from '@/adapters/queueManager/queueManager';
 import { AllergenRepository } from '@/adapters/repositories/allergenRepository/allergen.repository';
 import { DeliveryZoneRepository } from '@/adapters/repositories/deliveryZoneRepository/deliveryZone.repository';
 import { DietaryRegimeRepository } from '@/adapters/repositories/dietaryRegimeRepository/dietaryRegime.repository';
@@ -47,6 +49,7 @@ const adaptersContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<MailSenderInterface>(TYPES.MailSender).to(MailSender);
   bind<AnalyticsRepositoryInterface>(TYPES.AnalyticsRepository).to(AnalyticsRepository);
   bind<AuditLogRepositoryInterface>(TYPES.AuditLogRepository).to(AuditLogRepository);
+  bind<QueueManagerInterface>(TYPES.QueueManager).to(QueueManager).inSingletonScope();
 
   // Global services
   bind<LoggerInterface>(TYPES.Logger).to(Logger).inSingletonScope();

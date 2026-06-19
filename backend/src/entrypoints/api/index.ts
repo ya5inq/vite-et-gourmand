@@ -4,6 +4,7 @@ import { ServerType } from '@hono/node-server';
 
 import { I18nInterface } from '@/application/i18n/i18n.interface';
 import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.interface';
+import { QueueManagerInterface } from '@/domain/interfaces/adapters/queueManager.interface';
 import { LoggerInterface } from '@/domain/interfaces/logger/logger.interface';
 import { ClientDatabaseInterface } from '@/infrastructure/database/clientDatabase/clientDatabase.interface';
 import { MongoClientInterface } from '@/infrastructure/mongo/mongoClient.interface';
@@ -16,9 +17,11 @@ import { ensureMongoIndexes } from '@/infrastructure/mongo/ensureIndexes';
 
 import { bootstrap } from './loader/server';
 import { runShutdownCallbacks } from './loader/shutdownRegistry';
+import { workers } from '../queueConsumer/workers';
 
 let clientDatabase: ClientDatabaseInterface;
 let mongoClient: MongoClientInterface;
+let queueManager: QueueManagerInterface;
 let server: ServerType;
 let appLogger: LoggerInterface;
 
@@ -37,6 +40,12 @@ const shutdownGracefully = async (error?: Error) => {
     if (mongoClient) {
       await mongoClient.disconnect().catch((err) => {
         appLogger?.error('Error disconnecting MongoDB', err);
+      });
+    }
+
+    if (queueManager) {
+      await queueManager.stop().catch((err) => {
+        appLogger?.error('Error stopping queue manager', err);
       });
     }
 
@@ -69,6 +78,7 @@ const init = async () => {
   try {
     clientDatabase = mainContainer.get<ClientDatabaseInterface>(TYPES.ClientDatabase);
     mongoClient = mainContainer.get<MongoClientInterface>(TYPES.MongoClient);
+    queueManager = mainContainer.get<QueueManagerInterface>(TYPES.QueueManager);
     const envConfig = mainContainer.get<EnvConfigInterface>(TYPES.EnvConfig);
     appLogger = mainContainer.get<LoggerInterface>(TYPES.Logger);
     const i18n = mainContainer.get<I18nInterface>(TYPES.I18n);
@@ -94,6 +104,17 @@ const init = async () => {
       }
     } else {
       appLogger.warn('MONGO_URL not set — analytics/audit disabled');
+    }
+
+    // pg-boss powers the material-return penalty cron + worker. Best-effort,
+    // like Mongo: a failure here must not prevent the API from starting.
+    try {
+      await queueManager.start(envConfig.dbUrl);
+      await Promise.all(workers.map((worker) => queueManager.setupWorker(worker.queue, worker.handler)));
+    } catch (queueError) {
+      appLogger.warn('pg-boss unavailable at startup — background jobs disabled', {
+        error: queueError instanceof Error ? queueError.message : 'unknown',
+      });
     }
 
     const bootstrapData = bootstrap();

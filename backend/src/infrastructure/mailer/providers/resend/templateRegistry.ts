@@ -96,4 +96,53 @@ export const RESEND_TEMPLATE_REGISTRY: Record<string, TemplateRenderer> = {
           <tr><td style="padding-bottom:24px;">${button(variables.ordersUrl ?? '#', 'Suivre ma commande')}</td></tr>`,
       ),
     }) satisfies RenderedTemplate,
+
+  'material-return': (variables) =>
+    ({
+      subject: 'Matériel à restituer — Vite & Gourmand',
+      html: baseLayout(
+        'Matériel à restituer',
+        `<tr><td style="color:#444;line-height:1.6;padding-bottom:16px;">
+            ${variables.customerName ? `Bonjour ${variables.customerName},<br/>` : ''}
+            Votre commande a bien été livrée. Le matériel mis à disposition doit nous être restitué.
+          </td></tr>
+          <tr><td style="color:#444;line-height:1.8;padding-bottom:24px;">
+            <strong>Référence&nbsp;:</strong> ${variables.orderId ?? ''}<br/>
+            <strong>Date limite de restitution&nbsp;:</strong> ${variables.deadline ?? ''}<br/>
+            À défaut de restitution sous 10 jours ouvrés, des frais de ${variables.penaltyAmount ?? '600.00'} € seront facturés, conformément à nos CGV.
+          </td></tr>`,
+      ),
+    }) satisfies RenderedTemplate,
+
+  'order-completed': (variables) =>
+    ({
+      subject: 'Votre commande est terminée — donnez votre avis',
+      html: baseLayout(
+        'Commande terminée',
+        `<tr><td style="color:#444;line-height:1.6;padding-bottom:16px;">
+            ${variables.customerName ? `Bonjour ${variables.customerName},<br/>` : ''}
+            Votre commande (référence ${variables.orderId ?? ''}) est désormais terminée. Merci de votre confiance&nbsp;!
+          </td></tr>
+          <tr><td style="color:#444;line-height:1.6;padding-bottom:24px;">
+            Votre avis nous intéresse&nbsp;: partagez votre expérience pour nous aider à nous améliorer.
+          </td></tr>
+          <tr><td style="padding-bottom:24px;">${button(variables.reviewsUrl ?? '#', 'Donner mon avis')}</td></tr>`,
+      ),
+    }) satisfies RenderedTemplate,
+
+  'material-penalty': (variables) =>
+    ({
+      subject: 'Pénalité de non-restitution du matériel — Vite & Gourmand',
+      html: baseLayout(
+        'Pénalité matériel',
+        `<tr><td style="color:#444;line-height:1.6;padding-bottom:16px;">
+            ${variables.customerName ? `Bonjour ${variables.customerName},<br/>` : ''}
+            Faute de restitution du matériel dans le délai imparti, une pénalité a été appliquée à votre commande.
+          </td></tr>
+          <tr><td style="color:#444;line-height:1.8;padding-bottom:24px;">
+            <strong>Référence&nbsp;:</strong> ${variables.orderId ?? ''}<br/>
+            <strong>Montant de la pénalité&nbsp;:</strong> ${variables.penaltyAmount ?? '600.00'} €
+          </td></tr>`,
+      ),
+    }) satisfies RenderedTemplate,
 };

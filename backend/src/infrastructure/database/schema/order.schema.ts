@@ -113,6 +113,20 @@ export const OrderSchema = new EntitySchema<OrderInterface>({
       type: 'timestamp with time zone',
       nullable: true,
     },
+    materialPenaltyApplied: {
+      name: 'material_penalty_applied',
+      type: 'boolean',
+      nullable: false,
+      default: false,
+    },
+    penaltyAmount: {
+      name: 'penalty_amount',
+      type: 'numeric',
+      precision: 10,
+      scale: 2,
+      nullable: true,
+      transformer: decimalTransformer,
+    },
     createdAt: {
       name: 'created_at',
       type: 'timestamp with time zone',
@@ -154,6 +168,11 @@ export const OrderSchema = new EntitySchema<OrderInterface>({
       target: 'orderItem',
       inverseSide: 'order',
       cascade: true,
+    },
+    history: {
+      type: 'one-to-many',
+      target: 'orderHistory',
+      inverseSide: 'order',
     },
   },
 });

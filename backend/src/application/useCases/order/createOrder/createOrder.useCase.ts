@@ -173,6 +173,8 @@ export class CreateOrderUseCase implements CreateOrderUseCaseInterface {
       rejectedBy: null,
       rejectedAt: null,
       materialReturnDeadline: null,
+      materialPenaltyApplied: false,
+      penaltyAmount: null,
       createdAt: now,
       updatedAt: now,
       orderItems,

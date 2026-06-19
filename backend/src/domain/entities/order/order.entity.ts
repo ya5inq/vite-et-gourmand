@@ -24,6 +24,8 @@ export class Order implements OrderInterface {
     public rejectedBy: string | null,
     public rejectedAt: Date | null,
     public materialReturnDeadline: Date | null,
+    public materialPenaltyApplied: boolean,
+    public penaltyAmount: number | null,
     public createdAt: Date,
     public updatedAt: Date,
     public orderItems: OrderItemInterface[] = [],
