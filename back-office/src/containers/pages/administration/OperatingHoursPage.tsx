@@ -1,87 +1,21 @@
 import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { toast } from 'sonner';
 import { DashboardPageLayout } from '@/components/templates/DashboardPageLayout';
-import { supabase } from '@/configs/supabase';
-import { CacheKeys } from '@/configs/cacheKeys';
+import { useOperatingHours, useSaveOperatingHours } from '@/api/hooks/useOperatingHours';
 
-type OperatingHour = {
-  id: string;
-  day_of_week: number;
-  day_name: string;
-  open_time: string | null;
-  close_time: string | null;
-  is_closed: boolean;
-};
-
+// dayOfWeek follows the backend convention (0-6). We display Monday-first with
+// dayOfWeek 0 == Lundi ... 6 == Dimanche.
 const DAY_NAMES = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-
-const useOperatingHours = () => {
-  return useQuery({
-    queryKey: CacheKeys.OPERATING_HOURS(),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('operating_hours')
-        .select('*')
-        .order('day_of_week');
-
-      if (error) throw error;
-      return data as OperatingHour[];
-    },
-  });
-};
-
-const useSaveOperatingHours = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (hours: { id?: string; day_of_week: number; day_name: string; open_time: string | null; close_time: string | null; is_closed: boolean }[]) => {
-      for (const hour of hours) {
-        if (hour.id) {
-          const { error } = await supabase
-            .from('operating_hours')
-            .update({
-              open_time: hour.is_closed ? null : hour.open_time,
-              close_time: hour.is_closed ? null : hour.close_time,
-              is_closed: hour.is_closed,
-            })
-            .eq('id', hour.id);
-
-          if (error) throw error;
-        } else {
-          const { error } = await supabase
-            .from('operating_hours')
-            .insert({
-              day_of_week: hour.day_of_week,
-              day_name: hour.day_name,
-              open_time: hour.is_closed ? null : hour.open_time,
-              close_time: hour.is_closed ? null : hour.close_time,
-              is_closed: hour.is_closed,
-            });
-
-          if (error) throw error;
-        }
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CacheKeys.OPERATING_HOURS() });
-      toast.success('Horaires mis a jour');
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-};
 
 const hourSchema = z.object({
   hours: z.array(z.object({
-    id: z.string().optional(),
-    day_of_week: z.number(),
-    day_name: z.string(),
-    open_time: z.string().nullable(),
-    close_time: z.string().nullable(),
-    is_closed: z.boolean(),
+    dayOfWeek: z.number(),
+    dayName: z.string(),
+    openTime: z.string(),
+    closeTime: z.string(),
+    isClosed: z.boolean(),
   })),
 });
 
@@ -95,11 +29,11 @@ export const OperatingHoursPage = () => {
     resolver: zodResolver(hourSchema),
     defaultValues: {
       hours: DAY_NAMES.map((name, i) => ({
-        day_of_week: i + 1,
-        day_name: name,
-        open_time: '11:00',
-        close_time: '22:00',
-        is_closed: false,
+        dayOfWeek: i,
+        dayName: name,
+        openTime: '11:00',
+        closeTime: '22:00',
+        isClosed: false,
       })),
     },
   });
@@ -109,14 +43,13 @@ export const OperatingHoursPage = () => {
   useEffect(() => {
     if (operatingHours && operatingHours.length > 0) {
       const formData = DAY_NAMES.map((name, i) => {
-        const existing = operatingHours.find((h) => h.day_of_week === i + 1);
+        const existing = operatingHours.find((h) => h.dayOfWeek === i);
         return {
-          id: existing?.id,
-          day_of_week: i + 1,
-          day_name: name,
-          open_time: existing?.open_time ?? '11:00',
-          close_time: existing?.close_time ?? '22:00',
-          is_closed: existing?.is_closed ?? false,
+          dayOfWeek: i,
+          dayName: name,
+          openTime: existing?.openTime ?? '11:00',
+          closeTime: existing?.closeTime ?? '22:00',
+          isClosed: existing?.isClosed ?? false,
         };
       });
       reset({ hours: formData });
@@ -124,7 +57,14 @@ export const OperatingHoursPage = () => {
   }, [operatingHours, reset]);
 
   const onSubmit = (data: HoursForm) => {
-    saveHours.mutate(data.hours);
+    saveHours.mutate(
+      data.hours.map((h) => ({
+        dayOfWeek: h.dayOfWeek,
+        openTime: h.isClosed ? null : h.openTime,
+        closeTime: h.isClosed ? null : h.closeTime,
+        isClosed: h.isClosed,
+      })),
+    );
   };
 
   const watchedHours = watch('hours');
@@ -147,14 +87,14 @@ export const OperatingHoursPage = () => {
               </thead>
               <tbody className="divide-y">
                 {fields.map((field, index) => {
-                  const isClosed = watchedHours[index]?.is_closed ?? false;
+                  const isClosed = watchedHours[index]?.isClosed ?? false;
                   return (
                     <tr key={field.id} className="hover:bg-muted/30">
-                      <td className="px-4 py-3 font-medium">{field.day_name}</td>
+                      <td className="px-4 py-3 font-medium">{field.dayName}</td>
                       <td className="px-4 py-3">
                         <input
                           type="time"
-                          {...register(`hours.${index}.open_time`)}
+                          {...register(`hours.${index}.openTime`)}
                           disabled={isClosed}
                           className="rounded-md border border-input px-2 py-1 text-sm outline-none ring-ring focus:ring-2 disabled:opacity-50"
                         />
@@ -162,7 +102,7 @@ export const OperatingHoursPage = () => {
                       <td className="px-4 py-3">
                         <input
                           type="time"
-                          {...register(`hours.${index}.close_time`)}
+                          {...register(`hours.${index}.closeTime`)}
                           disabled={isClosed}
                           className="rounded-md border border-input px-2 py-1 text-sm outline-none ring-ring focus:ring-2 disabled:opacity-50"
                         />
@@ -170,7 +110,7 @@ export const OperatingHoursPage = () => {
                       <td className="px-4 py-3 text-center">
                         <input
                           type="checkbox"
-                          {...register(`hours.${index}.is_closed`)}
+                          {...register(`hours.${index}.isClosed`)}
                           className="h-4 w-4"
                         />
                       </td>

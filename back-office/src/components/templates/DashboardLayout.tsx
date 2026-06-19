@@ -64,7 +64,7 @@ const navGroups: NavGroup[] = [
   {
     title: 'Administration',
     items: [
-      { label: 'Utilisateurs', icon: Users, to: '/users' },
+      { label: 'Employes', icon: Users, to: '/users' },
       { label: 'Zones livraison', icon: MapPin, to: '/delivery-zones' },
       { label: 'Messages contact', icon: MessageSquare, to: '/contact-messages' },
       { label: 'Horaires', icon: Clock, to: '/operating-hours' },

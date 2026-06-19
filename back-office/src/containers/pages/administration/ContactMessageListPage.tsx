@@ -1,65 +1,21 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { Eye, Mail, MailOpen } from 'lucide-react';
 import { useState } from 'react';
 import { DashboardPageLayout } from '@/components/templates/DashboardPageLayout';
-import { supabase } from '@/configs/supabase';
-import { CacheKeys } from '@/configs/cacheKeys';
-
-type ContactMessage = {
-  id: string;
-  name: string;
-  email: string;
-  subject: string | null;
-  message: string;
-  is_read: boolean;
-  created_at: string;
-};
-
-const useContactMessages = () => {
-  return useQuery({
-    queryKey: CacheKeys.CONTACT_MESSAGES(),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as ContactMessage[];
-    },
-  });
-};
-
-const useMarkAsRead = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, is_read }: { id: string; is_read: boolean }) => {
-      const { error } = await supabase
-        .from('contact_messages')
-        .update({ is_read })
-        .eq('id', id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CacheKeys.CONTACT_MESSAGES() });
-      toast.success('Statut mis a jour');
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-};
+import {
+  useContactMessages,
+  useMarkContactMessageRead,
+  type ContactMessageRow,
+} from '@/api/hooks/useContactMessages';
 
 export const ContactMessageListPage = () => {
   const { data: messages, isLoading } = useContactMessages();
-  const markAsRead = useMarkAsRead();
-  const [viewingMessage, setViewingMessage] = useState<ContactMessage | null>(null);
+  const markAsRead = useMarkContactMessageRead();
+  const [viewingMessage, setViewingMessage] = useState<ContactMessageRow | null>(null);
 
-  const handleView = (msg: ContactMessage) => {
+  const handleView = (msg: ContactMessageRow) => {
     setViewingMessage(msg);
-    if (!msg.is_read) {
-      markAsRead.mutate({ id: msg.id, is_read: true });
+    if (!msg.isRead) {
+      markAsRead.mutate(msg.id);
     }
   };
 
@@ -82,9 +38,9 @@ export const ContactMessageListPage = () => {
             </thead>
             <tbody className="divide-y">
               {messages?.map((msg) => (
-                <tr key={msg.id} className={`hover:bg-muted/30 ${!msg.is_read ? 'bg-blue-50/50 font-medium' : ''}`}>
+                <tr key={msg.id} className={`hover:bg-muted/30 ${!msg.isRead ? 'bg-blue-50/50 font-medium' : ''}`}>
                   <td className="px-4 py-3">
-                    {msg.is_read ? (
+                    {msg.isRead ? (
                       <MailOpen className="h-4 w-4 text-muted-foreground" />
                     ) : (
                       <Mail className="h-4 w-4 text-primary" />
@@ -94,7 +50,7 @@ export const ContactMessageListPage = () => {
                   <td className="px-4 py-3 text-muted-foreground">{msg.email}</td>
                   <td className="px-4 py-3">{msg.subject ?? '-'}</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {new Date(msg.created_at).toLocaleDateString('fr-FR', {
+                    {new Date(msg.createdAt).toLocaleDateString('fr-FR', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
@@ -110,15 +66,6 @@ export const ContactMessageListPage = () => {
                     >
                       <Eye className="h-4 w-4" />
                     </button>
-                    {msg.is_read && (
-                      <button
-                        onClick={() => markAsRead.mutate({ id: msg.id, is_read: false })}
-                        className="ml-1 rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
-                        title="Marquer comme non lu"
-                      >
-                        <Mail className="h-4 w-4" />
-                      </button>
-                    )}
                   </td>
                 </tr>
               ))}
@@ -143,8 +90,11 @@ export const ContactMessageListPage = () => {
                 <p className="text-sm text-muted-foreground">
                   De: {viewingMessage.name} ({viewingMessage.email})
                 </p>
+                {viewingMessage.phone && (
+                  <p className="text-xs text-muted-foreground">Tel: {viewingMessage.phone}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
-                  {new Date(viewingMessage.created_at).toLocaleDateString('fr-FR', {
+                  {new Date(viewingMessage.createdAt).toLocaleDateString('fr-FR', {
                     day: '2-digit',
                     month: 'long',
                     year: 'numeric',

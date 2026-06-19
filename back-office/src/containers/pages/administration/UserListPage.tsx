@@ -1,85 +1,44 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { toast } from 'sonner';
-import { Plus, Pencil } from 'lucide-react';
+import { Plus, UserCheck, UserX } from 'lucide-react';
 import { DashboardPageLayout } from '@/components/templates/DashboardPageLayout';
-import { supabase } from '@/configs/supabase';
-import { CacheKeys } from '@/configs/cacheKeys';
 import { useAuthContext } from '@/contexts/AuthContext';
-
-type UserProfile = {
-  id: string;
-  email: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  role: string;
-  created_at: string;
-};
+import {
+  useEmployees,
+  useCreateEmployee,
+  useDeactivateEmployee,
+  useReactivateEmployee,
+  type EmployeeRow,
+} from '@/api/hooks/useEmployees';
 
 const ROLE_COLORS: Record<string, string> = {
-  admin: 'bg-purple-100 text-purple-800',
-  employee: 'bg-blue-100 text-blue-800',
-  user: 'bg-gray-100 text-gray-800',
-  visitor: 'bg-yellow-100 text-yellow-800',
+  ADMIN: 'bg-purple-100 text-purple-800',
+  EMPLOYEE: 'bg-blue-100 text-blue-800',
 };
 
-const useUsers = () => {
-  return useQuery({
-    queryKey: CacheKeys.USERS(),
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_users_with_email');
-
-      if (error) throw error;
-      return data as UserProfile[];
-    },
-  });
-};
-
-const useUpdateUserRole = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ role })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CacheKeys.USERS() });
-      toast.success('Role mis a jour');
-    },
-    onError: (error: Error) => {
-      toast.error(`Erreur: ${error.message}`);
-    },
-  });
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: 'Administrateur',
+  EMPLOYEE: 'Employe',
 };
 
 const employeeSchema = z.object({
   email: z.string().email('Email invalide'),
-  password: z.string().min(6, 'Minimum 6 caracteres'),
-  first_name: z.string().min(1, 'Le prenom est requis'),
-  last_name: z.string().min(1, 'Le nom est requis'),
-  role: z.enum(['employee', 'admin']),
+  firstName: z.string().min(1, 'Le prenom est requis'),
+  lastName: z.string().min(1, 'Le nom est requis'),
+  phone: z.string().optional(),
 });
 
 type EmployeeForm = z.infer<typeof employeeSchema>;
 
 export const UserListPage = () => {
   const { isAdmin } = useAuthContext();
-  const { data: users, isLoading } = useUsers();
-  const updateRole = useUpdateUserRole();
+  const { data: employees, isLoading } = useEmployees();
+  const createEmployee = useCreateEmployee();
+  const deactivate = useDeactivateEmployee();
+  const reactivate = useReactivateEmployee();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [editingRole, setEditingRole] = useState('');
 
   const {
     register,
@@ -88,64 +47,39 @@ export const UserListPage = () => {
     formState: { errors },
   } = useForm<EmployeeForm>({
     resolver: zodResolver(employeeSchema),
-    defaultValues: { role: 'employee' },
   });
 
-  const [isCreating, setIsCreating] = useState(false);
-
   const openCreate = () => {
-    reset({ email: '', password: '', first_name: '', last_name: '', role: 'employee' });
+    reset({ email: '', firstName: '', lastName: '', phone: '' });
     setIsModalOpen(true);
   };
 
-  const onSubmit = async (data: EmployeeForm) => {
-    setIsCreating(true);
-    try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+  const onSubmit = (data: EmployeeForm) => {
+    createEmployee.mutate(
+      {
         email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            first_name: data.first_name,
-            last_name: data.last_name,
-          },
-        },
-      });
-
-      if (authError) throw authError;
-
-      if (authData.user) {
-        await supabase
-          .from('profiles')
-          .update({
-            first_name: data.first_name,
-            last_name: data.last_name,
-            role: data.role,
-          })
-          .eq('id', authData.user.id);
-      }
-
-      toast.success('Employe cree avec succes');
-      setIsModalOpen(false);
-    } catch (error) {
-      toast.error(`Erreur: ${(error as Error).message}`);
-    } finally {
-      setIsCreating(false);
-    }
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone?.trim() ? data.phone : undefined,
+      },
+      { onSuccess: () => setIsModalOpen(false) },
+    );
   };
 
-  const handleRoleChange = (userId: string, role: string) => {
-    updateRole.mutate({ id: userId, role }, {
-      onSuccess: () => {
-        setEditingUserId(null);
-      },
-    });
+  const toggleActive = (employee: EmployeeRow) => {
+    if (employee.isActive) {
+      if (window.confirm(`Desactiver ${employee.firstName} ${employee.lastName} ?`)) {
+        deactivate.mutate(employee.id);
+      }
+    } else {
+      reactivate.mutate(employee.id);
+    }
   };
 
   return (
     <DashboardPageLayout
-      title="Utilisateurs"
-      description="Gestion des utilisateurs"
+      title="Employes"
+      description="Gestion des employes (la creation envoie un email de configuration du mot de passe)"
       actions={
         isAdmin ? (
           <button
@@ -167,69 +101,53 @@ export const UserListPage = () => {
                 <th className="px-4 py-3 text-left font-medium">Email</th>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
                 <th className="px-4 py-3 text-left font-medium">Role</th>
+                <th className="px-4 py-3 text-left font-medium">Statut</th>
                 <th className="px-4 py-3 text-left font-medium">Date de creation</th>
                 {isAdmin && <th className="px-4 py-3 text-right font-medium">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y">
-              {users?.map((user) => (
-                <tr key={user.id} className="hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium">
-                    {user.email}
-                  </td>
+              {employees?.map((employee) => (
+                <tr key={employee.id} className="hover:bg-muted/30">
+                  <td className="px-4 py-3 font-medium">{employee.email}</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {[user.first_name, user.last_name].filter(Boolean).join(' ') || '-'}
+                    {[employee.firstName, employee.lastName].filter(Boolean).join(' ') || '-'}
                   </td>
                   <td className="px-4 py-3">
-                    {editingUserId === user.id ? (
-                      <select
-                        value={editingRole}
-                        onChange={(e) => setEditingRole(e.target.value)}
-                        onBlur={() => {
-                          if (editingRole !== user.role) {
-                            handleRoleChange(user.id, editingRole);
-                          } else {
-                            setEditingUserId(null);
-                          }
-                        }}
-                        className="rounded-md border border-input px-2 py-1 text-sm"
-                        autoFocus
-                      >
-                        <option value="visitor">Visiteur</option>
-                        <option value="user">Utilisateur</option>
-                        <option value="employee">Employe</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    ) : (
-                      <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_COLORS[user.role] ?? 'bg-gray-100 text-gray-800'}`}
-                      >
-                        {user.role}
-                      </span>
-                    )}
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_COLORS[employee.role] ?? 'bg-gray-100 text-gray-800'}`}
+                    >
+                      {ROLE_LABELS[employee.role] ?? employee.role}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${employee.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                    >
+                      {employee.isActive ? 'Actif' : 'Desactive'}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {new Date(user.created_at).toLocaleDateString('fr-FR')}
+                    {new Date(employee.createdAt).toLocaleDateString('fr-FR')}
                   </td>
                   {isAdmin && (
                     <td className="px-4 py-3 text-right">
                       <button
-                        onClick={() => {
-                          setEditingUserId(user.id);
-                          setEditingRole(user.role);
-                        }}
-                        className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                        onClick={() => toggleActive(employee)}
+                        disabled={deactivate.isPending || reactivate.isPending}
+                        className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-50"
+                        title={employee.isActive ? 'Desactiver' : 'Reactiver'}
                       >
-                        <Pencil className="h-4 w-4" />
+                        {employee.isActive ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
                       </button>
                     </td>
                   )}
                 </tr>
               ))}
-              {users?.length === 0 && (
+              {employees?.length === 0 && (
                 <tr>
-                  <td colSpan={isAdmin ? 5 : 4} className="px-4 py-8 text-center text-muted-foreground">
-                    Aucun utilisateur
+                  <td colSpan={isAdmin ? 6 : 5} className="px-4 py-8 text-center text-muted-foreground">
+                    Aucun employe
                   </td>
                 </tr>
               )}
@@ -247,18 +165,18 @@ export const UserListPage = () => {
                 <div>
                   <label className="mb-1 block text-sm font-medium">Prenom</label>
                   <input
-                    {...register('first_name')}
+                    {...register('firstName')}
                     className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
                   />
-                  {errors.first_name && <p className="mt-1 text-xs text-destructive">{errors.first_name.message}</p>}
+                  {errors.firstName && <p className="mt-1 text-xs text-destructive">{errors.firstName.message}</p>}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">Nom</label>
                   <input
-                    {...register('last_name')}
+                    {...register('lastName')}
                     className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
                   />
-                  {errors.last_name && <p className="mt-1 text-xs text-destructive">{errors.last_name.message}</p>}
+                  {errors.lastName && <p className="mt-1 text-xs text-destructive">{errors.lastName.message}</p>}
                 </div>
               </div>
               <div>
@@ -271,24 +189,15 @@ export const UserListPage = () => {
                 {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Mot de passe</label>
+                <label className="mb-1 block text-sm font-medium">Telephone (optionnel)</label>
                 <input
-                  type="password"
-                  {...register('password')}
+                  {...register('phone')}
                   className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
                 />
-                {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>}
               </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">Role</label>
-                <select
-                  {...register('role')}
-                  className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-                >
-                  <option value="employee">Employe</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Un email sera envoye a l'employe pour qu'il definisse son mot de passe.
+              </p>
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
@@ -299,10 +208,10 @@ export const UserListPage = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isCreating}
+                  disabled={createEmployee.isPending}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                 >
-                  {isCreating ? 'Creation...' : 'Creer'}
+                  {createEmployee.isPending ? 'Creation...' : 'Creer'}
                 </button>
               </div>
             </form>

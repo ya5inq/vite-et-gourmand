@@ -12,7 +12,7 @@ const menuSchema = z.object({
   theme: z.string().optional(),
   price: z.coerce.number().min(0, 'Le prix doit etre positif'),
   stock: z.coerce.number().int().min(0, 'Le stock doit etre positif'),
-  is_available: z.boolean(),
+  isAvailable: z.boolean(),
 });
 
 type MenuForm = z.infer<typeof menuSchema>;
@@ -32,12 +32,12 @@ export const MenuListPage = () => {
     formState: { errors },
   } = useForm<MenuForm>({
     resolver: zodResolver(menuSchema),
-    defaultValues: { is_available: true, stock: 0, price: 0 },
+    defaultValues: { isAvailable: true, stock: 0, price: 0 },
   });
 
   const openCreate = () => {
     setEditingMenu(null);
-    reset({ name: '', description: '', theme: '', price: 0, stock: 0, is_available: true });
+    reset({ name: '', description: '', theme: '', price: 0, stock: 0, isAvailable: true });
     setIsModalOpen(true);
   };
 
@@ -48,8 +48,8 @@ export const MenuListPage = () => {
       description: menu.description ?? '',
       theme: menu.theme ?? '',
       price: menu.price,
-      stock: menu.stock,
-      is_available: menu.is_available,
+      stock: menu.stock ?? 0,
+      isAvailable: menu.isAvailable,
     });
     setIsModalOpen(true);
   };
@@ -102,14 +102,14 @@ export const MenuListPage = () => {
                   <td className="px-4 py-3 font-medium">{menu.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{menu.theme ?? '-'}</td>
                   <td className="px-4 py-3">{menu.price.toFixed(2)} EUR</td>
-                  <td className="px-4 py-3">{menu.stock}</td>
+                  <td className="px-4 py-3">{menu.stock ?? '-'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                        menu.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        menu.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}
                     >
-                      {menu.is_available ? 'Oui' : 'Non'}
+                      {menu.isAvailable ? 'Oui' : 'Non'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -191,8 +191,8 @@ export const MenuListPage = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="is_available" {...register('is_available')} className="h-4 w-4" />
-                <label htmlFor="is_available" className="text-sm font-medium">
+                <input type="checkbox" id="isAvailable" {...register('isAvailable')} className="h-4 w-4" />
+                <label htmlFor="isAvailable" className="text-sm font-medium">
                   Disponible
                 </label>
               </div>

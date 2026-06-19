@@ -24,8 +24,10 @@
     "@tanstack/react-query": "^5.60.0",
     "@tanstack/react-query-devtools": "^5.60.0",
     "@tanstack/react-table": "^8.20.0",
+    "@vite-et-gourmand/sdk": "workspace:*",
     "@vite-et-gourmand/supabase": "workspace:*",
     "@vite-et-gourmand/ui": "workspace:*",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.400.0",
@@ -38,13 +40,18 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@tailwindcss/vite": "^4.1.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react-swc": "^4.0.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
+    "globals": "^15.0.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.7.3",
+    "typescript-eslint": "^8.0.0",
     "vite": "^6.0.0"
   }
 }

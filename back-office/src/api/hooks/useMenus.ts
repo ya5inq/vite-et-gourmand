@@ -1,20 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { supabase } from '@/configs/supabase';
+import type {
+  AdminMenuCreateBody,
+  AdminMenuGetAll200ItemsItem,
+  AdminMenuGetOne200,
+  AdminMenuUpdateBody,
+} from '@vite-et-gourmand/sdk';
+import { AdminApi } from '@/configs/api';
 import { CacheKeys } from '@/configs/cacheKeys';
 
-export type MenuRow = {
-  id: string;
-  name: string;
-  description: string | null;
-  theme: string | null;
-  price: number;
-  stock: number;
-  is_available: boolean;
-  created_at: string;
-  menu_dishes?: { dish_id: string; dishes: { id: string; name: string } }[];
-  menu_dietary_regimes?: { dietary_regime_id: string; dietary_regimes: { id: string; name: string } }[];
-};
+export type MenuRow = AdminMenuGetAll200ItemsItem;
+export type MenuDetail = AdminMenuGetOne200;
 
 export type MenuInput = {
   name: string;
@@ -22,20 +18,24 @@ export type MenuInput = {
   theme?: string;
   price: number;
   stock: number;
-  is_available: boolean;
+  isAvailable: boolean;
 };
+
+const toBody = (input: MenuInput): AdminMenuCreateBody & AdminMenuUpdateBody => ({
+  name: input.name,
+  description: input.description?.trim() ? input.description : null,
+  theme: input.theme?.trim() ? input.theme : null,
+  price: input.price,
+  stock: input.stock,
+  isAvailable: input.isAvailable,
+});
 
 export const useMenus = () => {
   return useQuery({
     queryKey: CacheKeys.MENUS(),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('menus')
-        .select('*, menu_dishes(dish_id, dishes(id, name)), menu_dietary_regimes(dietary_regime_id, dietary_regimes(id, name))')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as MenuRow[];
+      const { data } = await AdminApi.adminMenuGetAll({ limit: 100 });
+      return data.items;
     },
   });
 };
@@ -44,14 +44,8 @@ export const useMenu = (id: string) => {
   return useQuery({
     queryKey: CacheKeys.MENU(id),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('menus')
-        .select('*, menu_dishes(dish_id, dishes(id, name)), menu_dietary_regimes(dietary_regime_id, dietary_regimes(id, name))')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-      return data as MenuRow;
+      const { data } = await AdminApi.adminMenuGetOne(id);
+      return data;
     },
     enabled: !!id,
   });
@@ -62,21 +56,12 @@ export const useCreateMenu = () => {
 
   return useMutation({
     mutationFn: async (input: MenuInput) => {
-      const { data, error } = await supabase
-        .from('menus')
-        .insert(input)
-        .select()
-        .single();
-
-      if (error) throw error;
+      const { data } = await AdminApi.adminMenuCreate(toBody(input));
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENUS() });
       toast.success('Menu cree avec succes');
-    },
-    onError: (error: Error) => {
-      toast.error(`Erreur: ${error.message}`);
     },
   });
 };
@@ -86,23 +71,13 @@ export const useUpdateMenu = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...input }: MenuInput & { id: string }) => {
-      const { data, error } = await supabase
-        .from('menus')
-        .update(input)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
+      const { data } = await AdminApi.adminMenuUpdate(id, toBody(input));
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENUS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENU(data.id) });
       toast.success('Menu mis a jour');
-    },
-    onError: (error: Error) => {
-      toast.error(`Erreur: ${error.message}`);
     },
   });
 };
@@ -112,19 +87,11 @@ export const useDeleteMenu = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('menus')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      await AdminApi.adminMenuDelete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENUS() });
       toast.success('Menu supprime');
-    },
-    onError: (error: Error) => {
-      toast.error(`Erreur: ${error.message}`);
     },
   });
 };

@@ -1,73 +1,75 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { supabase } from '@/configs/supabase';
+import type {
+  AdminOrderGetAll200ItemsItem,
+  AdminOrderGetOne200,
+  AdminOrderUpdateStatusBodyContactMode,
+} from '@vite-et-gourmand/sdk';
+import { AdminApi } from '@/configs/api';
 import { CacheKeys } from '@/configs/cacheKeys';
 
-export type OrderStatus = 'pending' | 'rejected' | 'confirmed' | 'preparing' | 'ready' | 'delivering' | 'completed' | 'cancelled';
+export type OrderStatus =
+  | 'PENDING'
+  | 'ACCEPTED'
+  | 'PREPARING'
+  | 'DELIVERING'
+  | 'DELIVERED'
+  | 'AWAITING_MATERIAL_RETURN'
+  | 'COMPLETED'
+  | 'REJECTED'
+  | 'CANCELLED';
 
-export type OrderItemRow = {
-  id: string;
-  menu_id: string;
-  quantity: number;
-  unit_price: number;
-  menus: { name: string } | null;
-};
+export type ContactMode = AdminOrderUpdateStatusBodyContactMode;
 
-export type OrderRow = {
-  id: string;
-  user_id: string | null;
-  status: OrderStatus;
-  total_price: number;
-  delivery_address: string | null;
-  delivery_city: string | null;
-  delivery_postal_code: string | null;
-  delivery_date: string | null;
-  delivery_fee: number;
-  notes: string | null;
-  created_at: string;
-  rejection_reason: string | null;
-  rejected_at: string | null;
-  rejected_by: string | null;
-  guest_email: string | null;
-  guest_name: string | null;
-  guest_phone: string | null;
-  profiles?: { first_name: string | null; last_name: string | null; email?: string } | null;
-  order_items?: OrderItemRow[];
-};
+export type OrderRow = AdminOrderGetAll200ItemsItem;
+export type OrderDetail = AdminOrderGetOne200;
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  pending: 'En attente',
-  rejected: 'Refusee',
-  confirmed: 'Confirmee',
-  preparing: 'En preparation',
-  ready: 'Prete',
-  delivering: 'En livraison',
-  completed: 'Terminee',
-  cancelled: 'Annulee',
+  PENDING: 'En attente',
+  ACCEPTED: 'Acceptee',
+  PREPARING: 'En preparation',
+  DELIVERING: 'En livraison',
+  DELIVERED: 'Livree',
+  AWAITING_MATERIAL_RETURN: 'Retour materiel',
+  COMPLETED: 'Terminee',
+  REJECTED: 'Refusee',
+  CANCELLED: 'Annulee',
 };
 
 export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  rejected: 'bg-red-100 text-red-800',
-  confirmed: 'bg-blue-100 text-blue-800',
-  preparing: 'bg-orange-100 text-orange-800',
-  ready: 'bg-green-100 text-green-800',
-  delivering: 'bg-purple-100 text-purple-800',
-  completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-gray-100 text-gray-600',
+  PENDING: 'bg-yellow-100 text-yellow-800',
+  ACCEPTED: 'bg-blue-100 text-blue-800',
+  PREPARING: 'bg-orange-100 text-orange-800',
+  DELIVERING: 'bg-purple-100 text-purple-800',
+  DELIVERED: 'bg-green-100 text-green-800',
+  AWAITING_MATERIAL_RETURN: 'bg-amber-100 text-amber-800',
+  COMPLETED: 'bg-green-100 text-green-700',
+  REJECTED: 'bg-red-100 text-red-800',
+  CANCELLED: 'bg-gray-100 text-gray-600',
+};
+
+/**
+ * Mirror of the backend state machine (ORDER_STATUS_TRANSITIONS).
+ * Used to populate the "change status" UI with only reachable states.
+ */
+export const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  PENDING: ['ACCEPTED', 'REJECTED', 'CANCELLED'],
+  ACCEPTED: ['PREPARING', 'CANCELLED'],
+  PREPARING: ['DELIVERING', 'CANCELLED'],
+  DELIVERING: ['DELIVERED'],
+  DELIVERED: ['AWAITING_MATERIAL_RETURN', 'COMPLETED'],
+  AWAITING_MATERIAL_RETURN: ['COMPLETED'],
+  COMPLETED: [],
+  REJECTED: [],
+  CANCELLED: [],
 };
 
 export const useOrders = () => {
   return useQuery({
     queryKey: CacheKeys.ORDERS(),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*, profiles!orders_user_id_fkey(first_name, last_name), order_items(id, quantity, unit_price, menu_id, menus(name))')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as unknown as OrderRow[];
+      const { data } = await AdminApi.adminOrderGetAll({ limit: 100 });
+      return data.items;
     },
   });
 };
@@ -76,14 +78,8 @@ export const useOrder = (id: string) => {
   return useQuery({
     queryKey: CacheKeys.ORDER(id),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*, profiles!orders_user_id_fkey(first_name, last_name), order_items(id, quantity, unit_price, menu_id, menus(name))')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-      return data as unknown as OrderRow;
+      const { data } = await AdminApi.adminOrderGetOne(id);
+      return data;
     },
     enabled: !!id,
   });
@@ -94,23 +90,13 @@ export const useUpdateOrderStatus = () => {
 
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: OrderStatus }) => {
-      const { data, error } = await supabase
-        .from('orders')
-        .update({ status })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
+      const { data } = await AdminApi.adminOrderUpdateStatus(id, { newStatus: status });
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDERS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDER(data.id) });
       toast.success('Statut de la commande mis a jour');
-    },
-    onError: (error: Error) => {
-      toast.error(`Erreur: ${error.message}`);
     },
   });
 };
@@ -120,23 +106,13 @@ export const useAcceptOrder = () => {
 
   return useMutation({
     mutationFn: async ({ id }: { id: string }) => {
-      const { data, error } = await supabase
-        .from('orders')
-        .update({ status: 'confirmed' })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
+      const { data } = await AdminApi.adminOrderUpdateStatus(id, { newStatus: 'ACCEPTED' });
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDERS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDER(data.id) });
       toast.success('Commande acceptee');
-    },
-    onError: (error: Error) => {
-      toast.error(`Erreur: ${error.message}`);
     },
   });
 };
@@ -145,29 +121,26 @@ export const useRejectOrder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, reason, rejectedBy }: { id: string; reason: string; rejectedBy: string }) => {
-      const { data, error } = await supabase
-        .from('orders')
-        .update({
-          status: 'rejected',
-          rejection_reason: reason,
-          rejected_at: new Date().toISOString(),
-          rejected_by: rejectedBy,
-        })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
+    mutationFn: async ({
+      id,
+      reason,
+      contactMode,
+    }: {
+      id: string;
+      reason: string;
+      contactMode: ContactMode;
+    }) => {
+      const { data } = await AdminApi.adminOrderUpdateStatus(id, {
+        newStatus: 'REJECTED',
+        reason,
+        contactMode,
+      });
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDERS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDER(data.id) });
       toast.success('Commande refusee');
-    },
-    onError: (error: Error) => {
-      toast.error(`Erreur: ${error.message}`);
     },
   });
 };

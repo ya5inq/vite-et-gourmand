@@ -1,30 +1,19 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase } from '@/configs/supabase';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { login } = useAuthContext();
 
   return useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
-
-      if (!profile || (profile.role !== 'admin' && profile.role !== 'employee')) {
-        await supabase.auth.signOut();
-        throw new Error('Acces refuse. Vous devez etre employe ou administrateur.');
-      }
-
-      return data;
+      await login(email, password);
     },
     onSuccess: () => {
+      queryClient.clear();
       toast.success('Connexion reussie');
       navigate('/dashboard');
     },
@@ -35,15 +24,11 @@ export const useLogin = () => {
 };
 
 export const useLogout = () => {
-  const navigate = useNavigate();
+  const { signOut } = useAuthContext();
 
   return useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      navigate('/login');
+      await signOut();
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Erreur de deconnexion');
