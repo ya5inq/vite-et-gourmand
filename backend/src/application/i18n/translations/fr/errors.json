@@ -21,6 +21,7 @@
   "NOT_FOUND_DIETARY_REGIME": "Régime alimentaire introuvable",
   "NOT_FOUND_DISH": "Plat introuvable",
   "NOT_FOUND_MENU": "Menu introuvable",
+  "NOT_FOUND_DELIVERY_ZONE": "Zone de livraison introuvable",
   "CONFLICT": "Un conflit a été détecté",
   "CONFLICT_EMAIL_TAKEN": "Cet email est déjà utilisé",
   "CONFLICT_ACCOUNT_ALREADY_VALIDATED": "Ce compte est déjà validé",

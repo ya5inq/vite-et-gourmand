@@ -7,6 +7,7 @@ import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.inter
 import { MailSenderInterface } from '@/domain/interfaces/adapters/mailSender.interface';
 import { LoggerInterface } from '@/domain/interfaces/logger/logger.interface';
 import { AllergenRepositoryInterface } from '@/domain/interfaces/repositories/allergen.repository.interface';
+import { DeliveryZoneRepositoryInterface } from '@/domain/interfaces/repositories/deliveryZone.repository.interface';
 import { DietaryRegimeRepositoryInterface } from '@/domain/interfaces/repositories/dietaryRegime.repository.interface';
 import { DishRepositoryInterface } from '@/domain/interfaces/repositories/dish.repository.interface';
 import { MenuRepositoryInterface } from '@/domain/interfaces/repositories/menu.repository.interface';
@@ -19,6 +20,7 @@ import { EnvConfig } from '@/adapters/envConfig/envConfig';
 import { Logger } from '@/adapters/logger/logger';
 import { MailSender } from '@/adapters/mailSender/mailSender';
 import { AllergenRepository } from '@/adapters/repositories/allergenRepository/allergen.repository';
+import { DeliveryZoneRepository } from '@/adapters/repositories/deliveryZoneRepository/deliveryZone.repository';
 import { DietaryRegimeRepository } from '@/adapters/repositories/dietaryRegimeRepository/dietaryRegime.repository';
 import { DishRepository } from '@/adapters/repositories/dishRepository/dish.repository';
 import { MenuRepository } from '@/adapters/repositories/menuRepository/menu.repository';
@@ -36,6 +38,7 @@ const adaptersContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<DietaryRegimeRepositoryInterface>(TYPES.DietaryRegimeRepository).to(DietaryRegimeRepository);
   bind<DishRepositoryInterface>(TYPES.DishRepository).to(DishRepository);
   bind<MenuRepositoryInterface>(TYPES.MenuRepository).to(MenuRepository);
+  bind<DeliveryZoneRepositoryInterface>(TYPES.DeliveryZoneRepository).to(DeliveryZoneRepository);
 
   // Adapters
   bind<MailSenderInterface>(TYPES.MailSender).to(MailSender);

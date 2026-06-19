@@ -10,6 +10,8 @@ import { authResetPasswordRequestRoute } from './authResetPasswordRequest';
 import { authValidateAccountRoute } from './authValidateAccount';
 import { healthcheckRoute } from './healthcheck';
 import { publicAllergenGetAllRoute } from './publicAllergenGetAll';
+import { publicDeliveryZoneCalculatePriceRoute } from './publicDeliveryZoneCalculatePrice';
+import { publicDeliveryZoneGetAllRoute } from './publicDeliveryZoneGetAll';
 import { publicDietaryRegimeGetAllRoute } from './publicDietaryRegimeGetAll';
 import { publicMenuGetAllRoute } from './publicMenuGetAll';
 import { publicMenuGetOneRoute } from './publicMenuGetOne';
@@ -32,6 +34,10 @@ publicRouter
   .route('/', publicMenuGetOneRoute)
   .route('/', publicAllergenGetAllRoute)
   .route('/', publicDietaryRegimeGetAllRoute)
+
+  // Delivery zones (public, used by the storefront checkout)
+  .route('/', publicDeliveryZoneGetAllRoute)
+  .route('/', publicDeliveryZoneCalculatePriceRoute)
 
   // Healthcheck routes
   .route('/healthcheck', healthcheckRoute);

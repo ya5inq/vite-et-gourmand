@@ -26,6 +26,7 @@ const TYPES = {
   DietaryRegimeRepository: Symbol.for('DietaryRegimeRepository'),
   DishRepository: Symbol.for('DishRepository'),
   MenuRepository: Symbol.for('MenuRepository'),
+  DeliveryZoneRepository: Symbol.for('DeliveryZoneRepository'),
 
   // Use Cases - Auth
   LoginUseCase: Symbol.for('LoginUseCase'),
@@ -66,6 +67,13 @@ const TYPES = {
   DeleteMenuUseCase: Symbol.for('DeleteMenuUseCase'),
   GetAllMenusUseCase: Symbol.for('GetAllMenusUseCase'),
   GetMenuUseCase: Symbol.for('GetMenuUseCase'),
+
+  // Use Cases - DeliveryZone
+  CreateDeliveryZoneUseCase: Symbol.for('CreateDeliveryZoneUseCase'),
+  UpdateDeliveryZoneUseCase: Symbol.for('UpdateDeliveryZoneUseCase'),
+  DeleteDeliveryZoneUseCase: Symbol.for('DeleteDeliveryZoneUseCase'),
+  GetAllDeliveryZonesUseCase: Symbol.for('GetAllDeliveryZonesUseCase'),
+  CalculateDeliveryPriceUseCase: Symbol.for('CalculateDeliveryPriceUseCase'),
 
   // Infra
   ClientDatabase: Symbol.for('ClientDatabase'),
