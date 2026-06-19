@@ -5,11 +5,13 @@ import { adminEmployeeCreateRoute } from './adminEmployeeCreate';
 import { adminEmployeeDeactivateRoute } from './adminEmployeeDeactivate';
 import { adminEmployeeGetAllRoute } from './adminEmployeeGetAll';
 import { adminEmployeeReactivateRoute } from './adminEmployeeReactivate';
+import { adminStatsOrdersByMenuRoute } from './adminStatsOrdersByMenu';
+import { adminStatsRevenueByMenuRoute } from './adminStatsRevenueByMenu';
 
 const adminRestrictedRouter = getHonoApp();
 
-// Admin-only section (employees, and future admin-restricted features such as stats).
-// Catalogue CRUD is reserved to staff (see admin.router); these routes require ADMIN.
+// Admin-only section (employees + analytics). Catalogue CRUD is reserved to
+// staff (see admin.router); these routes require ADMIN.
 adminRestrictedRouter
   .use(authorizationMiddleware({ shouldBeAdmin: true }))
 
@@ -17,6 +19,10 @@ adminRestrictedRouter
   .route('/', adminEmployeeGetAllRoute)
   .route('/', adminEmployeeCreateRoute)
   .route('/', adminEmployeeDeactivateRoute)
-  .route('/', adminEmployeeReactivateRoute);
+  .route('/', adminEmployeeReactivateRoute)
+
+  // Stats (read from MongoDB)
+  .route('/', adminStatsOrdersByMenuRoute)
+  .route('/', adminStatsRevenueByMenuRoute);
 
 export { adminRestrictedRouter };
