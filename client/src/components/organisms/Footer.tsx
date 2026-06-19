@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getServerPublicApi } from '@/lib/api/server';
 
 const DAY_NAMES = [
   'Dimanche',
@@ -11,30 +11,48 @@ const DAY_NAMES = [
   'Samedi',
 ];
 
+interface FooterInfo {
+  company_name?: string;
+  siret?: string;
+  address?: string;
+  description?: string;
+}
+
+interface ContactInfo {
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
 export async function Footer() {
-  const supabase = await createClient();
+  const api = getServerPublicApi();
 
-  const { data: hoursData } = await supabase
-    .from('operating_hours')
-    .select('*')
-    .order('day_of_week');
+  // Operating hours + footer/info + contact/content. Tolerate individual
+  // failures so the footer always renders with sensible defaults.
+  const [hoursRes, footerRes, contactRes] = await Promise.allSettled([
+    api.publicOperatingHoursGetAll(),
+    api.publicPageContentGet({ page: 'footer', section: 'info' }),
+    api.publicPageContentGet({ page: 'contact', section: 'content' }),
+  ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const hours = hoursData as any[] | null;
+  const hours =
+    hoursRes.status === 'fulfilled'
+      ? [...hoursRes.value.data.items].sort((a, b) => a.dayOfWeek - b.dayOfWeek)
+      : [];
 
-  const { data: footerContent } = await supabase
-    .from('page_contents')
-    .select('content')
-    .eq('page', 'home')
-    .eq('section', 'footer')
-    .single();
+  const footer: FooterInfo =
+    footerRes.status === 'fulfilled'
+      ? ((footerRes.value.data.items[0]?.content as FooterInfo) ?? {})
+      : {};
 
-  const footer = (footerContent as { content?: {
-    description?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-  } } | null)?.content ?? null;
+  const contact: ContactInfo =
+    contactRes.status === 'fulfilled'
+      ? ((contactRes.value.data.items[0]?.content as ContactInfo) ?? {})
+      : {};
+
+  const address = footer.address ?? contact.address ?? 'Bordeaux, France';
+  const email = contact.email ?? 'contact@viteetgourmand.fr';
+  const phone = contact.phone ?? '05 56 00 00 00';
 
   return (
     <footer className="bg-foreground text-background">
@@ -42,17 +60,15 @@ export async function Footer() {
         <div className="grid md:grid-cols-3 gap-12">
           {/* Company info */}
           <div>
-            <h3 className="text-lg font-bold mb-4">Vite &amp; Gourmand</h3>
+            <h3 className="text-lg font-bold mb-4">{footer.company_name ?? 'Vite & Gourmand'}</h3>
             <p className="text-sm text-gray-400 mb-4">
-              {footer?.description ??
+              {footer.description ??
                 "Votre traiteur d'exception a Bordeaux. Des menus raffines pour tous vos evenements."}
             </p>
             <div className="space-y-2 text-sm text-gray-400">
-              {(footer?.address ?? 'Bordeaux, France') && (
-                <p>{footer?.address ?? 'Bordeaux, France'}</p>
-              )}
-              <p>{footer?.email ?? 'contact@viteetgourmand.fr'}</p>
-              <p>{footer?.phone ?? '05 56 00 00 00'}</p>
+              <p>{address}</p>
+              <p>{email}</p>
+              <p>{phone}</p>
             </div>
           </div>
 
@@ -91,15 +107,15 @@ export async function Footer() {
           {/* Operating hours */}
           <div>
             <h3 className="text-lg font-bold mb-4">Horaires</h3>
-            {hours && hours.length > 0 ? (
+            {hours.length > 0 ? (
               <ul className="space-y-1 text-sm">
                 {hours.map((hour) => (
                   <li key={hour.id} className="flex justify-between text-gray-400">
-                    <span>{DAY_NAMES[hour.day_of_week] ?? `Jour ${hour.day_of_week}`}</span>
+                    <span>{DAY_NAMES[hour.dayOfWeek] ?? `Jour ${hour.dayOfWeek}`}</span>
                     <span>
-                      {hour.is_closed
+                      {hour.isClosed
                         ? 'Ferme'
-                        : `${hour.open_time?.slice(0, 5) ?? ''} - ${hour.close_time?.slice(0, 5) ?? ''}`}
+                        : `${hour.openTime?.slice(0, 5) ?? ''} - ${hour.closeTime?.slice(0, 5) ?? ''}`}
                     </span>
                   </li>
                 ))}
@@ -107,7 +123,7 @@ export async function Footer() {
             ) : (
               <ul className="space-y-1 text-sm text-gray-400">
                 <li className="flex justify-between"><span>Lundi - Vendredi</span><span>9h - 18h</span></li>
-                <li className="flex justify-between"><span>Samedi</span><span>9h - 13h</span></li>
+                <li className="flex justify-between"><span>Samedi</span><span>10h - 17h</span></li>
                 <li className="flex justify-between"><span>Dimanche</span><span>Ferme</span></li>
               </ul>
             )}

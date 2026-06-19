@@ -1,59 +1,31 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+import { ProtectedApi } from '@/lib/api/axios';
 import { useAuth } from '@/contexts/AuthContext';
 import { OrderStatusBadge } from '@/components/molecules/OrderStatusBadge';
 import { RejectionNotice } from '@/components/molecules/RejectionNotice';
-
-interface OrderItem {
-  id: string;
-  quantity: number;
-  unit_price: number;
-  menus: { name: string } | null;
-}
-
-interface Order {
-  id: string;
-  quantity: number;
-  total_price: number;
-  status: string;
-  delivery_date: string | null;
-  delivery_address: string | null;
-  delivery_city: string | null;
-  delivery_fee: number;
-  created_at: string;
-  rejection_reason: string | null;
-  rejected_at: string | null;
-  menus: {
-    name: string;
-    price: number;
-  } | null;
-  order_items: OrderItem[];
-}
+import { OrderStatus } from '@/lib/orderStatus';
+import type { ProtectedOrderGetAll200ItemsItem } from '@vite-et-gourmand/sdk';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<ProtectedOrderGetAll200ItemsItem[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = useMemo(() => createClient(), []);
-
-  // Redirect if not authenticated
+  // Redirect if not authenticated (once the auth bootstrap resolved).
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.replace('/auth/login');
     }
   }, [authLoading, isAuthenticated, router]);
 
-  // Fetch orders when user is available
   useEffect(() => {
-    if (!user?.id) {
-      setOrdersLoading(false);
+    if (!isAuthenticated) {
       return;
     }
 
@@ -62,30 +34,16 @@ export default function DashboardPage() {
     async function fetchOrders() {
       try {
         setError(null);
-        const { data, error: fetchError } = await supabase
-          .from('orders')
-          .select('*, menus(name, price), order_items(id, quantity, unit_price, menus(name))')
-          .eq('user_id', user!.id)
-          .order('created_at', { ascending: false });
-
-        if (!isMounted) return;
-
-        if (fetchError) {
-          console.error('Orders fetch error:', fetchError);
-          setError('Erreur lors du chargement des commandes');
-          return;
-        }
-
-        setOrders((data ?? []) as Order[]);
-      } catch (err) {
-        console.error('Dashboard error:', err);
-        if (isMounted) {
-          setError('Une erreur est survenue');
-        }
+        const { data } = await ProtectedApi.protectedOrderGetAll({
+          sortBy: 'createdAt',
+          sortOrder: 'DESC',
+          limit: 100,
+        });
+        if (isMounted) setOrders(data.items);
+      } catch {
+        if (isMounted) setError('Erreur lors du chargement des commandes');
       } finally {
-        if (isMounted) {
-          setOrdersLoading(false);
-        }
+        if (isMounted) setOrdersLoading(false);
       }
     }
 
@@ -94,9 +52,8 @@ export default function DashboardPage() {
     return () => {
       isMounted = false;
     };
-  }, [user?.id, supabase]);
+  }, [isAuthenticated]);
 
-  // Show loading while checking auth
   if (authLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -105,7 +62,6 @@ export default function DashboardPage() {
     );
   }
 
-  // Don't render anything while redirecting
   if (!isAuthenticated) {
     return null;
   }
@@ -164,54 +120,41 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="divide-y divide-border">
-            {orders.map((order) => {
-              // Get menu names from order_items if available, otherwise fallback to legacy menus field
-              const menuNames = order.order_items?.length > 0
-                ? order.order_items.map(item => item.menus?.name ?? 'Menu').join(', ')
-                : order.menus?.name ?? 'Menu';
-              const totalQuantity = order.order_items?.length > 0
-                ? order.order_items.reduce((sum, item) => sum + item.quantity, 0)
-                : order.quantity;
-
-              return (
-                <div key={order.id} className="p-6 hover:bg-secondary/50 transition-colors">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">
-                        {menuNames}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {totalQuantity} personne{totalQuantity > 1 ? 's' : ''} &middot;{' '}
-                        Commande du {new Date(order.created_at).toLocaleDateString('fr-FR')}
+            {orders.map((order) => (
+              <div key={order.id} className="p-6 hover:bg-secondary/50 transition-colors">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground">
+                      Commande #{order.id.slice(0, 8).toUpperCase()}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {order.itemCount} menu{order.itemCount > 1 ? 's' : ''} &middot;{' '}
+                      Commande du {new Date(order.createdAt).toLocaleDateString('fr-FR')}
+                    </p>
+                    {order.deliveryDate && (
+                      <p className="text-sm text-muted-foreground">
+                        Livraison le {new Date(order.deliveryDate).toLocaleDateString('fr-FR')}
                       </p>
-                      {order.delivery_date && (
-                        <p className="text-sm text-muted-foreground">
-                          Livraison le {new Date(order.delivery_date).toLocaleDateString('fr-FR')}
-                          {order.delivery_city && ` a ${order.delivery_city}`}
-                        </p>
-                      )}
+                    )}
 
-                      {/* Show rejection notice */}
-                      {order.status === 'rejected' && (
-                        <RejectionNotice
-                          reason={order.rejection_reason}
-                          rejectedAt={order.rejected_at}
-                        />
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <OrderStatusBadge status={order.status} />
-                      <p className="font-bold text-foreground mt-2">{order.total_price.toFixed(2)} &euro;</p>
-                      {order.delivery_fee > 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          dont {order.delivery_fee.toFixed(2)} &euro; de livraison
-                        </p>
-                      )}
-                    </div>
+                    {order.status === OrderStatus.REJECTED && (
+                      <RejectionNotice reason={null} />
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <OrderStatusBadge status={order.status} />
+                    <p className="font-bold text-foreground mt-2">
+                      {order.totalPrice.toFixed(2)} &euro;
+                    </p>
+                    {order.deliveryFee > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        dont {order.deliveryFee.toFixed(2)} &euro; de livraison
+                      </p>
+                    )}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         )}
       </div>

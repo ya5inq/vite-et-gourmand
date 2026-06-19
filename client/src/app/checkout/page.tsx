@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -8,28 +8,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ShoppingBag, ArrowLeft, Info } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { PublicApi, ProtectedApi } from '@/lib/api/axios';
 import { useCart } from '@/contexts/CartContext';
-import type { User } from '@supabase/supabase-js';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  saveConfirmationRecap,
+  type ConfirmationRecap,
+} from '@/lib/confirmationStore';
+import type { PublicDeliveryZoneGetAll200ItemsItem } from '@vite-et-gourmand/sdk';
 
-interface DeliveryZone {
-  id: string;
-  name: string;
-  city: string | null;
-  postal_code: string | null;
-  delivery_fee: number;
-}
-
-interface Profile {
-  first_name: string | null;
-  last_name: string | null;
-  phone: string | null;
-  address: string | null;
-  city: string | null;
-  postal_code: string | null;
-}
-
-// Full schema - guest fields are validated conditionally in onSubmit
 const checkoutSchema = z.object({
   guest_name: z.string().optional(),
   guest_email: z.string().optional(),
@@ -47,13 +34,14 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotal, clearCart } = useCart();
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [zones, setZones] = useState<DeliveryZone[]>([]);
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const [zones, setZones] = useState<PublicDeliveryZoneGetAll200ItemsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
   const cartTotal = getTotal();
+  const totalPrice = cartTotal + deliveryFee;
 
   const {
     register,
@@ -68,58 +56,57 @@ export default function CheckoutPage() {
 
   const watchZoneId = watch('delivery_zone_id');
 
-  const selectedZone = useMemo(
-    () => zones.find((z) => z.id === watchZoneId),
-    [zones, watchZoneId]
-  );
-
-  const deliveryFee = selectedZone?.delivery_fee ?? 0;
-  const totalPrice = cartTotal + deliveryFee;
-
-  // Minimum delivery date: 2 days from now
+  // Minimum delivery date: 2 days from now.
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + 2);
   const minDateStr = minDate.toISOString().split('T')[0];
 
+  // Load active delivery zones (public) once.
   useEffect(() => {
-    const supabase = createClient();
-
-    async function loadData() {
-      // Load zones
-      const { data: zonesData } = await supabase
-        .from('delivery_zones')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      setZones((zonesData as DeliveryZone[]) ?? []);
-
-      // Check auth
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      setUser(authUser);
-
-      if (authUser) {
-        // Load profile
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('first_name, last_name, phone, address, city, postal_code')
-          .eq('id', authUser.id)
-          .single();
-
-        if (profileData) {
-          const typedProfile = profileData as Profile;
-          setProfile(typedProfile);
-          // Pre-fill form
-          if (typedProfile.address) setValue('delivery_address', typedProfile.address);
-          if (typedProfile.city) setValue('delivery_city', typedProfile.city);
-          if (typedProfile.postal_code) setValue('delivery_postal_code', typedProfile.postal_code);
-        }
+    let isMounted = true;
+    async function loadZones() {
+      try {
+        const { data } = await PublicApi.publicDeliveryZoneGetAll();
+        if (isMounted) setZones(data.items);
+      } catch {
+        // interceptor surfaces errors
+      } finally {
+        if (isMounted) setLoading(false);
       }
-
-      setLoading(false);
     }
+    loadZones();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    loadData();
-  }, [setValue]);
+  // Prefill address fields for authenticated users from their profile.
+  useEffect(() => {
+    if (user) {
+      if (user.address) setValue('delivery_address', user.address);
+      if (user.city) setValue('delivery_city', user.city);
+      if (user.postalCode) setValue('delivery_postal_code', user.postalCode);
+    }
+  }, [user, setValue]);
+
+  // Recompute the delivery fee server-side whenever the selected zone changes.
+  useEffect(() => {
+    if (!watchZoneId) {
+      setDeliveryFee(0);
+      return;
+    }
+    let isMounted = true;
+    PublicApi.publicDeliveryZoneCalculatePrice({ deliveryZoneId: watchZoneId })
+      .then(({ data }) => {
+        if (isMounted) setDeliveryFee(data.deliveryFee);
+      })
+      .catch(() => {
+        if (isMounted) setDeliveryFee(0);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [watchZoneId]);
 
   async function onSubmit(data: CheckoutFormData) {
     if (items.length === 0) {
@@ -127,8 +114,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Validate guest fields if not logged in
-    if (!user) {
+    // Conditionally validate guest fields when not authenticated.
+    if (!isAuthenticated) {
       let hasError = false;
       if (!data.guest_name || data.guest_name.length < 2) {
         setError('guest_name', { message: 'Le nom est requis' });
@@ -147,103 +134,87 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      const supabase = createClient();
+      const orderItems = items.map((item) => ({
+        menuId: item.menuId,
+        quantity: item.quantity,
+      }));
 
-      // Re-fetch the current user to ensure we have the latest auth state
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      // The backend validates deliveryDate as a date-only string (YYYY-MM-DD),
+      // which is exactly what the <input type="date"> already produces.
+      const deliveryDate = data.delivery_date;
 
-      let orderId: string;
+      let recap: ConfirmationRecap;
 
-      if (currentUser) {
-        // Authenticated user: use direct insert
-        const orderData = {
-          user_id: currentUser.id,
-          total_price: totalPrice,
-          delivery_address: data.delivery_address,
-          delivery_city: data.delivery_city,
-          delivery_postal_code: data.delivery_postal_code,
-          delivery_zone_id: data.delivery_zone_id,
-          delivery_date: data.delivery_date,
-          delivery_fee: deliveryFee,
-          notes: data.notes || null,
-          status: 'pending' as const,
-        };
-
-        const { data: order, error: orderError } = await supabase
-          .from('orders')
-          .insert(orderData as never)
-          .select('id')
-          .single();
-
-        if (orderError) throw orderError;
-        if (!order) throw new Error('No order returned');
-        orderId = (order as { id: string }).id;
-
-        // Create order items for authenticated user
-        const orderItems = items.map((item) => ({
-          order_id: orderId,
-          menu_id: item.menuId,
-          quantity: item.quantity,
-          unit_price: item.unitPrice,
-        }));
-
-        const { error: itemsError } = await supabase
-          .from('order_items')
-          .insert(orderItems as never);
-
-        if (itemsError) throw itemsError;
-      } else {
-        // Guest user: use RPC functions to bypass RLS
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: guestOrderId, error: guestOrderError } = await (supabase.rpc as any)(
-          'create_guest_order',
-          {
-            p_guest_name: data.guest_name!,
-            p_guest_email: data.guest_email!,
-            p_guest_phone: data.guest_phone!,
-            p_total_price: totalPrice,
-            p_delivery_address: data.delivery_address,
-            p_delivery_city: data.delivery_city,
-            p_delivery_postal_code: data.delivery_postal_code,
-            p_delivery_zone_id: data.delivery_zone_id,
-            p_delivery_date: data.delivery_date,
-            p_delivery_fee: deliveryFee,
-            p_notes: data.notes || null,
-          }
-        );
-
-        if (guestOrderError) throw guestOrderError;
-        if (!guestOrderId) throw new Error('No order ID returned');
-        orderId = guestOrderId;
-
-        // Add order items for guest order
-        const orderItemsJson = items.map((item) => ({
-          menu_id: item.menuId,
-          quantity: item.quantity,
-          unit_price: item.unitPrice,
-        }));
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: itemsError } = await (supabase.rpc as any)('add_guest_order_items', {
-          p_order_id: orderId,
-          p_items: orderItemsJson,
+      if (isAuthenticated) {
+        const { data: order } = await ProtectedApi.protectedOrderCreate({
+          items: orderItems,
+          deliveryZoneId: data.delivery_zone_id,
+          deliveryAddress: data.delivery_address,
+          deliveryCity: data.delivery_city,
+          deliveryPostalCode: data.delivery_postal_code,
+          deliveryDate,
+          notes: data.notes || undefined,
         });
-
-        if (itemsError) throw itemsError;
+        recap = {
+          id: order.id,
+          totalPrice: order.totalPrice,
+          deliveryFee: order.deliveryFee,
+          deliveryDate: order.deliveryDate ?? null,
+          deliveryAddress: order.deliveryAddress ?? null,
+          deliveryCity: order.deliveryCity ?? null,
+          guestName: null,
+          guestEmail: user?.email ?? null,
+          items: order.items.map((i) => ({
+            id: i.id,
+            menuName: i.menuName ?? 'Menu',
+            quantity: i.quantity,
+            unitPrice: i.unitPrice,
+          })),
+        };
+      } else {
+        const { data: order } = await PublicApi.publicOrderCreateGuest({
+          items: orderItems,
+          guestName: data.guest_name!,
+          guestEmail: data.guest_email!,
+          guestPhone: data.guest_phone || undefined,
+          deliveryZoneId: data.delivery_zone_id,
+          deliveryAddress: data.delivery_address,
+          deliveryCity: data.delivery_city,
+          deliveryPostalCode: data.delivery_postal_code,
+          deliveryDate,
+          notes: data.notes || undefined,
+        });
+        recap = {
+          id: order.id,
+          totalPrice: order.totalPrice,
+          deliveryFee: order.deliveryFee,
+          deliveryDate: order.deliveryDate ?? null,
+          deliveryAddress: order.deliveryAddress ?? null,
+          deliveryCity: order.deliveryCity ?? null,
+          guestName: order.guestName ?? data.guest_name ?? null,
+          guestEmail: order.guestEmail ?? data.guest_email ?? null,
+          items: order.items.map((i) => ({
+            id: i.id,
+            menuName: i.menuName ?? 'Menu',
+            quantity: i.quantity,
+            unitPrice: i.unitPrice,
+          })),
+        };
       }
 
-      // Clear cart and redirect
+      // Persist the recap so the confirmation page can show it even for guests
+      // (there is no public "get order by id" endpoint).
+      saveConfirmationRecap(recap);
       clearCart();
-      router.push(`/commande/confirmation?id=${orderId}`);
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error('Erreur lors de la commande. Veuillez reessayer.');
+      router.push(`/commande/confirmation?id=${recap.id}`);
+    } catch {
+      // The axios interceptor already surfaces the backend error message.
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -272,7 +243,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const isGuest = !user;
+  const isGuest = !isAuthenticated;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -287,10 +258,8 @@ export default function CheckoutPage() {
       <h1 className="text-3xl font-bold text-foreground mb-8">Finaliser votre commande</h1>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Form */}
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Guest info (if not logged in) */}
             {isGuest && (
               <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
                 <h2 className="text-lg font-semibold text-foreground mb-4">Vos coordonnees</h2>
@@ -351,22 +320,25 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Logged in user info */}
-            {user && profile && (
+            {isAuthenticated && user && (
               <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
                 <h2 className="text-lg font-semibold text-foreground mb-4">Vos coordonnees</h2>
                 <p className="text-muted-foreground">
                   <span className="font-medium text-foreground">
-                    {profile.first_name} {profile.last_name}
+                    {user.firstName} {user.lastName}
                   </span>
                   <br />
                   {user.email}
-                  {profile.phone && <><br />{profile.phone}</>}
+                  {user.phone && (
+                    <>
+                      <br />
+                      {user.phone}
+                    </>
+                  )}
                 </p>
               </div>
             )}
 
-            {/* Delivery info */}
             <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
               <h2 className="text-lg font-semibold text-foreground mb-4">Livraison</h2>
 
@@ -453,8 +425,6 @@ export default function CheckoutPage() {
                       <option key={zone.id} value={zone.id}>
                         {zone.name}
                         {zone.city ? ` (${zone.city})` : ''}
-                        {' - '}
-                        {zone.delivery_fee === 0 ? 'Gratuit' : `${zone.delivery_fee.toFixed(2)} \u20ac`}
                       </option>
                     ))}
                   </select>
@@ -478,7 +448,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Info box */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
               <Info className="text-blue-500 flex-shrink-0 mt-0.5" size={20} />
               <div className="text-sm text-blue-800">
@@ -500,7 +469,6 @@ export default function CheckoutPage() {
           </form>
         </div>
 
-        {/* Order summary */}
         <div className="lg:col-span-1">
           <div className="bg-card rounded-2xl shadow-sm border border-border p-6 sticky top-24">
             <h2 className="text-lg font-semibold text-foreground mb-4">Recapitulatif</h2>
@@ -526,10 +494,10 @@ export default function CheckoutPage() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Frais de livraison</span>
                 <span className="text-foreground">
-                  {selectedZone
+                  {watchZoneId
                     ? deliveryFee === 0
                       ? 'Gratuit'
-                      : `${deliveryFee.toFixed(2)} \u20ac`
+                      : `${deliveryFee.toFixed(2)} €`
                     : '-'}
                 </span>
               </div>

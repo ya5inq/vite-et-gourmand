@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { MapPin, Mail, Phone } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { PublicApi } from '@/lib/api/axios';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Le nom doit contenir au moins 2 caracteres'),
@@ -35,21 +35,18 @@ export default function ContactPage() {
   async function onSubmit(data: ContactForm) {
     setIsSubmitting(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from('contact_messages').insert({
+      await PublicApi.publicContactSend({
         name: data.name,
         email: data.email,
-        phone: data.phone || null,
-        subject: data.subject || null,
+        phone: data.phone || undefined,
+        subject: data.subject || undefined,
         message: data.message,
-      } as never);
-
-      if (error) throw error;
+      });
 
       toast.success('Message envoye avec succes ! Nous vous repondrons rapidement.');
       reset();
     } catch {
-      toast.error("Erreur lors de l'envoi du message. Veuillez reessayer.");
+      // The axios interceptor already surfaces the backend error message.
     } finally {
       setIsSubmitting(false);
     }

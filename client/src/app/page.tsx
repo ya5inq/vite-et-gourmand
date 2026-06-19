@@ -1,10 +1,12 @@
-import { createClient } from '@/lib/supabase/server';
+import { getServerPublicApi } from '@/lib/api/server';
 import { HeroSection } from '@/components/molecules/HeroSection';
 import { FeaturesSection } from '@/components/molecules/FeaturesSection';
 import { PopularMenusSection } from '@/components/molecules/PopularMenusSection';
 import { ValuesSection } from '@/components/molecules/ValuesSection';
 import { CtaSection } from '@/components/molecules/CtaSection';
 import { TestimonialsSection } from '@/components/molecules/TestimonialsSection';
+
+export const dynamic = 'force-dynamic';
 
 interface CmsContent {
   title?: string;
@@ -20,49 +22,48 @@ interface CmsContent {
 }
 
 export default async function HomePage() {
-  const supabase = await createClient();
+  const api = getServerPublicApi();
 
-  const { data: pageContentsData } = await supabase
-    .from('page_contents')
-    .select('*')
-    .eq('page', 'home');
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pageContents = pageContentsData as any[] | null;
+  // Run independent public fetches in parallel; tolerate individual failures so
+  // the homepage always renders (with fallback content for missing sections).
+  const [pageContentsRes, menusRes, reviewsRes] = await Promise.allSettled([
+    api.publicPageContentGet({ page: 'home' }),
+    api.publicMenuGetAll({ limit: 4, sortBy: 'createdAt', sortOrder: 'DESC' }),
+    api.publicReviewGetApproved({ limit: 6 }),
+  ]);
 
   const sections: Record<string, CmsContent> = {};
-  pageContents?.forEach((item) => {
-    sections[item.section] = item.content as CmsContent;
-  });
+  if (pageContentsRes.status === 'fulfilled') {
+    for (const item of pageContentsRes.value.data.items) {
+      sections[item.section] = item.content as CmsContent;
+    }
+  }
 
-  const { data: menusData } = await supabase
-    .from('menus')
-    .select(`
-      *,
-      menu_dietary_regimes(
-        dietary_regimes(id, name)
-      )
-    `)
-    .eq('is_available', true)
-    .order('created_at', { ascending: false })
-    .limit(4);
+  const menusWithRegimes =
+    menusRes.status === 'fulfilled'
+      ? menusRes.value.data.items.map((menu) => ({
+          id: menu.id,
+          name: menu.name,
+          description: menu.description ?? null,
+          theme: menu.theme ?? null,
+          price: menu.price,
+          min_persons: menu.minPersons,
+          max_persons: menu.maxPersons ?? null,
+          image_url: menu.imageUrl ?? null,
+          regimes: [] as Array<{ id: string; name: string }>,
+        }))
+      : [];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const menus = menusData as any[] | null;
-
-  const menusWithRegimes = menus?.map((menu) => ({
-    ...menu,
-    regimes: menu.menu_dietary_regimes
-      ?.map((mdr: { dietary_regimes: { id: string; name: string } | null }) => mdr.dietary_regimes)
-      .filter(Boolean) ?? [],
-  })) ?? [];
-
-  const { data: reviews } = await supabase
-    .from('reviews')
-    .select('*, profiles:user_id(first_name, last_name)')
-    .eq('is_approved', true)
-    .order('created_at', { ascending: false })
-    .limit(6);
+  const reviews =
+    reviewsRes.status === 'fulfilled'
+      ? reviewsRes.value.data.items.map((r) => ({
+          id: r.id,
+          rating: r.rating,
+          comment: r.comment ?? null,
+          created_at: r.createdAt,
+          profiles: { first_name: r.firstName ?? null, last_name: null },
+        }))
+      : [];
 
   const heroContent = sections['hero'] ?? {
     title: 'Vite & Gourmand',
@@ -73,76 +74,21 @@ export default async function HomePage() {
     cta_link: '/menus',
   };
 
-  const featuresContent = sections['features'] ?? {
-    title: 'Pourquoi nous choisir ?',
-    items: [
-      {
-        icon: 'ChefHat',
-        title: 'Chef experimente',
-        description: 'Notre chef cree des menus uniques avec des produits frais et locaux.',
-      },
-      {
-        icon: 'Truck',
-        title: 'Livraison soignee',
-        description: 'Livraison dans toute la region bordelaise, dans le respect de la chaine du froid.',
-      },
-      {
-        icon: 'Users',
-        title: 'Sur mesure',
-        description: "Menus adaptes a vos besoins : vegetarien, sans gluten, halal...",
-      },
-      {
-        icon: 'Star',
-        title: 'Qualite garantie',
-        description: 'Des ingredients premium et un savoir-faire artisanal pour chaque plat.',
-      },
-    ],
-  };
+  const featuresContent: CmsContent = sections['features']
+    ? { title: 'Pourquoi nous choisir ?', ...sections['features'] }
+    : { title: 'Pourquoi nous choisir ?', items: [] };
 
-  const valuesContent = sections['values'] ?? {
-    title: 'Nos valeurs',
-    items: [
-      {
-        icon: 'Leaf',
-        title: 'Produits locaux',
-        description: 'Nous privilegions les producteurs locaux et les circuits courts.',
-      },
-      {
-        icon: 'Heart',
-        title: 'Passion',
-        description: 'La cuisine est notre passion, chaque plat est prepare avec amour.',
-      },
-      {
-        icon: 'Recycle',
-        title: 'Eco-responsable',
-        description: 'Emballages recyclables et lutte contre le gaspillage alimentaire.',
-      },
-      {
-        icon: 'Handshake',
-        title: 'Confiance',
-        description: 'Un service fiable et transparent, de la commande a la livraison.',
-      },
-    ],
-  };
+  const valuesContent: CmsContent = sections['values']
+    ? { title: 'Nos valeurs', ...sections['values'] }
+    : { title: 'Nos valeurs', items: [] };
 
   return (
     <div>
-      {/* 1. Accroche - Qui sommes-nous et que proposons-nous */}
       <HeroSection content={heroContent} />
-
-      {/* 2. Produits - Montrer immediatement ce qu'on vend */}
       <PopularMenusSection menus={menusWithRegimes} />
-
-      {/* 3. Reassurance - Pourquoi nous faire confiance */}
       <FeaturesSection content={featuresContent} />
-
-      {/* 4. Preuve sociale - Les clients temoignent */}
-      <TestimonialsSection reviews={reviews ?? []} />
-
-      {/* 5. Valeurs - Creer un lien emotionnel */}
+      <TestimonialsSection reviews={reviews} />
       <ValuesSection content={valuesContent} />
-
-      {/* 6. Call to Action final - Pousser a l'action */}
       <CtaSection />
     </div>
   );

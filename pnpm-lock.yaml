@@ -301,12 +301,18 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.60.0
         version: 5.90.20(react@19.2.4)
+      '@vite-et-gourmand/sdk':
+        specifier: workspace:*
+        version: link:../packages/sdk
       '@vite-et-gourmand/supabase':
         specifier: workspace:*
         version: link:../packages/supabase
       '@vite-et-gourmand/ui':
         specifier: workspace:*
         version: link:../packages/ui
+      axios:
+        specifier: ^1.7.7
+        version: 1.18.0
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.1

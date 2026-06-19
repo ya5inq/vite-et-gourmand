@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
+import { PublicApi } from '@/lib/api/axios';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -28,18 +28,11 @@ export default function ForgotPasswordPage() {
   async function onSubmit(data: ForgotPasswordForm) {
     setIsLoading(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/auth/login`,
-      });
-
-      if (error) throw error;
-
+      await PublicApi.publicAuthResetPasswordRequest({ email: data.email });
       setEmailSent(true);
       toast.success('Email de reinitialisation envoye !');
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Erreur lors de l\'envoi';
-      toast.error(message);
+    } catch {
+      // The axios interceptor already surfaces the backend error message.
     } finally {
       setIsLoading(false);
     }

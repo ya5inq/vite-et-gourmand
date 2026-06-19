@@ -1,8 +1,30 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import type { User, Session } from '@supabase/supabase-js';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
+import {
+  PublicApi,
+  ProtectedApi,
+  setAccessToken,
+  refreshAccessToken,
+} from '@/lib/api/axios';
+import type { ProtectedUserGetMe200 } from '@vite-et-gourmand/sdk';
+
+/**
+ * Shape kept intentionally close to the previous Supabase-based context so that
+ * consumers (Navbar, dashboard pages...) need minimal changes:
+ * - `user` exposes `id`, `email`, `role` and the camelCase profile fields.
+ * - `profile` mirrors the old `{ first_name, last_name, phone, role }` shape so
+ *   Navbar's getInitials/getDisplayName keep working unchanged.
+ */
+
+export type AuthUser = ProtectedUserGetMe200;
 
 interface Profile {
   id: string;
@@ -13,152 +35,108 @@ interface Profile {
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   profile: Profile | null;
-  session: Session | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<AuthUser>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const toProfile = (u: AuthUser): Profile => ({
+  id: u.id,
+  first_name: u.firstName ?? null,
+  last_name: u.lastName ?? null,
+  phone: u.phone ?? null,
+  role: u.role,
+});
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const supabase = useMemo(() => createClient(), []);
-
-  const fetchProfile = useCallback(async (userId: string) => {
+  const loadMe = useCallback(async (): Promise<AuthUser | null> => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, phone, role')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return null;
-      }
-
-      return data as Profile;
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+      const { data } = await ProtectedApi.protectedUserGetMe();
+      setUser(data);
+      return data;
+    } catch {
+      setUser(null);
       return null;
     }
-  }, [supabase]);
+  }, []);
 
   const refreshProfile = useCallback(async () => {
-    if (user?.id) {
-      const profileData = await fetchProfile(user.id);
-      setProfile(profileData);
-    }
-  }, [user?.id, fetchProfile]);
+    await loadMe();
+  }, [loadMe]);
+
+  const login = useCallback(
+    async (email: string, password: string): Promise<AuthUser> => {
+      const { data } = await PublicApi.publicAuthLogin({ email, password });
+      setAccessToken(data.accessToken);
+      const me = await loadMe();
+      if (!me) {
+        throw new Error('Impossible de recuperer le profil utilisateur');
+      }
+      return me;
+    },
+    [loadMe],
+  );
 
   const signOut = useCallback(async () => {
     try {
-      await supabase.auth.signOut();
+      await PublicApi.publicAuthLogout();
+    } catch {
+      // Ignore: clear local state regardless of backend response.
+    } finally {
+      setAccessToken(null);
       setUser(null);
-      setProfile(null);
-      setSession(null);
-      // Force full page reload to clear all state
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Error signing out:', error);
-      // Force reload anyway
+      // Full reload to clear any in-memory state across the app.
       window.location.href = '/';
     }
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
 
-    async function initializeAuth() {
-      try {
-        // Get the current session
-        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+    async function bootstrap() {
+      // Try to recover a session from the httpOnly refresh cookie.
+      const token = await refreshAccessToken();
+      if (!isMounted) return;
 
-        if (!isMounted) return;
+      if (token) {
+        await loadMe();
+      }
 
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          setIsLoading(false);
-          return;
-        }
-
-        if (currentSession?.user) {
-          setSession(currentSession);
-          setUser(currentSession.user);
-
-          // Fetch profile
-          const profileData = await fetchProfile(currentSession.user.id);
-          if (isMounted) {
-            setProfile(profileData);
-          }
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+      if (isMounted) {
+        setIsLoading(false);
       }
     }
 
-    initializeAuth();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        if (!isMounted) return;
-
-        console.log('Auth state changed:', event);
-
-        if (event === 'SIGNED_OUT' || !newSession) {
-          setUser(null);
-          setProfile(null);
-          setSession(null);
-          return;
-        }
-
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          setSession(newSession);
-          setUser(newSession.user);
-
-          // Fetch profile for the new user
-          const profileData = await fetchProfile(newSession.user.id);
-          if (isMounted) {
-            setProfile(profileData);
-          }
-        }
-      }
-    );
+    bootstrap();
 
     return () => {
       isMounted = false;
-      subscription.unsubscribe();
     };
-  }, [supabase, fetchProfile]);
+  }, [loadMe]);
 
-  const value = useMemo(() => ({
-    user,
-    profile,
-    session,
-    isLoading,
-    isAuthenticated: !!user && !!session,
-    signOut,
-    refreshProfile,
-  }), [user, profile, session, isLoading, signOut, refreshProfile]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo<AuthContextType>(
+    () => ({
+      user,
+      profile: user ? toProfile(user) : null,
+      isLoading,
+      isAuthenticated: !!user,
+      login,
+      signOut,
+      refreshProfile,
+    }),
+    [user, isLoading, login, signOut, refreshProfile],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
