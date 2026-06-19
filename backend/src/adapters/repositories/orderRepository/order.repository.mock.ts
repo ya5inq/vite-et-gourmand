@@ -13,6 +13,8 @@ export const getOrderRepositoryMock = (options?: {
   countByUser?: number;
   findAll?: OrderInterface[];
   countFindAll?: number;
+  updateStatusWithHistory?: OrderInterface;
+  findOverdueMaterialReturns?: OrderInterface[];
 }): Mocked<OrderRepositoryInterface> => ({
   createWithItemsAndStock: vi
     .fn()
@@ -25,4 +27,6 @@ export const getOrderRepositoryMock = (options?: {
   findAll: vi.fn().mockResolvedValue(options?.findAll ?? []),
   countFindAll: vi.fn().mockResolvedValue(options?.countFindAll ?? 0),
   updateOne: vi.fn().mockResolvedValue(undefined),
+  updateStatusWithHistory: vi.fn().mockResolvedValue(options?.updateStatusWithHistory ?? null),
+  findOverdueMaterialReturns: vi.fn().mockResolvedValue(options?.findOverdueMaterialReturns ?? []),
 });

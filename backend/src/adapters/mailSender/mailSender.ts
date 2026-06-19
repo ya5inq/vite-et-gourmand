@@ -4,6 +4,9 @@ import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.inter
 import {
   MailSenderInterface,
   SendEmployeeSetPasswordEmailOptions,
+  SendMaterialPenaltyEmailOptions,
+  SendMaterialReturnEmailOptions,
+  SendOrderCompletedEmailOptions,
   SendOrderConfirmationEmailOptions,
   SendRegisterEmailOptions,
   SendResetPasswordEmailOptions,
@@ -67,6 +70,54 @@ export class MailSender implements MailSenderInterface {
         deliveryFee: deliveryFee.toFixed(2),
         deliveryDate: deliveryDate ? deliveryDate.toISOString().slice(0, 10) : '',
         ordersUrl: `${this.envConfig.frontendUrl}/orders`,
+      },
+    });
+  }
+
+  async sendMaterialReturnEmail({
+    email,
+    orderId,
+    customerName,
+    deadline,
+    penaltyAmount,
+  }: SendMaterialReturnEmailOptions): Promise<void> {
+    await this.templateMailer.sendTemplateEmail({
+      to: [email],
+      template: { type: 'alias', value: 'material-return' },
+      templateVariables: {
+        customerName: customerName ?? '',
+        orderId,
+        deadline: deadline.toISOString().slice(0, 10),
+        penaltyAmount: penaltyAmount.toFixed(2),
+      },
+    });
+  }
+
+  async sendOrderCompletedEmail({ email, orderId, customerName }: SendOrderCompletedEmailOptions): Promise<void> {
+    await this.templateMailer.sendTemplateEmail({
+      to: [email],
+      template: { type: 'alias', value: 'order-completed' },
+      templateVariables: {
+        customerName: customerName ?? '',
+        orderId,
+        reviewsUrl: `${this.envConfig.frontendUrl}/dashboard/avis`,
+      },
+    });
+  }
+
+  async sendMaterialPenaltyEmail({
+    email,
+    orderId,
+    customerName,
+    penaltyAmount,
+  }: SendMaterialPenaltyEmailOptions): Promise<void> {
+    await this.templateMailer.sendTemplateEmail({
+      to: [email],
+      template: { type: 'alias', value: 'material-penalty' },
+      templateVariables: {
+        customerName: customerName ?? '',
+        orderId,
+        penaltyAmount: penaltyAmount.toFixed(2),
       },
     });
   }

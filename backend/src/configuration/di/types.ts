@@ -18,6 +18,7 @@ const TYPES = {
   MailSender: Symbol.for('MailSender'),
   AnalyticsRepository: Symbol.for('AnalyticsRepository'),
   AuditLogRepository: Symbol.for('AuditLogRepository'),
+  QueueManager: Symbol.for('QueueManager'),
 
   // Repositories
   UserRepository: Symbol.for('UserRepository'),
@@ -80,11 +81,15 @@ const TYPES = {
   CreateOrderUseCase: Symbol.for('CreateOrderUseCase'),
   GetUserOrdersUseCase: Symbol.for('GetUserOrdersUseCase'),
   GetOrderUseCase: Symbol.for('GetOrderUseCase'),
+  GetAllOrdersUseCase: Symbol.for('GetAllOrdersUseCase'),
+  UpdateOrderStatusUseCase: Symbol.for('UpdateOrderStatusUseCase'),
+  ApplyMaterialReturnPenaltiesUseCase: Symbol.for('ApplyMaterialReturnPenaltiesUseCase'),
 
   // Infra
   ClientDatabase: Symbol.for('ClientDatabase'),
   TemplateMailer: Symbol.for('TemplateMailer'),
   MongoClient: Symbol.for('MongoClient'),
+  PgBossClient: Symbol.for('PgBossClient'),
 };
 
 export { TYPES };

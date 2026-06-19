@@ -32,9 +32,43 @@ export interface SendOrderConfirmationEmailOptions {
   deliveryDate: Date | null;
 }
 
+/**
+ * Sent when an order enters AWAITING_MATERIAL_RETURN: the customer must return
+ * the rented material within 10 business days, otherwise a 600€ fee applies (CGV).
+ */
+export interface SendMaterialReturnEmailOptions {
+  email: string;
+  orderId: string;
+  customerName: string | null;
+  deadline: Date;
+  penaltyAmount: number;
+}
+
+/**
+ * Sent when an order is COMPLETED: invite the customer to leave a review.
+ */
+export interface SendOrderCompletedEmailOptions {
+  email: string;
+  orderId: string;
+  customerName: string | null;
+}
+
+/**
+ * Sent when the 600€ material-return penalty has been charged.
+ */
+export interface SendMaterialPenaltyEmailOptions {
+  email: string;
+  orderId: string;
+  customerName: string | null;
+  penaltyAmount: number;
+}
+
 export interface MailSenderInterface {
   sendRegisterEmail: (options: SendRegisterEmailOptions) => Promise<void>;
   sendResetPasswordEmail: (options: SendResetPasswordEmailOptions) => Promise<void>;
   sendEmployeeSetPasswordEmail: (options: SendEmployeeSetPasswordEmailOptions) => Promise<void>;
   sendOrderConfirmationEmail: (options: SendOrderConfirmationEmailOptions) => Promise<void>;
+  sendMaterialReturnEmail: (options: SendMaterialReturnEmailOptions) => Promise<void>;
+  sendOrderCompletedEmail: (options: SendOrderCompletedEmailOptions) => Promise<void>;
+  sendMaterialPenaltyEmail: (options: SendMaterialPenaltyEmailOptions) => Promise<void>;
 }
