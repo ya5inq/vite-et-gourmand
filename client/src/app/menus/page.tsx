@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { createClient } from '@/lib/supabase/server';
+import { getServerPublicApi } from '@/lib/api/server';
 import { MenuFilter } from '@/components/molecules/MenuFilter';
 
 export const metadata = {
@@ -7,38 +7,44 @@ export const metadata = {
   description: 'Decouvrez nos menus traiteur pour tous vos evenements a Bordeaux.',
 };
 
+export const dynamic = 'force-dynamic';
+
 const HEADER_IMAGE = 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80';
 
 export default async function MenusPage() {
-  const supabase = await createClient();
+  const api = getServerPublicApi();
 
-  const { data: menusData } = await supabase
-    .from('menus')
-    .select(`
-      *,
-      menu_dietary_regimes(
-        dietary_regimes(id, name)
-      )
-    `)
-    .eq('is_available', true)
-    .order('price', { ascending: true });
+  const [menusRes, regimesRes] = await Promise.allSettled([
+    // Public menu list is already filtered to available menus by the backend.
+    api.publicMenuGetAll({ limit: 100, sortBy: 'price', sortOrder: 'ASC' }),
+    api.publicDietaryRegimeGetAll(),
+  ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const menus = menusData as any[] | null;
+  const menusWithRegimes =
+    menusRes.status === 'fulfilled'
+      ? menusRes.value.data.items.map((menu) => ({
+          id: menu.id,
+          name: menu.name,
+          description: menu.description ?? null,
+          theme: menu.theme ?? null,
+          price: menu.price,
+          min_persons: menu.minPersons,
+          max_persons: menu.maxPersons ?? null,
+          image_url: menu.imageUrl ?? null,
+          regimes: [] as Array<{ id: string; name: string }>,
+        }))
+      : [];
 
-  const { data: regimes } = await supabase
-    .from('dietary_regimes')
-    .select('*')
-    .order('name');
+  const regimes =
+    regimesRes.status === 'fulfilled'
+      ? regimesRes.value.data.items.map((r) => ({ id: r.id, name: r.name }))
+      : [];
 
-  const themes = [...new Set(menus?.map((m) => m.theme).filter(Boolean) ?? [])];
-
-  const menusWithRegimes = menus?.map((menu) => ({
-    ...menu,
-    regimes: menu.menu_dietary_regimes
-      ?.map((mdr: { dietary_regimes: { id: string; name: string } | null }) => mdr.dietary_regimes)
-      .filter(Boolean) ?? [],
-  })) ?? [];
+  const themes = [
+    ...new Set(
+      menusWithRegimes.map((m) => m.theme).filter((t): t is string => !!t),
+    ),
+  ];
 
   return (
     <div>
@@ -63,11 +69,7 @@ export default async function MenusPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <MenuFilter
-          themes={themes as string[]}
-          regimes={regimes ?? []}
-          menus={menusWithRegimes}
-        />
+        <MenuFilter themes={themes} regimes={regimes} menus={menusWithRegimes} />
       </div>
     </div>
   );

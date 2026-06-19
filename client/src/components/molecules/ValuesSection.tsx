@@ -1,11 +1,27 @@
 import Image from 'next/image';
-import { Leaf, Heart, Recycle, Handshake, type LucideIcon } from 'lucide-react';
+import {
+  Leaf,
+  Heart,
+  Recycle,
+  Handshake,
+  MapPin,
+  ChefHat,
+  type LucideIcon,
+} from 'lucide-react';
 
+// CMS icon keys come from the backend seed (lowercase, dash-separated). We keep
+// the legacy capitalized keys too for backward compatibility.
 const ICON_MAP: Record<string, LucideIcon> = {
   Leaf,
   Heart,
   Recycle,
   Handshake,
+  leaf: Leaf,
+  heart: Heart,
+  recycle: Recycle,
+  handshake: Handshake,
+  'map-pin': MapPin,
+  'chef-hat': ChefHat,
 };
 
 const VALUE_COLORS: Record<string, string> = {
@@ -13,6 +29,12 @@ const VALUE_COLORS: Record<string, string> = {
   Heart: 'bg-red-500',
   Recycle: 'bg-blue-500',
   Handshake: 'bg-amber-500',
+  leaf: 'bg-green-500',
+  heart: 'bg-red-500',
+  recycle: 'bg-blue-500',
+  handshake: 'bg-amber-500',
+  'map-pin': 'bg-emerald-500',
+  'chef-hat': 'bg-amber-500',
 };
 
 interface ValuesContent {

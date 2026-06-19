@@ -6,24 +6,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
+import { ProtectedApi } from '@/lib/api/axios';
+import { useAuth } from '@/contexts/AuthContext';
 import { StarRating } from '@/components/molecules/StarRating';
-import type { User } from '@supabase/supabase-js';
-
-interface Review {
-  id: string;
-  order_id: string;
-  rating: number;
-  comment: string | null;
-  is_approved: boolean;
-  created_at: string;
-}
-
-interface CompletedOrder {
-  id: string;
-  created_at: string;
-  menus: { name: string } | null;
-}
+import type {
+  ProtectedReviewGetMine200ItemsItem,
+  ProtectedOrderGetAll200ItemsItem,
+} from '@vite-et-gourmand/sdk';
 
 const reviewSchema = z.object({
   order_id: z.string().min(1, 'Selectionnez une commande'),
@@ -35,9 +24,9 @@ type ReviewForm = z.infer<typeof reviewSchema>;
 
 export default function AvisPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [completedOrders, setCompletedOrders] = useState<CompletedOrder[]>([]);
+  const { isLoading: authLoading, isAuthenticated } = useAuth();
+  const [reviews, setReviews] = useState<ProtectedReviewGetMine200ItemsItem[]>([]);
+  const [completedOrders, setCompletedOrders] = useState<ProtectedOrderGetAll200ItemsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
@@ -54,76 +43,76 @@ export default function AvisPage() {
   });
 
   useEffect(() => {
-    const supabase = createClient();
+    if (!authLoading && !isAuthenticated) {
+      router.replace('/auth/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
 
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) {
-        router.push('/auth/login');
-        return;
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    let isMounted = true;
+
+    async function load() {
+      try {
+        const [reviewsRes, ordersRes] = await Promise.all([
+          ProtectedApi.protectedReviewGetMine(),
+          ProtectedApi.protectedOrderGetAll({
+            status: 'COMPLETED',
+            sortOrder: 'DESC',
+            limit: 100,
+          }),
+        ]);
+
+        if (!isMounted) return;
+
+        const myReviews = reviewsRes.data.items;
+        setReviews(myReviews);
+
+        const reviewedOrderIds = new Set(myReviews.map((r) => r.orderId));
+        setCompletedOrders(
+          ordersRes.data.items.filter((o) => !reviewedOrderIds.has(o.id)),
+        );
+      } catch {
+        // The axios interceptor surfaces backend errors.
+      } finally {
+        if (isMounted) setLoading(false);
       }
-      setUser(user);
+    }
 
-      const [reviewsRes, ordersRes] = await Promise.all([
-        supabase
-          .from('reviews')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('orders')
-          .select('id, created_at, menus(name)')
-          .eq('user_id', user.id)
-          .eq('status', 'completed')
-          .order('created_at', { ascending: false }),
-      ]);
+    load();
 
-      setReviews((reviewsRes.data as Review[]) ?? []);
-
-      const existingReviewOrderIds = new Set(
-        (reviewsRes.data ?? []).map((r: { order_id: string }) => r.order_id)
-      );
-      const availableOrders = ((ordersRes.data as unknown as CompletedOrder[]) ?? []).filter(
-        (o) => !existingReviewOrderIds.has(o.id)
-      );
-      setCompletedOrders(availableOrders);
-      setLoading(false);
-    });
-  }, [router]);
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated]);
 
   async function onSubmit(data: ReviewForm) {
-    if (!user) return;
     setSubmitting(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from('reviews').insert({
-        user_id: user.id,
-        order_id: data.order_id,
+      await ProtectedApi.protectedReviewCreate({
+        orderId: data.order_id,
         rating: data.rating,
-        comment: data.comment || null,
-      } as never);
-
-      if (error) throw error;
+        comment: data.comment || undefined,
+      });
 
       toast.success('Avis envoye ! Il sera visible apres moderation.');
       reset();
       setSelectedRating(0);
 
-      // Refresh data
-      const { data: updatedReviews } = await supabase
-        .from('reviews')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-      setReviews((updatedReviews as Review[]) ?? []);
+      const { data: updated } = await ProtectedApi.protectedReviewGetMine();
+      setReviews(updated.items);
       setCompletedOrders((prev) => prev.filter((o) => o.id !== data.order_id));
     } catch {
-      toast.error("Erreur lors de l'envoi de l'avis.");
+      // The axios interceptor surfaces backend errors.
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -131,7 +120,7 @@ export default function AvisPage() {
     );
   }
 
-  if (!user) return null;
+  if (!isAuthenticated) return null;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -153,7 +142,8 @@ export default function AvisPage() {
                 <option value="">Selectionnez une commande</option>
                 {completedOrders.map((order) => (
                   <option key={order.id} value={order.id}>
-                    {order.menus?.name ?? 'Menu'} - {new Date(order.created_at).toLocaleDateString('fr-FR')}
+                    Commande #{order.id.slice(0, 8).toUpperCase()} -{' '}
+                    {new Date(order.createdAt).toLocaleDateString('fr-FR')}
                   </option>
                 ))}
               </select>
@@ -226,21 +216,21 @@ export default function AvisPage() {
                 <div className="flex items-center justify-between mb-2">
                   <StarRating rating={review.rating} />
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      review.is_approved
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {review.is_approved ? 'Approuve' : 'En attente'}
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        review.isApproved
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                      }`}
+                    >
+                      {review.isApproved ? 'Approuve' : 'En attente'}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {new Date(review.created_at).toLocaleDateString('fr-FR')}
+                      {new Date(review.createdAt).toLocaleDateString('fr-FR')}
                     </span>
                   </div>
                 </div>
-                {review.comment && (
-                  <p className="text-foreground">{review.comment}</p>
-                )}
+                {review.comment && <p className="text-foreground">{review.comment}</p>}
               </div>
             ))}
           </div>

@@ -4,100 +4,81 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Mail, ArrowRight } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
-
-interface OrderItem {
-  id: string;
-  quantity: number;
-  unit_price: number;
-  menus: { name: string } | null;
-}
-
-interface Order {
-  id: string;
-  total_price: number;
-  delivery_date: string | null;
-  delivery_address: string | null;
-  delivery_city: string | null;
-  guest_email: string | null;
-  guest_name: string | null;
-  created_at: string;
-  order_items: OrderItem[];
-}
+import { ProtectedApi } from '@/lib/api/axios';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  readConfirmationRecap,
+  type ConfirmationRecap,
+} from '@/lib/confirmationStore';
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('id');
-  const [user, setUser] = useState<User | null>(null);
-  const [order, setOrder] = useState<Order | null>(null);
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const [order, setOrder] = useState<ConfirmationRecap | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
+    if (authLoading) return;
 
-    async function loadData() {
-      // Check auth
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      setUser(authUser);
+    let isMounted = true;
 
-      if (orderId) {
-        if (authUser) {
-          // Authenticated user: load order directly
-          const { data } = await supabase
-            .from('orders')
-            .select('id, total_price, delivery_date, delivery_address, delivery_city, guest_email, guest_name, created_at, order_items(id, quantity, unit_price, menus(name))')
-            .eq('id', orderId)
-            .single();
+    async function load() {
+      if (!orderId) {
+        if (isMounted) setLoading(false);
+        return;
+      }
 
-          if (data) {
-            setOrder(data as unknown as Order);
-          }
-        } else {
-          // Guest user: use RPC functions to bypass RLS
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data: guestOrder } = await (supabase.rpc as any)('get_guest_order_by_id', {
-            p_order_id: orderId,
-          });
+      // Primary source: the recap stored at checkout (works for guests too).
+      const stored = readConfirmationRecap(orderId);
+      if (stored) {
+        if (isMounted) {
+          setOrder(stored);
+          setLoading(false);
+        }
+        return;
+      }
 
-          if (guestOrder && guestOrder.length > 0) {
-            const orderData = guestOrder[0];
-
-            // Get order items separately
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: items } = await (supabase.rpc as any)('get_guest_order_items', {
-              p_order_id: orderId,
-            });
-
-            const orderItems: OrderItem[] = (items || []).map((item: { id: string; quantity: number; unit_price: number; menu_name: string }) => ({
-              id: item.id,
-              quantity: item.quantity,
-              unit_price: item.unit_price,
-              menus: { name: item.menu_name },
-            }));
-
+      // Fallback for authenticated users (e.g. page refresh wiped sessionStorage):
+      // re-fetch the order detail. Guests have no public endpoint, so they only
+      // get the recap from sessionStorage.
+      if (isAuthenticated) {
+        try {
+          const { data } = await ProtectedApi.protectedOrderGetOne(orderId);
+          if (isMounted) {
             setOrder({
-              id: orderData.id,
-              total_price: orderData.total_price,
-              delivery_date: orderData.delivery_date,
-              delivery_address: orderData.delivery_address,
-              delivery_city: orderData.delivery_city,
-              guest_email: orderData.guest_email,
-              guest_name: orderData.guest_name,
-              created_at: orderData.created_at,
-              order_items: orderItems,
+              id: data.id,
+              totalPrice: data.totalPrice,
+              deliveryFee: data.deliveryFee,
+              deliveryDate: data.deliveryDate ?? null,
+              deliveryAddress: data.deliveryAddress ?? null,
+              deliveryCity: data.deliveryCity ?? null,
+              guestName: data.guestName ?? null,
+              guestEmail: data.guestEmail ?? null,
+              items: data.items.map((i) => ({
+                id: i.id,
+                menuName: i.menuName ?? 'Menu',
+                quantity: i.quantity,
+                unitPrice: i.unitPrice,
+              })),
             });
           }
+        } catch {
+          // interceptor surfaces errors
         }
       }
 
-      setLoading(false);
+      if (isMounted) setLoading(false);
     }
 
-    loadData();
-  }, [orderId]);
+    load();
 
-  if (loading) {
+    return () => {
+      isMounted = false;
+    };
+  }, [orderId, isAuthenticated, authLoading]);
+
+  if (loading || authLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -105,9 +86,9 @@ function ConfirmationContent() {
     );
   }
 
-  const isGuest = !user;
-  const customerName = order?.guest_name || 'Client';
-  const customerEmail = order?.guest_email || user?.email;
+  const isGuest = !isAuthenticated;
+  const customerName = order?.guestName || 'Client';
+  const customerEmail = order?.guestEmail || user?.email;
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -126,17 +107,19 @@ function ConfirmationContent() {
           <>
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
               <span className="text-sm text-muted-foreground">Numero de commande</span>
-              <span className="font-mono text-sm font-medium">{order.id.slice(0, 8).toUpperCase()}</span>
+              <span className="font-mono text-sm font-medium">
+                {order.id.slice(0, 8).toUpperCase()}
+              </span>
             </div>
 
             <div className="space-y-3 mb-4">
-              {order.order_items?.map((item) => (
+              {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
                   <span className="text-foreground">
-                    {item.menus?.name ?? 'Menu'} x {item.quantity}
+                    {item.menuName} x {item.quantity}
                   </span>
                   <span className="text-muted-foreground">
-                    {(item.unit_price * item.quantity).toFixed(2)} &euro;
+                    {(item.unitPrice * item.quantity).toFixed(2)} &euro;
                   </span>
                 </div>
               ))}
@@ -144,15 +127,15 @@ function ConfirmationContent() {
 
             <div className="border-t border-border pt-3 flex justify-between font-semibold">
               <span>Total</span>
-              <span className="text-primary">{order.total_price.toFixed(2)} &euro;</span>
+              <span className="text-primary">{order.totalPrice.toFixed(2)} &euro;</span>
             </div>
 
-            {order.delivery_date && (
+            {order.deliveryDate && (
               <div className="mt-4 pt-4 border-t border-border">
                 <p className="text-sm text-muted-foreground">
                   Livraison prevue le{' '}
                   <span className="font-medium text-foreground">
-                    {new Date(order.delivery_date).toLocaleDateString('fr-FR', {
+                    {new Date(order.deliveryDate).toLocaleDateString('fr-FR', {
                       weekday: 'long',
                       day: 'numeric',
                       month: 'long',
@@ -160,14 +143,19 @@ function ConfirmationContent() {
                     })}
                   </span>
                 </p>
-                {order.delivery_address && (
+                {order.deliveryAddress && (
                   <p className="text-sm text-muted-foreground mt-1">
-                    {order.delivery_address}, {order.delivery_city}
+                    {order.deliveryAddress}, {order.deliveryCity}
                   </p>
                 )}
               </div>
             )}
           </>
+        )}
+        {!order && (
+          <p className="text-sm text-muted-foreground text-center">
+            Votre demande a bien ete enregistree. Vous recevrez un email de confirmation.
+          </p>
         )}
       </div>
 
@@ -177,16 +165,20 @@ function ConfirmationContent() {
           <div className="text-sm text-blue-800">
             <p className="font-medium">Et maintenant ?</p>
             <p className="mt-1">
-              Nous allons examiner votre demande et vous contacter a{' '}
-              <span className="font-medium">{customerEmail}</span> pour confirmer la disponibilite
-              et finaliser votre commande.
+              Nous allons examiner votre demande et vous contacter
+              {customerEmail ? (
+                <>
+                  {' '}a <span className="font-medium">{customerEmail}</span>
+                </>
+              ) : null}{' '}
+              pour confirmer la disponibilite et finaliser votre commande.
             </p>
           </div>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        {user ? (
+        {isAuthenticated ? (
           <Link
             href="/dashboard"
             className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"

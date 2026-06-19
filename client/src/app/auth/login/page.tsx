@@ -1,23 +1,24 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
+import { isAxiosError } from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
-  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caracteres'),
+  password: z.string().min(1, 'Le mot de passe est requis'),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = useMemo(() => createClient(), []);
+  const { login } = useAuth();
 
   const {
     register,
@@ -30,26 +31,19 @@ export default function LoginPage() {
   async function onSubmit(data: LoginForm) {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (error) {
-        if (error.message === 'Invalid login credentials') {
-          toast.error('Email ou mot de passe incorrect');
-        } else {
-          toast.error(error.message);
-        }
-        return;
-      }
-
+      await login(data.email, data.password);
       toast.success('Connexion reussie !');
-      // Use window.location for full page reload to ensure auth state is properly initialized
+      // Full reload so the dashboard mounts with a hydrated auth context.
       window.location.href = '/dashboard';
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Erreur de connexion';
-      toast.error(message);
+      // 401 errors are not toasted by the axios interceptor; show a clear message.
+      if (isAxiosError(error) && error.response?.status === 401) {
+        toast.error('Email ou mot de passe incorrect');
+      } else if (!isAxiosError(error)) {
+        const message = error instanceof Error ? error.message : 'Erreur de connexion';
+        toast.error(message);
+      }
+      // For other axios errors the interceptor already showed the backend message.
     } finally {
       setIsLoading(false);
     }

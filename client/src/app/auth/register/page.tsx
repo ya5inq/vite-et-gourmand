@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
+import { PublicApi } from '@/lib/api/axios';
 
 const registerSchema = z
   .object({
@@ -14,7 +14,13 @@ const registerSchema = z
     lastName: z.string().min(2, 'Le nom doit contenir au moins 2 caracteres'),
     email: z.string().email('Email invalide'),
     phone: z.string().optional(),
-    password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caracteres'),
+    // Backend requires >=8 chars with an upper, a lower and a digit/special char.
+    password: z
+      .string()
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W_])[a-zA-Z\d\W_]{8,}$/,
+        'Min. 8 caracteres avec majuscule, minuscule et chiffre/symbole',
+      ),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -26,7 +32,6 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = useMemo(() => createClient(), []);
 
   const {
     register,
@@ -39,33 +44,20 @@ export default function RegisterPage() {
   async function onSubmit(data: RegisterForm) {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      await PublicApi.publicAuthRegister({
         email: data.email,
         password: data.password,
-        options: {
-          data: {
-            first_name: data.firstName,
-            last_name: data.lastName,
-            phone: data.phone || null,
-          },
-        },
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone || undefined,
       });
 
-      if (error) {
-        if (error.message.includes('already registered')) {
-          toast.error('Cet email est deja utilise');
-        } else {
-          toast.error(error.message);
-        }
-        return;
-      }
-
-      toast.success('Compte cree avec succes ! Verifiez votre email pour confirmer votre inscription.');
-      // Redirect to login page
+      toast.success(
+        'Compte cree avec succes ! Verifiez votre email pour confirmer votre inscription.',
+      );
       window.location.href = '/auth/login';
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Erreur lors de la creation du compte';
-      toast.error(message);
+    } catch {
+      // The axios interceptor already surfaces the backend error message.
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +146,7 @@ export default function RegisterPage() {
                 type="password"
                 {...register('password')}
                 className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                placeholder="Minimum 6 caracteres"
+                placeholder="Min. 8 caracteres, 1 maj, 1 min, 1 chiffre"
               />
               {errors.password && (
                 <p className="text-destructive text-sm mt-1">{errors.password.message}</p>
