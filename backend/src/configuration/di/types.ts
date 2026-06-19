@@ -116,6 +116,10 @@ const TYPES = {
   UpsertPageContentUseCase: Symbol.for('UpsertPageContentUseCase'),
   UpsertOperatingHoursUseCase: Symbol.for('UpsertOperatingHoursUseCase'),
 
+  // Use Cases - Stats
+  GetOrdersByMenuStatsUseCase: Symbol.for('GetOrdersByMenuStatsUseCase'),
+  GetRevenueByMenuStatsUseCase: Symbol.for('GetRevenueByMenuStatsUseCase'),
+
   // Infra
   ClientDatabase: Symbol.for('ClientDatabase'),
   TemplateMailer: Symbol.for('TemplateMailer'),

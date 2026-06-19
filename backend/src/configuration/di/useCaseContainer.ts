@@ -55,6 +55,8 @@ import { DeleteReviewUseCaseInterface } from '@/application/useCases/review/dele
 import { GetAllReviewsUseCaseInterface } from '@/application/useCases/review/getAllReviews/getAllReviews.useCase.interface';
 import { GetApprovedReviewsUseCaseInterface } from '@/application/useCases/review/getApprovedReviews/getApprovedReviews.useCase.interface';
 import { GetMyReviewsUseCaseInterface } from '@/application/useCases/review/getMyReviews/getMyReviews.useCase.interface';
+import { GetOrdersByMenuStatsUseCaseInterface } from '@/application/useCases/stats/getOrdersByMenuStats/getOrdersByMenuStats.useCase.interface';
+import { GetRevenueByMenuStatsUseCaseInterface } from '@/application/useCases/stats/getRevenueByMenuStats/getRevenueByMenuStats.useCase.interface';
 import { GetUserUseCaseInterface } from '@/application/useCases/user/getUser/getUser.useCase.interface';
 import { UpdateUserUseCaseInterface } from '@/application/useCases/user/updateUser/updateUser.useCase.interface';
 
@@ -113,6 +115,8 @@ import { DeleteReviewUseCase } from '@/application/useCases/review/deleteReview/
 import { GetAllReviewsUseCase } from '@/application/useCases/review/getAllReviews/getAllReviews.useCase';
 import { GetApprovedReviewsUseCase } from '@/application/useCases/review/getApprovedReviews/getApprovedReviews.useCase';
 import { GetMyReviewsUseCase } from '@/application/useCases/review/getMyReviews/getMyReviews.useCase';
+import { GetOrdersByMenuStatsUseCase } from '@/application/useCases/stats/getOrdersByMenuStats/getOrdersByMenuStats.useCase';
+import { GetRevenueByMenuStatsUseCase } from '@/application/useCases/stats/getRevenueByMenuStats/getRevenueByMenuStats.useCase';
 import { GetUserUseCase } from '@/application/useCases/user/getUser/getUser.useCase';
 import { UpdateUserUseCase } from '@/application/useCases/user/updateUser/updateUser.useCase';
 
@@ -203,6 +207,10 @@ const useCaseContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<GetAllOperatingHoursUseCaseInterface>(TYPES.GetAllOperatingHoursUseCase).to(GetAllOperatingHoursUseCase);
   bind<UpsertPageContentUseCaseInterface>(TYPES.UpsertPageContentUseCase).to(UpsertPageContentUseCase);
   bind<UpsertOperatingHoursUseCaseInterface>(TYPES.UpsertOperatingHoursUseCase).to(UpsertOperatingHoursUseCase);
+
+  // Stats
+  bind<GetOrdersByMenuStatsUseCaseInterface>(TYPES.GetOrdersByMenuStatsUseCase).to(GetOrdersByMenuStatsUseCase);
+  bind<GetRevenueByMenuStatsUseCaseInterface>(TYPES.GetRevenueByMenuStatsUseCase).to(GetRevenueByMenuStatsUseCase);
 });
 
 export { useCaseContainer };
