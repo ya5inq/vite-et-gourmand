@@ -80,7 +80,20 @@ export type SerializedOrderListItem = z.infer<typeof OrderListItemSchemaParser>;
 export type SerializedOrderStaffListItem = z.infer<typeof OrderStaffListItemSchemaParser>;
 export type SerializedOrderDetail = z.infer<typeof OrderDetailSchemaParser>;
 
-const toDateOnly = (date: Date | null): string | null => (date ? date.toISOString().slice(0, 10) : null);
+/**
+ * Serializes a `date` column to `YYYY-MM-DD`. TypeORM returns `date` columns as
+ * a plain string on read but the value is a `Date` right after creation, so this
+ * helper tolerates both.
+ */
+const toDateOnly = (date: Date | string | null): string | null => {
+  if (!date) {
+    return null;
+  }
+  if (typeof date === 'string') {
+    return date.slice(0, 10);
+  }
+  return date.toISOString().slice(0, 10);
+};
 
 export class OrderSerializer {
   static serialize(order: OrderInterface): SerializedOrder {
