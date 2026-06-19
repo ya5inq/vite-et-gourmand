@@ -469,10 +469,7 @@
                   "accessToken": {
                     "type": "string"
                   }
-                },
-                "required": [
-                  "accessToken"
-                ]
+                }
               }
             }
           }

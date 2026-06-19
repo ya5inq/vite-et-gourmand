@@ -6,5 +6,5 @@
  */
 
 export type PublicAuthRefreshBody = {
-  accessToken: string;
+  accessToken?: string;
 };

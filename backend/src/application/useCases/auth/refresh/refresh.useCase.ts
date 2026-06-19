@@ -24,10 +24,32 @@ export class RefreshUseCase implements RefreshUseCaseInterface {
   ) {}
 
   async executeRefresh(
-    accessToken: string,
     refreshTokenValue: string,
+    accessToken?: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const { userId } = await this.authService.verifyAccessToken(accessToken, true);
+    // The user is resolved from the refresh token stored in DB. This allows
+    // cookie-only refresh (SSR clients keep no access token client-side).
+    const refreshToken = await this.userTokenRepository.findByTokenValue(refreshTokenValue);
+    if (!refreshToken) {
+      throw new AppError({
+        message: 'Refresh token not found',
+        code: AppErrorCodes.UNAUTHORIZED_TOKEN_NOT_FOUND,
+      });
+    }
+
+    const userId = refreshToken.userId;
+
+    // Defense in depth: when an access token is supplied, it must match the user.
+    if (accessToken) {
+      const payload = await this.authService.verifyAccessToken(accessToken, true);
+      if (payload.userId !== userId) {
+        throw new AppError({
+          message: 'Access token does not match refresh token',
+          code: AppErrorCodes.UNAUTHORIZED_INVALID_JWT,
+          privateContext: { userId, payloadUserId: payload.userId },
+        });
+      }
+    }
 
     const user = await this.userRepository.findById(userId);
     if (!user) {
@@ -38,7 +60,6 @@ export class RefreshUseCase implements RefreshUseCaseInterface {
       });
     }
 
-    const refreshToken = await this.userTokenRepository.findByTokenValue(refreshTokenValue);
     const validatedToken = this.authService.verifyRefreshToken({
       token: refreshToken,
       tokenValue: refreshTokenValue,

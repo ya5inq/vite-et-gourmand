@@ -49,7 +49,7 @@ authRefreshRoute.openapi(route, async (c) => {
   }
 
   const refreshUseCase = mainContainer.get<RefreshUseCaseInterface>(TYPES.RefreshUseCase);
-  const { accessToken, refreshToken } = await refreshUseCase.executeRefresh(oldAccessToken, oldRefreshToken);
+  const { accessToken, refreshToken } = await refreshUseCase.executeRefresh(oldRefreshToken, oldAccessToken);
 
   setRefreshTokenCookie(c, refreshToken);
 
