@@ -9,3 +9,7 @@ export * from './deliveryZone.schema';
 export * from './order.schema';
 export * from './orderItem.schema';
 export * from './orderHistory.schema';
+export * from './review.schema';
+export * from './contactMessage.schema';
+export * from './pageContent.schema';
+export * from './operatingHours.schema';

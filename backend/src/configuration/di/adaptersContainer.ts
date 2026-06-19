@@ -8,11 +8,15 @@ import { MailSenderInterface } from '@/domain/interfaces/adapters/mailSender.int
 import { QueueManagerInterface } from '@/domain/interfaces/adapters/queueManager.interface';
 import { LoggerInterface } from '@/domain/interfaces/logger/logger.interface';
 import { AllergenRepositoryInterface } from '@/domain/interfaces/repositories/allergen.repository.interface';
+import { ContactMessageRepositoryInterface } from '@/domain/interfaces/repositories/contactMessage.repository.interface';
 import { DeliveryZoneRepositoryInterface } from '@/domain/interfaces/repositories/deliveryZone.repository.interface';
 import { DietaryRegimeRepositoryInterface } from '@/domain/interfaces/repositories/dietaryRegime.repository.interface';
 import { DishRepositoryInterface } from '@/domain/interfaces/repositories/dish.repository.interface';
 import { MenuRepositoryInterface } from '@/domain/interfaces/repositories/menu.repository.interface';
+import { OperatingHoursRepositoryInterface } from '@/domain/interfaces/repositories/operatingHours.repository.interface';
 import { OrderRepositoryInterface } from '@/domain/interfaces/repositories/order.repository.interface';
+import { PageContentRepositoryInterface } from '@/domain/interfaces/repositories/pageContent.repository.interface';
+import { ReviewRepositoryInterface } from '@/domain/interfaces/repositories/review.repository.interface';
 import { UserRepositoryInterface } from '@/domain/interfaces/repositories/user.repository.interface';
 import { UserTokenRepositoryInterface } from '@/domain/interfaces/repositories/userToken.repository.interface';
 
@@ -23,11 +27,15 @@ import { Logger } from '@/adapters/logger/logger';
 import { MailSender } from '@/adapters/mailSender/mailSender';
 import { QueueManager } from '@/adapters/queueManager/queueManager';
 import { AllergenRepository } from '@/adapters/repositories/allergenRepository/allergen.repository';
+import { ContactMessageRepository } from '@/adapters/repositories/contactMessageRepository/contactMessage.repository';
 import { DeliveryZoneRepository } from '@/adapters/repositories/deliveryZoneRepository/deliveryZone.repository';
 import { DietaryRegimeRepository } from '@/adapters/repositories/dietaryRegimeRepository/dietaryRegime.repository';
 import { DishRepository } from '@/adapters/repositories/dishRepository/dish.repository';
 import { MenuRepository } from '@/adapters/repositories/menuRepository/menu.repository';
+import { OperatingHoursRepository } from '@/adapters/repositories/operatingHoursRepository/operatingHours.repository';
 import { OrderRepository } from '@/adapters/repositories/orderRepository/order.repository';
+import { PageContentRepository } from '@/adapters/repositories/pageContentRepository/pageContent.repository';
+import { ReviewRepository } from '@/adapters/repositories/reviewRepository/review.repository';
 import { UserRepository } from '@/adapters/repositories/userRepository/user.repository';
 import { UserTokenRepository } from '@/adapters/repositories/userTokenRepository/userToken.repository';
 import { i18n } from '@/application/i18n/i18n';
@@ -44,6 +52,10 @@ const adaptersContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<MenuRepositoryInterface>(TYPES.MenuRepository).to(MenuRepository);
   bind<DeliveryZoneRepositoryInterface>(TYPES.DeliveryZoneRepository).to(DeliveryZoneRepository);
   bind<OrderRepositoryInterface>(TYPES.OrderRepository).to(OrderRepository);
+  bind<ReviewRepositoryInterface>(TYPES.ReviewRepository).to(ReviewRepository);
+  bind<ContactMessageRepositoryInterface>(TYPES.ContactMessageRepository).to(ContactMessageRepository);
+  bind<PageContentRepositoryInterface>(TYPES.PageContentRepository).to(PageContentRepository);
+  bind<OperatingHoursRepositoryInterface>(TYPES.OperatingHoursRepository).to(OperatingHoursRepository);
 
   // Adapters
   bind<MailSenderInterface>(TYPES.MailSender).to(MailSender);

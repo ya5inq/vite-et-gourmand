@@ -29,6 +29,10 @@ const TYPES = {
   MenuRepository: Symbol.for('MenuRepository'),
   DeliveryZoneRepository: Symbol.for('DeliveryZoneRepository'),
   OrderRepository: Symbol.for('OrderRepository'),
+  ReviewRepository: Symbol.for('ReviewRepository'),
+  ContactMessageRepository: Symbol.for('ContactMessageRepository'),
+  PageContentRepository: Symbol.for('PageContentRepository'),
+  OperatingHoursRepository: Symbol.for('OperatingHoursRepository'),
 
   // Use Cases - Auth
   LoginUseCase: Symbol.for('LoginUseCase'),
@@ -91,6 +95,26 @@ const TYPES = {
   GetAllOrdersUseCase: Symbol.for('GetAllOrdersUseCase'),
   UpdateOrderStatusUseCase: Symbol.for('UpdateOrderStatusUseCase'),
   ApplyMaterialReturnPenaltiesUseCase: Symbol.for('ApplyMaterialReturnPenaltiesUseCase'),
+
+  // Use Cases - Review
+  CreateReviewUseCase: Symbol.for('CreateReviewUseCase'),
+  GetMyReviewsUseCase: Symbol.for('GetMyReviewsUseCase'),
+  GetApprovedReviewsUseCase: Symbol.for('GetApprovedReviewsUseCase'),
+  ApproveReviewUseCase: Symbol.for('ApproveReviewUseCase'),
+  GetAllReviewsUseCase: Symbol.for('GetAllReviewsUseCase'),
+  DeleteReviewUseCase: Symbol.for('DeleteReviewUseCase'),
+
+  // Use Cases - Contact
+  SendContactMessageUseCase: Symbol.for('SendContactMessageUseCase'),
+  GetContactMessagesUseCase: Symbol.for('GetContactMessagesUseCase'),
+  MarkContactMessageReadUseCase: Symbol.for('MarkContactMessageReadUseCase'),
+  DeleteContactMessageUseCase: Symbol.for('DeleteContactMessageUseCase'),
+
+  // Use Cases - CMS
+  GetPageContentUseCase: Symbol.for('GetPageContentUseCase'),
+  GetAllOperatingHoursUseCase: Symbol.for('GetAllOperatingHoursUseCase'),
+  UpsertPageContentUseCase: Symbol.for('UpsertPageContentUseCase'),
+  UpsertOperatingHoursUseCase: Symbol.for('UpsertOperatingHoursUseCase'),
 
   // Infra
   ClientDatabase: Symbol.for('ClientDatabase'),

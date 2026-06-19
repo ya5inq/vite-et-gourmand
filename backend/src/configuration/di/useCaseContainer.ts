@@ -11,6 +11,14 @@ import { RegisterUseCaseInterface } from '@/application/useCases/auth/register/r
 import { ResendValidationEmailUseCaseInterface } from '@/application/useCases/auth/resendValidationEmail/resendValidationEmail.useCase.interface';
 import { ResetPasswordUseCaseInterface } from '@/application/useCases/auth/resetPassword/resetPassword.useCase.interface';
 import { ValidateAccountUseCaseInterface } from '@/application/useCases/auth/validateAccount/validateAccount.useCase.interface';
+import { GetAllOperatingHoursUseCaseInterface } from '@/application/useCases/cms/getAllOperatingHours/getAllOperatingHours.useCase.interface';
+import { GetPageContentUseCaseInterface } from '@/application/useCases/cms/getPageContent/getPageContent.useCase.interface';
+import { UpsertOperatingHoursUseCaseInterface } from '@/application/useCases/cms/upsertOperatingHours/upsertOperatingHours.useCase.interface';
+import { UpsertPageContentUseCaseInterface } from '@/application/useCases/cms/upsertPageContent/upsertPageContent.useCase.interface';
+import { DeleteContactMessageUseCaseInterface } from '@/application/useCases/contact/deleteContactMessage/deleteContactMessage.useCase.interface';
+import { GetContactMessagesUseCaseInterface } from '@/application/useCases/contact/getContactMessages/getContactMessages.useCase.interface';
+import { MarkContactMessageReadUseCaseInterface } from '@/application/useCases/contact/markContactMessageRead/markContactMessageRead.useCase.interface';
+import { SendContactMessageUseCaseInterface } from '@/application/useCases/contact/sendContactMessage/sendContactMessage.useCase.interface';
 import { CalculateDeliveryPriceUseCaseInterface } from '@/application/useCases/deliveryZone/calculateDeliveryPrice/calculateDeliveryPrice.useCase.interface';
 import { CreateDeliveryZoneUseCaseInterface } from '@/application/useCases/deliveryZone/createDeliveryZone/createDeliveryZone.useCase.interface';
 import { DeleteDeliveryZoneUseCaseInterface } from '@/application/useCases/deliveryZone/deleteDeliveryZone/deleteDeliveryZone.useCase.interface';
@@ -41,6 +49,12 @@ import { GetAllOrdersUseCaseInterface } from '@/application/useCases/order/getAl
 import { GetOrderUseCaseInterface } from '@/application/useCases/order/getOrder/getOrder.useCase.interface';
 import { GetUserOrdersUseCaseInterface } from '@/application/useCases/order/getUserOrders/getUserOrders.useCase.interface';
 import { UpdateOrderStatusUseCaseInterface } from '@/application/useCases/order/updateOrderStatus/updateOrderStatus.useCase.interface';
+import { ApproveReviewUseCaseInterface } from '@/application/useCases/review/approveReview/approveReview.useCase.interface';
+import { CreateReviewUseCaseInterface } from '@/application/useCases/review/createReview/createReview.useCase.interface';
+import { DeleteReviewUseCaseInterface } from '@/application/useCases/review/deleteReview/deleteReview.useCase.interface';
+import { GetAllReviewsUseCaseInterface } from '@/application/useCases/review/getAllReviews/getAllReviews.useCase.interface';
+import { GetApprovedReviewsUseCaseInterface } from '@/application/useCases/review/getApprovedReviews/getApprovedReviews.useCase.interface';
+import { GetMyReviewsUseCaseInterface } from '@/application/useCases/review/getMyReviews/getMyReviews.useCase.interface';
 import { GetUserUseCaseInterface } from '@/application/useCases/user/getUser/getUser.useCase.interface';
 import { UpdateUserUseCaseInterface } from '@/application/useCases/user/updateUser/updateUser.useCase.interface';
 
@@ -55,6 +69,14 @@ import { RegisterUseCase } from '@/application/useCases/auth/register/register.u
 import { ResendValidationEmailUseCase } from '@/application/useCases/auth/resendValidationEmail/resendValidationEmail.useCase';
 import { ResetPasswordUseCase } from '@/application/useCases/auth/resetPassword/resetPassword.useCase';
 import { ValidateAccountUseCase } from '@/application/useCases/auth/validateAccount/validateAccount.useCase';
+import { GetAllOperatingHoursUseCase } from '@/application/useCases/cms/getAllOperatingHours/getAllOperatingHours.useCase';
+import { GetPageContentUseCase } from '@/application/useCases/cms/getPageContent/getPageContent.useCase';
+import { UpsertOperatingHoursUseCase } from '@/application/useCases/cms/upsertOperatingHours/upsertOperatingHours.useCase';
+import { UpsertPageContentUseCase } from '@/application/useCases/cms/upsertPageContent/upsertPageContent.useCase';
+import { DeleteContactMessageUseCase } from '@/application/useCases/contact/deleteContactMessage/deleteContactMessage.useCase';
+import { GetContactMessagesUseCase } from '@/application/useCases/contact/getContactMessages/getContactMessages.useCase';
+import { MarkContactMessageReadUseCase } from '@/application/useCases/contact/markContactMessageRead/markContactMessageRead.useCase';
+import { SendContactMessageUseCase } from '@/application/useCases/contact/sendContactMessage/sendContactMessage.useCase';
 import { CalculateDeliveryPriceUseCase } from '@/application/useCases/deliveryZone/calculateDeliveryPrice/calculateDeliveryPrice.useCase';
 import { CreateDeliveryZoneUseCase } from '@/application/useCases/deliveryZone/createDeliveryZone/createDeliveryZone.useCase';
 import { DeleteDeliveryZoneUseCase } from '@/application/useCases/deliveryZone/deleteDeliveryZone/deleteDeliveryZone.useCase';
@@ -85,6 +107,12 @@ import { GetAllOrdersUseCase } from '@/application/useCases/order/getAllOrders/g
 import { GetOrderUseCase } from '@/application/useCases/order/getOrder/getOrder.useCase';
 import { GetUserOrdersUseCase } from '@/application/useCases/order/getUserOrders/getUserOrders.useCase';
 import { UpdateOrderStatusUseCase } from '@/application/useCases/order/updateOrderStatus/updateOrderStatus.useCase';
+import { ApproveReviewUseCase } from '@/application/useCases/review/approveReview/approveReview.useCase';
+import { CreateReviewUseCase } from '@/application/useCases/review/createReview/createReview.useCase';
+import { DeleteReviewUseCase } from '@/application/useCases/review/deleteReview/deleteReview.useCase';
+import { GetAllReviewsUseCase } from '@/application/useCases/review/getAllReviews/getAllReviews.useCase';
+import { GetApprovedReviewsUseCase } from '@/application/useCases/review/getApprovedReviews/getApprovedReviews.useCase';
+import { GetMyReviewsUseCase } from '@/application/useCases/review/getMyReviews/getMyReviews.useCase';
 import { GetUserUseCase } from '@/application/useCases/user/getUser/getUser.useCase';
 import { UpdateUserUseCase } from '@/application/useCases/user/updateUser/updateUser.useCase';
 
@@ -155,6 +183,26 @@ const useCaseContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<ApplyMaterialReturnPenaltiesUseCaseInterface>(TYPES.ApplyMaterialReturnPenaltiesUseCase).to(
     ApplyMaterialReturnPenaltiesUseCase,
   );
+
+  // Review
+  bind<CreateReviewUseCaseInterface>(TYPES.CreateReviewUseCase).to(CreateReviewUseCase);
+  bind<GetMyReviewsUseCaseInterface>(TYPES.GetMyReviewsUseCase).to(GetMyReviewsUseCase);
+  bind<GetApprovedReviewsUseCaseInterface>(TYPES.GetApprovedReviewsUseCase).to(GetApprovedReviewsUseCase);
+  bind<ApproveReviewUseCaseInterface>(TYPES.ApproveReviewUseCase).to(ApproveReviewUseCase);
+  bind<GetAllReviewsUseCaseInterface>(TYPES.GetAllReviewsUseCase).to(GetAllReviewsUseCase);
+  bind<DeleteReviewUseCaseInterface>(TYPES.DeleteReviewUseCase).to(DeleteReviewUseCase);
+
+  // Contact
+  bind<SendContactMessageUseCaseInterface>(TYPES.SendContactMessageUseCase).to(SendContactMessageUseCase);
+  bind<GetContactMessagesUseCaseInterface>(TYPES.GetContactMessagesUseCase).to(GetContactMessagesUseCase);
+  bind<MarkContactMessageReadUseCaseInterface>(TYPES.MarkContactMessageReadUseCase).to(MarkContactMessageReadUseCase);
+  bind<DeleteContactMessageUseCaseInterface>(TYPES.DeleteContactMessageUseCase).to(DeleteContactMessageUseCase);
+
+  // CMS
+  bind<GetPageContentUseCaseInterface>(TYPES.GetPageContentUseCase).to(GetPageContentUseCase);
+  bind<GetAllOperatingHoursUseCaseInterface>(TYPES.GetAllOperatingHoursUseCase).to(GetAllOperatingHoursUseCase);
+  bind<UpsertPageContentUseCaseInterface>(TYPES.UpsertPageContentUseCase).to(UpsertPageContentUseCase);
+  bind<UpsertOperatingHoursUseCaseInterface>(TYPES.UpsertOperatingHoursUseCase).to(UpsertOperatingHoursUseCase);
 });
 
 export { useCaseContainer };

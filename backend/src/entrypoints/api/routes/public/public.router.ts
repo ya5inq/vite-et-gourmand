@@ -11,12 +11,16 @@ import { authSetEmployeePasswordRoute } from './authSetEmployeePassword';
 import { authValidateAccountRoute } from './authValidateAccount';
 import { healthcheckRoute } from './healthcheck';
 import { publicAllergenGetAllRoute } from './publicAllergenGetAll';
+import { publicContactSendRoute } from './publicContactSend';
 import { publicDeliveryZoneCalculatePriceRoute } from './publicDeliveryZoneCalculatePrice';
 import { publicDeliveryZoneGetAllRoute } from './publicDeliveryZoneGetAll';
 import { publicDietaryRegimeGetAllRoute } from './publicDietaryRegimeGetAll';
 import { publicMenuGetAllRoute } from './publicMenuGetAll';
 import { publicMenuGetOneRoute } from './publicMenuGetOne';
+import { publicOperatingHoursGetAllRoute } from './publicOperatingHoursGetAll';
 import { publicOrderCreateRoute } from './publicOrderCreate';
+import { publicPageContentGetRoute } from './publicPageContentGet';
+import { publicReviewGetApprovedRoute } from './publicReviewGetApproved';
 
 const publicRouter = getHonoApp();
 
@@ -44,6 +48,12 @@ publicRouter
 
   // Guest order (public checkout)
   .route('/', publicOrderCreateRoute)
+
+  // Reviews / Contact / CMS (public storefront)
+  .route('/', publicReviewGetApprovedRoute)
+  .route('/', publicContactSendRoute)
+  .route('/', publicPageContentGetRoute)
+  .route('/', publicOperatingHoursGetAllRoute)
 
   // Healthcheck routes
   .route('/healthcheck', healthcheckRoute);

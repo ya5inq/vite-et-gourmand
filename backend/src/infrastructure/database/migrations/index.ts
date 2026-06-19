@@ -4,3 +4,4 @@ export * from './1781855514867-CreateCatalog';
 export * from './1781856588965-CreateDeliveryZone';
 export * from './1781857929879-CreateOrders';
 export * from './1781858000000-AddOrderPenaltyFields';
+export * from './1781861889725-CreateReviewsContactCms';
