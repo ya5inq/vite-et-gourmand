@@ -6,4 +6,5 @@ export const getMailSenderMock = (): Mocked<MailSenderInterface> => ({
   sendRegisterEmail: vi.fn(),
   sendResetPasswordEmail: vi.fn(),
   sendEmployeeSetPasswordEmail: vi.fn(),
+  sendOrderConfirmationEmail: vi.fn(),
 });

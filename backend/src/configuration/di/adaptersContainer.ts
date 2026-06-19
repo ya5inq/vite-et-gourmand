@@ -11,6 +11,7 @@ import { DeliveryZoneRepositoryInterface } from '@/domain/interfaces/repositorie
 import { DietaryRegimeRepositoryInterface } from '@/domain/interfaces/repositories/dietaryRegime.repository.interface';
 import { DishRepositoryInterface } from '@/domain/interfaces/repositories/dish.repository.interface';
 import { MenuRepositoryInterface } from '@/domain/interfaces/repositories/menu.repository.interface';
+import { OrderRepositoryInterface } from '@/domain/interfaces/repositories/order.repository.interface';
 import { UserRepositoryInterface } from '@/domain/interfaces/repositories/user.repository.interface';
 import { UserTokenRepositoryInterface } from '@/domain/interfaces/repositories/userToken.repository.interface';
 
@@ -24,6 +25,7 @@ import { DeliveryZoneRepository } from '@/adapters/repositories/deliveryZoneRepo
 import { DietaryRegimeRepository } from '@/adapters/repositories/dietaryRegimeRepository/dietaryRegime.repository';
 import { DishRepository } from '@/adapters/repositories/dishRepository/dish.repository';
 import { MenuRepository } from '@/adapters/repositories/menuRepository/menu.repository';
+import { OrderRepository } from '@/adapters/repositories/orderRepository/order.repository';
 import { UserRepository } from '@/adapters/repositories/userRepository/user.repository';
 import { UserTokenRepository } from '@/adapters/repositories/userTokenRepository/userToken.repository';
 import { i18n } from '@/application/i18n/i18n';
@@ -39,6 +41,7 @@ const adaptersContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<DishRepositoryInterface>(TYPES.DishRepository).to(DishRepository);
   bind<MenuRepositoryInterface>(TYPES.MenuRepository).to(MenuRepository);
   bind<DeliveryZoneRepositoryInterface>(TYPES.DeliveryZoneRepository).to(DeliveryZoneRepository);
+  bind<OrderRepositoryInterface>(TYPES.OrderRepository).to(OrderRepository);
 
   // Adapters
   bind<MailSenderInterface>(TYPES.MailSender).to(MailSender);
