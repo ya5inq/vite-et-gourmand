@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ShoppingCart, Euro, MessageSquare, Clock } from 'lucide-react';
 import { DashboardPageLayout } from '@/components/templates/DashboardPageLayout';
-import { supabase } from '@/configs/supabase';
+import { AdminApi } from '@/configs/api';
 import { CacheKeys } from '@/configs/cacheKeys';
 
 type DashboardStats = {
@@ -11,37 +11,54 @@ type DashboardStats = {
   activeOrders: number;
 };
 
+const ACTIVE_STATUSES = new Set([
+  'PENDING',
+  'ACCEPTED',
+  'PREPARING',
+  'DELIVERING',
+  'DELIVERED',
+  'AWAITING_MATERIAL_RETURN',
+]);
+
+/**
+ * There is no dedicated /admin/dashboard-stats endpoint, so the four KPIs are
+ * computed in-memory from the admin order + review lists:
+ *  - totalOrders: total count of orders.
+ *  - monthlyRevenue: sum of totalPrice for non-cancelled/non-rejected orders
+ *    created in the current month.
+ *  - pendingReviews: reviews with isApproved === false.
+ *  - activeOrders: orders in a non-terminal status.
+ */
 const useDashboardStats = () => {
   return useQuery({
     queryKey: CacheKeys.DASHBOARD_STATS(),
     queryFn: async (): Promise<DashboardStats> => {
       const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const [ordersRes, revenueRes, reviewsRes, activeRes] = await Promise.all([
-        supabase.from('orders').select('id', { count: 'exact', head: true }),
-        supabase
-          .from('orders')
-          .select('total_price')
-          .gte('created_at', startOfMonth)
-          .neq('status', 'cancelled'),
-        supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('is_approved', false),
-        supabase
-          .from('orders')
-          .select('id', { count: 'exact', head: true })
-          .in('status', ['pending', 'confirmed', 'preparing', 'ready', 'delivering']),
+      const [ordersRes, reviewsRes] = await Promise.all([
+        AdminApi.adminOrderGetAll({ limit: 100 }),
+        AdminApi.adminReviewGetAll({ limit: 100, isApproved: 'false' }),
       ]);
 
-      const monthlyRevenue = (revenueRes.data ?? []).reduce(
-        (sum, order) => sum + (order.total_price ?? 0),
-        0
-      );
+      const orders = ordersRes.data.items;
+
+      const monthlyRevenue = orders
+        .filter(
+          (o) =>
+            o.status !== 'CANCELLED' &&
+            o.status !== 'REJECTED' &&
+            new Date(o.createdAt) >= startOfMonth,
+        )
+        .reduce((sum, o) => sum + (o.totalPrice ?? 0), 0);
+
+      const activeOrders = orders.filter((o) => ACTIVE_STATUSES.has(o.status)).length;
 
       return {
-        totalOrders: ordersRes.count ?? 0,
+        totalOrders: ordersRes.data.totalCount,
         monthlyRevenue,
-        pendingReviews: reviewsRes.count ?? 0,
-        activeOrders: activeRes.count ?? 0,
+        pendingReviews: reviewsRes.data.totalCount,
+        activeOrders,
       };
     },
   });

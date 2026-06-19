@@ -9,13 +9,19 @@ import { useDishes, useCreateDish, useUpdateDish, useDeleteDish, type DishRow } 
 const dishSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
   description: z.string().optional(),
-  category: z.string().optional(),
+  category: z.enum(['entree', 'plat', 'dessert']),
   price: z.coerce.number().min(0, 'Le prix doit etre positif'),
-  is_available: z.boolean(),
-  image_url: z.string().optional(),
+  isAvailable: z.boolean(),
+  imageUrl: z.string().optional(),
 });
 
 type DishForm = z.infer<typeof dishSchema>;
+
+const CATEGORY_LABELS: Record<DishForm['category'], string> = {
+  entree: 'Entree',
+  plat: 'Plat',
+  dessert: 'Dessert',
+};
 
 export const DishListPage = () => {
   const { data: dishes, isLoading } = useDishes();
@@ -32,12 +38,12 @@ export const DishListPage = () => {
     formState: { errors },
   } = useForm<DishForm>({
     resolver: zodResolver(dishSchema),
-    defaultValues: { is_available: true, price: 0 },
+    defaultValues: { isAvailable: true, price: 0, category: 'plat' },
   });
 
   const openCreate = () => {
     setEditingDish(null);
-    reset({ name: '', description: '', category: '', price: 0, is_available: true, image_url: '' });
+    reset({ name: '', description: '', category: 'plat', price: 0, isAvailable: true, imageUrl: '' });
     setIsModalOpen(true);
   };
 
@@ -46,10 +52,10 @@ export const DishListPage = () => {
     reset({
       name: dish.name,
       description: dish.description ?? '',
-      category: dish.category ?? '',
-      price: dish.price,
-      is_available: dish.is_available,
-      image_url: dish.image_url ?? '',
+      category: dish.category ?? 'plat',
+      price: dish.price ?? 0,
+      isAvailable: dish.isAvailable,
+      imageUrl: dish.imageUrl ?? '',
     });
     setIsModalOpen(true);
   };
@@ -92,7 +98,6 @@ export const DishListPage = () => {
                 <th className="px-4 py-3 text-left font-medium">Categorie</th>
                 <th className="px-4 py-3 text-left font-medium">Prix</th>
                 <th className="px-4 py-3 text-left font-medium">Disponible</th>
-                <th className="px-4 py-3 text-left font-medium">Allergenes</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -100,19 +105,18 @@ export const DishListPage = () => {
               {dishes?.map((dish) => (
                 <tr key={dish.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3 font-medium">{dish.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{dish.category ?? '-'}</td>
-                  <td className="px-4 py-3">{dish.price.toFixed(2)} EUR</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {dish.category ? CATEGORY_LABELS[dish.category] : '-'}
+                  </td>
+                  <td className="px-4 py-3">{dish.price != null ? `${dish.price.toFixed(2)} EUR` : '-'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                        dish.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        dish.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}
                     >
-                      {dish.is_available ? 'Oui' : 'Non'}
+                      {dish.isAvailable ? 'Oui' : 'Non'}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {dish.dish_allergens?.map((da) => da.allergens.name).join(', ') || '-'}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button
@@ -132,7 +136,7 @@ export const DishListPage = () => {
               ))}
               {dishes?.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                     Aucun plat
                   </td>
                 </tr>
@@ -166,10 +170,14 @@ export const DishListPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1 block text-sm font-medium">Categorie</label>
-                  <input
+                  <select
                     {...register('category')}
                     className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-                  />
+                  >
+                    <option value="entree">Entree</option>
+                    <option value="plat">Plat</option>
+                    <option value="dessert">Dessert</option>
+                  </select>
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">Prix (EUR)</label>
@@ -185,12 +193,12 @@ export const DishListPage = () => {
               <div>
                 <label className="mb-1 block text-sm font-medium">URL de l'image</label>
                 <input
-                  {...register('image_url')}
+                  {...register('imageUrl')}
                   className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
                 />
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="dish_available" {...register('is_available')} className="h-4 w-4" />
+                <input type="checkbox" id="dish_available" {...register('isAvailable')} className="h-4 w-4" />
                 <label htmlFor="dish_available" className="text-sm font-medium">
                   Disponible
                 </label>

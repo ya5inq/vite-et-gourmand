@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useRejectOrder } from '@/api/hooks/useOrders';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useRejectOrder, type ContactMode } from '@/api/hooks/useOrders';
 
 interface OrderRejectModalProps {
   orderId: string;
@@ -8,9 +7,9 @@ interface OrderRejectModalProps {
 }
 
 export const OrderRejectModal = ({ orderId, onClose }: OrderRejectModalProps) => {
-  const { user } = useAuthContext();
   const rejectOrder = useRejectOrder();
   const [reason, setReason] = useState('');
+  const [contactMode, setContactMode] = useState<ContactMode>('EMAIL');
   const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -22,13 +21,8 @@ export const OrderRejectModal = ({ orderId, onClose }: OrderRejectModalProps) =>
       return;
     }
 
-    if (!user?.id) {
-      setError('Vous devez etre connecte');
-      return;
-    }
-
     rejectOrder.mutate(
-      { id: orderId, reason: reason.trim(), rejectedBy: user.id },
+      { id: orderId, reason: reason.trim(), contactMode },
       { onSuccess: onClose }
     );
   };
@@ -54,11 +48,30 @@ export const OrderRejectModal = ({ orderId, onClose }: OrderRejectModalProps) =>
               className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
               placeholder="Expliquez la raison du refus (min. 10 caracteres)..."
             />
-            {error && <p className="text-destructive text-sm mt-1">{error}</p>}
             <p className="text-xs text-muted-foreground mt-1">
-              Cette raison sera visible par le client.
+              Cette raison sera communiquee au client.
             </p>
           </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="contactMode"
+              className="block text-sm font-medium text-foreground mb-2"
+            >
+              Mode de contact *
+            </label>
+            <select
+              id="contactMode"
+              value={contactMode}
+              onChange={(e) => setContactMode(e.target.value as ContactMode)}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="EMAIL">Email</option>
+              <option value="PHONE">Telephone</option>
+            </select>
+          </div>
+
+          {error && <p className="text-destructive text-sm mb-4">{error}</p>}
 
           <div className="flex justify-end gap-3">
             <button

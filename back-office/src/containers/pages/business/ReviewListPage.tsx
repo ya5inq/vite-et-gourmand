@@ -37,8 +37,7 @@ export const ReviewListPage = () => {
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/50">
               <tr>
-                <th className="px-4 py-3 text-left font-medium">Client</th>
-                <th className="px-4 py-3 text-left font-medium">Menu</th>
+                <th className="px-4 py-3 text-left font-medium">Commande</th>
                 <th className="px-4 py-3 text-left font-medium">Note</th>
                 <th className="px-4 py-3 text-left font-medium">Commentaire</th>
                 <th className="px-4 py-3 text-left font-medium">Statut</th>
@@ -47,59 +46,52 @@ export const ReviewListPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {reviews?.map((review) => {
-                const clientName = review.profiles
-                  ? [review.profiles.first_name, review.profiles.last_name].filter(Boolean).join(' ') || 'Anonyme'
-                  : 'Anonyme';
-
-                return (
-                  <tr key={review.id} className="hover:bg-muted/30">
-                    <td className="px-4 py-3">{clientName}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{review.menus?.name ?? '-'}</td>
-                    <td className="px-4 py-3">
-                      <StarRating rating={review.rating} />
-                    </td>
-                    <td className="max-w-xs truncate px-4 py-3 text-muted-foreground">
-                      {review.comment ?? '-'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                          review.is_approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {review.is_approved ? 'Approuve' : 'En attente'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {new Date(review.created_at).toLocaleDateString('fr-FR')}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {!review.is_approved && (
-                        <button
-                          onClick={() => handleApprove(review.id)}
-                          disabled={approveReview.isPending}
-                          className="mr-2 rounded p-1 text-green-600 hover:bg-green-50"
-                          title="Approuver"
-                        >
-                          <Check className="h-4 w-4" />
-                        </button>
-                      )}
+              {reviews?.map((review) => (
+                <tr key={review.id} className="hover:bg-muted/30">
+                  <td className="px-4 py-3 font-mono text-xs">{review.orderId.slice(0, 8)}...</td>
+                  <td className="px-4 py-3">
+                    <StarRating rating={review.rating} />
+                  </td>
+                  <td className="max-w-xs truncate px-4 py-3 text-muted-foreground">
+                    {review.comment ?? '-'}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                        review.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
+                      {review.isApproved ? 'Approuve' : 'En attente'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {new Date(review.createdAt).toLocaleDateString('fr-FR')}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {!review.isApproved && (
                       <button
-                        onClick={() => handleReject(review.id)}
-                        disabled={rejectReview.isPending}
-                        className="rounded p-1 text-red-600 hover:bg-red-50"
-                        title="Supprimer"
+                        onClick={() => handleApprove(review.id)}
+                        disabled={approveReview.isPending}
+                        className="mr-2 rounded p-1 text-green-600 hover:bg-green-50"
+                        title="Approuver"
                       >
-                        <X className="h-4 w-4" />
+                        <Check className="h-4 w-4" />
                       </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                    )}
+                    <button
+                      onClick={() => handleReject(review.id)}
+                      disabled={rejectReview.isPending}
+                      className="rounded p-1 text-red-600 hover:bg-red-50"
+                      title="Supprimer"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
               {reviews?.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                     Aucun avis
                   </td>
                 </tr>

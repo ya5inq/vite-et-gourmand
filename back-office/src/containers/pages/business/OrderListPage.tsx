@@ -6,30 +6,32 @@ import {
   useAcceptOrder,
   ORDER_STATUS_LABELS,
   ORDER_STATUS_COLORS,
+  ORDER_STATUS_TRANSITIONS,
   type OrderStatus,
 } from '@/api/hooks/useOrders';
 import { OrderRejectModal } from '@/components/molecules/OrderRejectModal';
 
-const ALL_STATUSES: OrderStatus[] = ['pending', 'rejected', 'confirmed', 'preparing', 'ready', 'delivering', 'completed', 'cancelled'];
 const STATUS_TABS: { value: OrderStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'Toutes' },
-  { value: 'pending', label: 'En attente' },
-  { value: 'confirmed', label: 'Confirmees' },
-  { value: 'preparing', label: 'En preparation' },
-  { value: 'rejected', label: 'Refusees' },
-  { value: 'cancelled', label: 'Annulees' },
+  { value: 'PENDING', label: 'En attente' },
+  { value: 'ACCEPTED', label: 'Acceptees' },
+  { value: 'PREPARING', label: 'En preparation' },
+  { value: 'DELIVERING', label: 'En livraison' },
+  { value: 'COMPLETED', label: 'Terminees' },
+  { value: 'REJECTED', label: 'Refusees' },
+  { value: 'CANCELLED', label: 'Annulees' },
 ];
 
 export const OrderListPage = () => {
   const { data: orders, isLoading } = useOrders();
   const updateStatus = useUpdateOrderStatus();
   const acceptOrder = useAcceptOrder();
-  const [statusModalId, setStatusModalId] = useState<string | null>(null);
+  const [statusModalOrder, setStatusModalOrder] = useState<{ id: string; status: OrderStatus } | null>(null);
   const [rejectModalId, setRejectModalId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<OrderStatus | 'all'>('all');
 
   const handleStatusChange = (orderId: string, status: OrderStatus) => {
-    updateStatus.mutate({ id: orderId, status }, { onSuccess: () => setStatusModalId(null) });
+    updateStatus.mutate({ id: orderId, status }, { onSuccess: () => setStatusModalOrder(null) });
   };
 
   const handleAccept = (orderId: string) => {
@@ -50,6 +52,12 @@ export const OrderListPage = () => {
       minute: '2-digit',
     });
   };
+
+  // Statuses reachable from the currently selected order (excluding REJECTED,
+  // which has its own dedicated modal because it requires reason + contactMode).
+  const reachableStatuses = statusModalOrder
+    ? ORDER_STATUS_TRANSITIONS[statusModalOrder.status].filter((s) => s !== 'REJECTED')
+    : [];
 
   return (
     <DashboardPageLayout title="Commandes" description="Gestion des commandes">
@@ -89,16 +97,8 @@ export const OrderListPage = () => {
             </thead>
             <tbody className="divide-y">
               {filteredOrders?.map((order) => {
-                // Get client name from profiles or guest info
-                const clientName = order.profiles
-                  ? [order.profiles.first_name, order.profiles.last_name].filter(Boolean).join(' ') || 'Client'
-                  : order.guest_name || 'Client invité';
-                const clientEmail = order.profiles?.email || order.guest_email;
-
-                // Get order items summary
-                const itemsSummary = order.order_items?.length
-                  ? order.order_items.map((item) => `${item.menus?.name || 'Menu'} x${item.quantity}`).join(', ')
-                  : '-';
+                const clientName = order.guestName || 'Client';
+                const clientEmail = order.guestEmail;
 
                 return (
                   <tr key={order.id} className="hover:bg-muted/30">
@@ -109,15 +109,10 @@ export const OrderListPage = () => {
                         {clientEmail && (
                           <p className="text-xs text-muted-foreground">{clientEmail}</p>
                         )}
-                        {order.guest_phone && (
-                          <p className="text-xs text-muted-foreground">{order.guest_phone}</p>
-                        )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 max-w-48">
-                      <p className="truncate text-sm" title={itemsSummary}>
-                        {itemsSummary}
-                      </p>
+                    <td className="px-4 py-3">
+                      <p className="text-sm">{order.itemCount} article(s)</p>
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -125,25 +120,20 @@ export const OrderListPage = () => {
                       >
                         {ORDER_STATUS_LABELS[order.status]}
                       </span>
-                      {order.status === 'rejected' && order.rejection_reason && (
-                        <p className="text-xs text-muted-foreground mt-1 max-w-32 truncate" title={order.rejection_reason}>
-                          {order.rejection_reason}
-                        </p>
-                      )}
                     </td>
-                    <td className="px-4 py-3">{order.total_price.toFixed(2)} EUR</td>
+                    <td className="px-4 py-3">{order.totalPrice.toFixed(2)} EUR</td>
                     <td className="px-4 py-3">
                       <div>
-                        <p>{formatDate(order.delivery_date)}</p>
-                        {order.delivery_city && (
-                          <p className="text-xs text-muted-foreground">{order.delivery_city}</p>
+                        <p>{formatDate(order.deliveryDate)}</p>
+                        {order.deliveryCity && (
+                          <p className="text-xs text-muted-foreground">{order.deliveryCity}</p>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{formatDate(order.created_at)}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{formatDate(order.createdAt)}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {order.status === 'pending' && (
+                        {order.status === 'PENDING' && (
                           <>
                             <button
                               onClick={() => handleAccept(order.id)}
@@ -160,12 +150,14 @@ export const OrderListPage = () => {
                             </button>
                           </>
                         )}
-                        <button
-                          onClick={() => setStatusModalId(order.id)}
-                          className="rounded-md border border-border px-3 py-1 text-xs font-medium hover:bg-accent"
-                        >
-                          Statut
-                        </button>
+                        {ORDER_STATUS_TRANSITIONS[order.status].filter((s) => s !== 'REJECTED').length > 0 && (
+                          <button
+                            onClick={() => setStatusModalOrder({ id: order.id, status: order.status })}
+                            className="rounded-md border border-border px-3 py-1 text-xs font-medium hover:bg-accent"
+                          >
+                            Statut
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -184,25 +176,29 @@ export const OrderListPage = () => {
       )}
 
       {/* Status change modal */}
-      {statusModalId && (
+      {statusModalOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
             <h2 className="mb-4 text-lg font-bold">Changer le statut</h2>
-            <div className="space-y-2">
-              {ALL_STATUSES.filter((s) => s !== 'rejected').map((status) => (
-                <button
-                  key={status}
-                  onClick={() => handleStatusChange(statusModalId, status)}
-                  disabled={updateStatus.isPending}
-                  className={`w-full rounded-md px-4 py-2 text-left text-sm font-medium transition-colors hover:bg-accent ${ORDER_STATUS_COLORS[status]}`}
-                >
-                  {ORDER_STATUS_LABELS[status]}
-                </button>
-              ))}
-            </div>
+            {reachableStatuses.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucune transition disponible.</p>
+            ) : (
+              <div className="space-y-2">
+                {reachableStatuses.map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => handleStatusChange(statusModalOrder.id, status)}
+                    disabled={updateStatus.isPending}
+                    className={`w-full rounded-md px-4 py-2 text-left text-sm font-medium transition-colors hover:bg-accent ${ORDER_STATUS_COLORS[status]}`}
+                  >
+                    {ORDER_STATUS_LABELS[status]}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="mt-4 flex justify-end">
               <button
-                onClick={() => setStatusModalId(null)}
+                onClick={() => setStatusModalOrder(null)}
                 className="rounded-md border border-border px-4 py-2 text-sm hover:bg-accent"
               >
                 Annuler

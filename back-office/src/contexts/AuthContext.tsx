@@ -1,90 +1,135 @@
-import { Session, User } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/configs/supabase';
+import type { ProtectedUserGetMe200 } from '@vite-et-gourmand/sdk';
+import { PublicApi, ProtectedApi, getAccessToken, setAccessToken } from '@/configs/api';
 
+export type AuthUser = ProtectedUserGetMe200;
+
+/**
+ * Backwards-compatible profile shape so existing components that read
+ * snake_case fields (DashboardLayout) keep working without changes.
+ */
 type Profile = {
   id: string;
   first_name: string | null;
   last_name: string | null;
-  role: 'visitor' | 'user' | 'employee' | 'admin';
+  role: AuthUser['role'];
 };
 
 type AuthContextType = {
-  user: User | null;
+  user: AuthUser | null;
   profile: Profile | null;
-  session: Session | null;
   isReady: boolean;
   isAdmin: boolean;
   isEmployee: boolean;
+  login: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
-  session: null,
   isReady: false,
   isAdmin: false,
   isEmployee: false,
+  login: async () => {},
   signOut: async () => {},
 });
 
+const toProfile = (user: AuthUser): Profile => ({
+  id: user.id,
+  first_name: user.firstName ?? null,
+  last_name: user.lastName ?? null,
+  role: user.role,
+});
+
+const isStaffRole = (role: AuthUser['role']): boolean =>
+  role === 'EMPLOYEE' || role === 'ADMIN';
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isReady, setIsReady] = useState(false);
   const navigate = useNavigate();
 
+  // Boot: try to recover a session. If a (possibly expired) access token is
+  // persisted, calling getMe will transparently trigger a refresh (old token in
+  // body + httpOnly cookie) via the axios 401 interceptor. With no stored token
+  // there is no session to recover.
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setIsReady(true);
-      }
-    });
+    let cancelled = false;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-        setIsReady(true);
+    const bootstrap = async () => {
+      if (!getAccessToken()) {
+        if (!cancelled) setIsReady(true);
+        return;
       }
-    });
 
-    return () => subscription.unsubscribe();
+      try {
+        const { data } = await ProtectedApi.protectedUserGetMe();
+        if (!cancelled) {
+          if (isStaffRole(data.role)) {
+            setUser(data);
+          } else {
+            setUser(null);
+            setAccessToken(null);
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setUser(null);
+          setAccessToken(null);
+        }
+      }
+
+      if (!cancelled) setIsReady(true);
+    };
+
+    void bootstrap();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, first_name, last_name, role')
-      .eq('id', userId)
-      .single();
+  const login = async (email: string, password: string): Promise<void> => {
+    const { data: loginData } = await PublicApi.publicAuthLogin({ email, password });
+    setAccessToken(loginData.accessToken);
 
-    setProfile(data as Profile | null);
-    setIsReady(true);
+    const { data: me } = await ProtectedApi.protectedUserGetMe();
+    if (!isStaffRole(me.role)) {
+      // Not a staff member: drop the session and refuse access.
+      setAccessToken(null);
+      await PublicApi.publicAuthLogout().catch(() => undefined);
+      throw new Error('Acces refuse. Vous devez etre employe ou administrateur.');
+    }
+
+    setUser(me);
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    setProfile(null);
+  const signOut = async (): Promise<void> => {
+    try {
+      await PublicApi.publicAuthLogout();
+    } catch {
+      // Ignore logout errors; we clear local state regardless.
+    }
+    setAccessToken(null);
+    setUser(null);
     navigate('/login');
   };
 
-  const contextValue = useMemo<AuthContextType>(() => ({
-    user: session?.user ?? null,
-    profile,
-    session,
-    isReady,
-    isAdmin: profile?.role === 'admin',
-    isEmployee: profile?.role === 'employee' || profile?.role === 'admin',
-    signOut,
-  }), [session, profile, isReady]);
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user,
+      profile: user ? toProfile(user) : null,
+      isReady,
+      isAdmin: user?.role === 'ADMIN',
+      isEmployee: user ? isStaffRole(user.role) : false,
+      login,
+      signOut,
+    }),
+    // login/signOut are stable closures over setters; intentionally omitted.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, isReady],
+  );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };

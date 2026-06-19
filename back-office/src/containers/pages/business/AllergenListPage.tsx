@@ -4,16 +4,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { DashboardPageLayout } from '@/components/templates/DashboardPageLayout';
-import { useAllergens, useCreateAllergen, useUpdateAllergen, useDeleteAllergen } from '@/api/hooks/useDishes';
+import {
+  useAllergens,
+  useCreateAllergen,
+  useUpdateAllergen,
+  useDeleteAllergen,
+  type AllergenRow,
+} from '@/api/hooks/useDishes';
 
 const allergenSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
-  description: z.string().optional(),
+  icon: z.string().optional(),
 });
 
 type AllergenForm = z.infer<typeof allergenSchema>;
-
-type AllergenRow = { id: string; name: string; description: string | null };
 
 export const AllergenListPage = () => {
   const { data: allergens, isLoading } = useAllergens();
@@ -34,21 +38,22 @@ export const AllergenListPage = () => {
 
   const openCreate = () => {
     setEditing(null);
-    reset({ name: '', description: '' });
+    reset({ name: '', icon: '' });
     setIsModalOpen(true);
   };
 
   const openEdit = (allergen: AllergenRow) => {
     setEditing(allergen);
-    reset({ name: allergen.name, description: allergen.description ?? '' });
+    reset({ name: allergen.name, icon: allergen.icon ?? '' });
     setIsModalOpen(true);
   };
 
   const onSubmit = (data: AllergenForm) => {
+    const payload = { name: data.name, icon: data.icon?.trim() ? data.icon : null };
     if (editing) {
-      updateAllergen.mutate({ id: editing.id, ...data }, { onSuccess: () => setIsModalOpen(false) });
+      updateAllergen.mutate({ id: editing.id, ...payload }, { onSuccess: () => setIsModalOpen(false) });
     } else {
-      createAllergen.mutate(data, { onSuccess: () => setIsModalOpen(false) });
+      createAllergen.mutate(payload, { onSuccess: () => setIsModalOpen(false) });
     }
   };
 
@@ -79,7 +84,7 @@ export const AllergenListPage = () => {
             <thead className="border-b bg-muted/50">
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
-                <th className="px-4 py-3 text-left font-medium">Description</th>
+                <th className="px-4 py-3 text-left font-medium">Icone</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -87,7 +92,7 @@ export const AllergenListPage = () => {
               {allergens?.map((allergen) => (
                 <tr key={allergen.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3 font-medium">{allergen.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{allergen.description ?? '-'}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{allergen.icon ?? '-'}</td>
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => openEdit(allergen)}
@@ -130,11 +135,11 @@ export const AllergenListPage = () => {
                 {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Description</label>
-                <textarea
-                  {...register('description')}
-                  rows={3}
+                <label className="mb-1 block text-sm font-medium">Icone</label>
+                <input
+                  {...register('icon')}
                   className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+                  placeholder="Ex: nom d'icone ou emoji"
                 />
               </div>
               <div className="flex justify-end gap-2">

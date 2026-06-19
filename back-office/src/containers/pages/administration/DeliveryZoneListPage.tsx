@@ -1,92 +1,23 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { toast } from 'sonner';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { DashboardPageLayout } from '@/components/templates/DashboardPageLayout';
-import { supabase } from '@/configs/supabase';
-import { CacheKeys } from '@/configs/cacheKeys';
-
-type DeliveryZone = {
-  id: string;
-  name: string;
-  postal_code: string | null;
-  city: string | null;
-  delivery_fee: number;
-  is_active: boolean;
-  created_at: string;
-};
-
-const useDeliveryZones = () => {
-  return useQuery({
-    queryKey: CacheKeys.DELIVERY_ZONES(),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('delivery_zones')
-        .select('*')
-        .order('name');
-
-      if (error) throw error;
-      return data as DeliveryZone[];
-    },
-  });
-};
-
-const useCreateDeliveryZone = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (input: Omit<DeliveryZone, 'id' | 'created_at'>) => {
-      const { data, error } = await supabase.from('delivery_zones').insert(input).select().single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CacheKeys.DELIVERY_ZONES() });
-      toast.success('Zone creee');
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-};
-
-const useUpdateDeliveryZone = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ id, ...input }: Partial<DeliveryZone> & { id: string }) => {
-      const { data, error } = await supabase.from('delivery_zones').update(input).eq('id', id).select().single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CacheKeys.DELIVERY_ZONES() });
-      toast.success('Zone mise a jour');
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-};
-
-const useDeleteDeliveryZone = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from('delivery_zones').delete().eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CacheKeys.DELIVERY_ZONES() });
-      toast.success('Zone supprimee');
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-};
+import {
+  useDeliveryZones,
+  useCreateDeliveryZone,
+  useUpdateDeliveryZone,
+  useDeleteDeliveryZone,
+  type DeliveryZoneRow,
+} from '@/api/hooks/useDeliveryZones';
 
 const zoneSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
-  postal_code: z.string().optional(),
+  postalCode: z.string().optional(),
   city: z.string().optional(),
-  delivery_fee: z.coerce.number().min(0),
-  is_active: z.boolean(),
+  distanceKm: z.coerce.number().min(0),
+  isActive: z.boolean(),
 });
 
 type ZoneForm = z.infer<typeof zoneSchema>;
@@ -97,27 +28,27 @@ export const DeliveryZoneListPage = () => {
   const updateZone = useUpdateDeliveryZone();
   const deleteZone = useDeleteDeliveryZone();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<DeliveryZone | null>(null);
+  const [editing, setEditing] = useState<DeliveryZoneRow | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ZoneForm>({
     resolver: zodResolver(zoneSchema),
-    defaultValues: { is_active: true, delivery_fee: 0, min_order_amount: 0 },
+    defaultValues: { isActive: true, distanceKm: 0 },
   });
 
   const openCreate = () => {
     setEditing(null);
-    reset({ name: '', postal_code: '', city: '', delivery_fee: 0, is_active: true });
+    reset({ name: '', postalCode: '', city: '', distanceKm: 0, isActive: true });
     setIsModalOpen(true);
   };
 
-  const openEdit = (zone: DeliveryZone) => {
+  const openEdit = (zone: DeliveryZoneRow) => {
     setEditing(zone);
     reset({
       name: zone.name,
-      postal_code: zone.postal_code ?? '',
+      postalCode: zone.postalCode ?? '',
       city: zone.city ?? '',
-      delivery_fee: zone.delivery_fee,
-      is_active: zone.is_active,
+      distanceKm: zone.distanceKm,
+      isActive: zone.isActive,
     });
     setIsModalOpen(true);
   };
@@ -125,10 +56,10 @@ export const DeliveryZoneListPage = () => {
   const onSubmit = (data: ZoneForm) => {
     const payload = {
       name: data.name,
-      postal_code: data.postal_code || null,
+      postalCode: data.postalCode || null,
       city: data.city || null,
-      delivery_fee: data.delivery_fee,
-      is_active: data.is_active,
+      distanceKm: data.distanceKm,
+      isActive: data.isActive,
     };
 
     if (editing) {
@@ -141,7 +72,7 @@ export const DeliveryZoneListPage = () => {
   return (
     <DashboardPageLayout
       title="Zones de livraison"
-      description="Gestion des zones de livraison"
+      description="Gestion des zones de livraison (le prix est calcule par le serveur a partir de la distance)"
       actions={
         <button onClick={openCreate} className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
           <Plus className="h-4 w-4" /> Nouvelle zone
@@ -158,7 +89,7 @@ export const DeliveryZoneListPage = () => {
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
                 <th className="px-4 py-3 text-left font-medium">Ville</th>
                 <th className="px-4 py-3 text-left font-medium">Code postal</th>
-                <th className="px-4 py-3 text-left font-medium">Frais livraison</th>
+                <th className="px-4 py-3 text-left font-medium">Distance (km)</th>
                 <th className="px-4 py-3 text-left font-medium">Active</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
@@ -168,11 +99,11 @@ export const DeliveryZoneListPage = () => {
                 <tr key={zone.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3 font-medium">{zone.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{zone.city ?? '-'}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{zone.postal_code ?? '-'}</td>
-                  <td className="px-4 py-3">{zone.delivery_fee.toFixed(2)} EUR</td>
+                  <td className="px-4 py-3 text-muted-foreground">{zone.postalCode ?? '-'}</td>
+                  <td className="px-4 py-3">{zone.distanceKm} km</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${zone.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                      {zone.is_active ? 'Oui' : 'Non'}
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${zone.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {zone.isActive ? 'Oui' : 'Non'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -210,15 +141,16 @@ export const DeliveryZoneListPage = () => {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">Code postal</label>
-                  <input {...register('postal_code')} className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2" placeholder="33000" />
+                  <input {...register('postalCode')} className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2" placeholder="33000" />
                 </div>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Frais livraison (EUR)</label>
-                <input type="number" step="0.01" {...register('delivery_fee')} className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2" />
+                <label className="mb-1 block text-sm font-medium">Distance (km)</label>
+                <input type="number" step="0.1" {...register('distanceKm')} className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2" />
+                {errors.distanceKm && <p className="mt-1 text-xs text-destructive">{errors.distanceKm.message}</p>}
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="zone_active" {...register('is_active')} className="h-4 w-4" />
+                <input type="checkbox" id="zone_active" {...register('isActive')} className="h-4 w-4" />
                 <label htmlFor="zone_active" className="text-sm font-medium">Active</label>
               </div>
               <div className="flex justify-end gap-2">
