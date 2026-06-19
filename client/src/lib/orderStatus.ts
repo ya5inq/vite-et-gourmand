@@ -1,10 +1,7 @@
 /**
- * Order status enum + FR labels + badge colors.
- *
- * Replaces the old `@vite-et-gourmand/supabase/enums` ORDER_STATUS_LABELS that
- * was removed during the Supabase -> SDK migration. The new backend uses the
- * OrderStatus values below (uppercase, richer workflow than the old Supabase
- * enum which only had PENDING/CONFIRMED/PREPARING/READY/DELIVERING/COMPLETED/...).
+ * Order status enum + FR labels + badge colors, mirroring the backend
+ * OrderStatus workflow (PENDING -> ACCEPTED -> PREPARING -> DELIVERING ->
+ * DELIVERED -> AWAITING_MATERIAL_RETURN -> COMPLETED, plus REJECTED/CANCELLED).
  */
 
 export const OrderStatus = {

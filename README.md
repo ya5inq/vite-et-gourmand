@@ -1,243 +1,114 @@
 # Vite & Gourmand
 
-Application web pour un service de traiteur basé à Bordeaux. Comprend un site client pour les commandes et un back-office pour la gestion.
+Application web pour un service de traiteur à Bordeaux. Un site client pour
+consulter les menus et commander, un back-office pour la gestion (employés et
+administrateur), et un backend Node qui porte toute la logique métier.
 
-## Architecture
+## Architecture (monorepo pnpm)
 
 ```
 vite-et-gourmand/
-├── client/          # Site client (Next.js 15)
-├── back-office/     # Interface admin (React + Vite)
+├── backend/          # API Node (Hono + TypeORM + Inversify, Clean Architecture)
+├── client/           # Site client (Next.js 15, App Router, SSR)
+├── back-office/      # Interface admin/employé (React 19 + Vite)
 ├── packages/
-│   ├── supabase/    # Types et clients Supabase partagés
-│   └── ui/          # Composants UI partagés
-└── supabase/        # Configuration et migrations Supabase
+│   ├── sdk/          # SDK TypeScript généré depuis l'OpenAPI du backend (Orval)
+│   └── ui/           # Composants UI partagés (shadcn)
+└── docker-compose.yml
 ```
+
+### Stack technique
+
+- **Backend** : Hono 4 + `@hono/zod-openapi`, **TypeORM 0.3 + PostgreSQL 16**
+  (base relationnelle), **MongoDB** (base non relationnelle : statistiques de
+  commandes par menu, chiffre d'affaires, journaux d'audit), Inversify (DI),
+  JWT + refresh token en cookie httpOnly, emails via Resend, jobs/cron via
+  pg-boss (pénalité de retour de matériel).
+- **Client** : Next.js 15 (Server Components pour le SSR public, cookie httpOnly
+  pour l'authentification).
+- **Back-office** : React 19 + Vite + React Query.
+- **SDK** : généré automatiquement (`pnpm generate-sdk`) — les deux fronts
+  consomment l'API via ce SDK typé (axios + zod).
 
 ## Prérequis
 
-- [Node.js](https://nodejs.org/) >= 18
-- [pnpm](https://pnpm.io/) >= 8
-- [Docker](https://www.docker.com/) (pour Supabase local)
-- [Supabase CLI](https://supabase.com/docs/guides/cli)
+- [Node.js](https://nodejs.org/) >= 20
+- [pnpm](https://pnpm.io/) >= 10 (`npm install -g pnpm`)
+- [Docker](https://www.docker.com/) (PostgreSQL + MongoDB)
 
-### Installation des prérequis
+## Installation et démarrage local
 
-```bash
-# Installer pnpm
-npm install -g pnpm
-
-# Installer Supabase CLI (macOS)
-brew install supabase/tap/supabase
-
-# Installer Supabase CLI (npm)
-npm install -g supabase
-```
-
-## Installation
-
-### 1. Cloner le repository
+### 1. Cloner et installer
 
 ```bash
-git clone git@github.com:ya5inq/vite-et-gourmand.git
+git clone <repo>
 cd vite-et-gourmand
-```
-
-### 2. Installer les dépendances
-
-```bash
 pnpm install
 ```
 
-### 3. Configuration des variables d'environnement
-
-Copier le fichier d'exemple et l'adapter :
+### 2. Variables d'environnement
 
 ```bash
+cp .env.dist .env
+cp .env.dist backend/.env
 cp .env.dist client/.env.local
+cp .env.dist back-office/.env
 ```
 
-Pour le développement local avec Supabase, les valeurs par défaut fonctionnent :
+Les valeurs par défaut conviennent pour le développement local. Renseigner
+`RESEND_API_KEY` uniquement pour envoyer de vrais emails (sinon ils sont
+journalisés en console en mode développement).
 
-```env
-# Supabase (Next.js client)
-NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
-
-# Vite (back-office)
-VITE_SUPABASE_URL=http://127.0.0.1:54321
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-```
-
-### 4. Démarrer Supabase
+### 3. Lancer les bases de données
 
 ```bash
-# Démarrer les services Supabase (Docker doit être lancé)
-supabase start
-
-# Les migrations sont appliquées automatiquement
-# Les données de seed sont chargées depuis supabase/seed.sql
+pnpm start:database     # PostgreSQL + Adminer (8089) + MongoDB + mongo-express (8081)
 ```
 
-Supabase démarre plusieurs services :
-- **API**: http://127.0.0.1:54321
-- **Studio**: http://127.0.0.1:54323 (interface d'administration)
-- **Inbucket**: http://127.0.0.1:54324 (emails de test)
-
-### 5. Démarrer les applications
-
-Dans des terminaux séparés :
+### 4. Initialiser la base relationnelle
 
 ```bash
-# Terminal 1 - Site client (port 3000)
-pnpm --filter client dev
-
-# Terminal 2 - Back-office (port 5173)
-pnpm --filter back-office dev
+pnpm migration:run      # Applique les migrations TypeORM
+pnpm fixtures:load       # Données de démonstration (menus, plats, zones, admin...)
 ```
 
-Ou lancer les deux en parallèle :
+Compte de démonstration créé par les fixtures :
+
+- `admin@viteetgourmand.fr` / `password123` (administrateur)
+
+### 5. Générer le SDK
 
 ```bash
-pnpm dev
+pnpm generate-sdk        # OpenAPI du backend -> packages/sdk
 ```
 
-## Accès aux applications
+### 6. Démarrer les serveurs
 
-| Application | URL | Description |
-|-------------|-----|-------------|
-| Client | http://localhost:3000 | Site public pour les clients |
-| Back-office | http://localhost:5173 | Interface d'administration |
-| Supabase Studio | http://localhost:54323 | Gestion de la base de données |
-| Inbucket | http://localhost:54324 | Emails de test |
+```bash
+pnpm dev:be              # API backend       -> http://localhost:8080
+pnpm dev:cl              # Site client       -> http://localhost:3000
+pnpm dev:bo              # Back-office        -> http://localhost:3001
+```
 
 ## Commandes utiles
 
-### Développement
+| Commande | Description |
+|----------|-------------|
+| `pnpm start:database` / `pnpm stop:database` | Démarre / arrête Postgres + Mongo (Docker) |
+| `pnpm migration:run` | Applique les migrations |
+| `pnpm migration:generate <chemin>` | Génère une migration depuis les entités |
+| `pnpm fixtures:load` | Charge les données de démonstration |
+| `pnpm generate-sdk` | Régénère le SDK depuis l'OpenAPI |
+| `pnpm test:be` | Tests unitaires du backend |
+| `pnpm typecheck` | Typecheck de tous les paquets |
+
+## Tests
 
 ```bash
-# Installer les dépendances
-pnpm install
-
-# Lancer tous les projets en dev
-pnpm dev
-
-# Lancer uniquement le client
-pnpm --filter client dev
-
-# Lancer uniquement le back-office
-pnpm --filter back-office dev
+pnpm test:be             # Tests unitaires backend (Vitest)
 ```
 
-### Supabase
+## Déploiement
 
-```bash
-# Démarrer Supabase
-supabase start
-
-# Arrêter Supabase
-supabase stop
-
-# Voir le statut
-supabase status
-
-# Réinitialiser la base de données (applique migrations + seed)
-supabase db reset
-
-# Créer une nouvelle migration
-supabase migration new nom_de_la_migration
-
-# Générer les types TypeScript
-supabase gen types typescript --local > packages/supabase/src/database.types.ts
-```
-
-### Build
-
-```bash
-# Build du client
-pnpm --filter client build
-
-# Build du back-office
-pnpm --filter back-office build
-
-# Build de tous les packages
-pnpm build
-```
-
-## Structure de la base de données
-
-### Tables principales
-
-- `profiles` - Profils utilisateurs (lié à auth.users)
-- `menus` - Menus disponibles
-- `dishes` - Plats composant les menus
-- `allergens` - Liste des allergènes
-- `orders` - Commandes clients
-- `order_items` - Items de chaque commande
-- `reviews` - Avis clients
-- `delivery_zones` - Zones de livraison avec tarifs
-
-### Rôles utilisateurs
-
-- `client` - Utilisateur standard
-- `employee` - Employé avec accès au back-office
-- `admin` - Administrateur avec tous les droits
-
-## Création d'un utilisateur admin
-
-Via Supabase Studio (http://localhost:54323) :
-
-1. Aller dans **Authentication** > **Users**
-2. Cliquer sur **Add user**
-3. Remplir email et mot de passe
-4. Aller dans **Table Editor** > **profiles**
-5. Modifier le `role` de l'utilisateur en `admin`
-
-Ou via SQL :
-
-```sql
--- Mettre à jour le rôle d'un utilisateur existant
-UPDATE profiles SET role = 'admin' WHERE id = 'USER_UUID';
-```
-
-## Technologies utilisées
-
-- **Frontend Client**: Next.js 15, React 19, Tailwind CSS
-- **Frontend Back-office**: React 18, Vite, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
-- **Monorepo**: pnpm workspaces
-- **Validation**: Zod, React Hook Form
-
-## Dépannage
-
-### Supabase ne démarre pas
-
-```bash
-# Vérifier que Docker est lancé
-docker ps
-
-# Nettoyer et redémarrer
-supabase stop --no-backup
-supabase start
-```
-
-### Erreurs de types TypeScript
-
-```bash
-# Regénérer les types Supabase
-supabase gen types typescript --local > packages/supabase/src/database.types.ts
-
-# Rebuild les packages
-pnpm build
-```
-
-### Port déjà utilisé
-
-```bash
-# Trouver le processus utilisant le port (ex: 3000)
-lsof -i :3000
-
-# Tuer le processus
-kill -9 <PID>
-```
+L'application est conteneurisable (PostgreSQL + MongoDB + backend + fronts).
+Voir la documentation technique pour la démarche de déploiement détaillée.
