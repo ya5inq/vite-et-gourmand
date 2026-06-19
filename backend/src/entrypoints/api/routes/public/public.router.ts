@@ -7,6 +7,7 @@ import { authRegisterRoute } from './authRegister';
 import { authResendValidationRoute } from './authResendValidation';
 import { authResetPasswordRoute } from './authResetPassword';
 import { authResetPasswordRequestRoute } from './authResetPasswordRequest';
+import { authSetEmployeePasswordRoute } from './authSetEmployeePassword';
 import { authValidateAccountRoute } from './authValidateAccount';
 import { healthcheckRoute } from './healthcheck';
 import { publicAllergenGetAllRoute } from './publicAllergenGetAll';
@@ -29,6 +30,7 @@ publicRouter
   .route('/auth', authResetPasswordRoute)
   .route('/auth', authValidateAccountRoute)
   .route('/auth', authResendValidationRoute)
+  .route('/auth', authSetEmployeePasswordRoute)
 
   // Catalog (public, used by the storefront + filters)
   .route('/', publicMenuGetAllRoute)
