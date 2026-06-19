@@ -2,7 +2,8 @@ import { z } from '@hono/zod-openapi';
 
 export const authRefreshSchema = {
   body: z.object({
-    accessToken: z.string(),
+    // Optional: SSR clients refresh from the httpOnly cookie alone.
+    accessToken: z.string().optional(),
   }),
   response: z.object({
     accessToken: z.string(),

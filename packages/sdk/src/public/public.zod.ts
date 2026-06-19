@@ -41,7 +41,7 @@ export const zodPublicAuthRegisterBody = zod.object({
  * @summary Auth - Refresh token
  */
 export const zodPublicAuthRefreshBody = zod.object({
-  accessToken: zod.string(),
+  accessToken: zod.string().optional(),
 });
 
 export const zodPublicAuthRefreshResponse = zod.object({
