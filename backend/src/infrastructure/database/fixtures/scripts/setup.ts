@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { PasswordServiceInterface } from '@/application/services/password/password.service.interface';
 import { AllergenInterface } from '@/domain/entities/allergen/allergen.entity.interface';
+import { DeliveryZoneInterface } from '@/domain/entities/deliveryZone/deliveryZone.entity.interface';
 import { DietaryRegimeInterface } from '@/domain/entities/dietaryRegime/dietaryRegime.entity.interface';
 import { DishInterface } from '@/domain/entities/dish/dish.entity.interface';
 import { RoleType, UserInterface } from '@/domain/entities/user/user.entity.interface';
@@ -33,12 +34,14 @@ import { ClientDatabaseInterface } from '@/infrastructure/database/clientDatabas
 import { mainContainer } from '@/configuration/di/mainContainer';
 import { TYPES } from '@/configuration/di/types';
 import { AllergenSchema } from '@/infrastructure/database/schema/allergen.schema';
+import { DeliveryZoneSchema } from '@/infrastructure/database/schema/deliveryZone.schema';
 import { DietaryRegimeSchema } from '@/infrastructure/database/schema/dietaryRegime.schema';
 import { DishSchema } from '@/infrastructure/database/schema/dish.schema';
 import { MenuSchema } from '@/infrastructure/database/schema/menu.schema';
 import { UserSchema } from '@/infrastructure/database/schema/user.schema';
 
 import { ALLERGENS, DIETARY_REGIMES, DISHES, MENUS } from '../data/catalog.data';
+import { DELIVERY_ZONES } from '../data/deliveryZone.data';
 
 const ADMIN_EMAIL = 'admin@viteetgourmand.fr';
 const ADMIN_PASSWORD = 'password123';
@@ -60,6 +63,7 @@ const setupFixtures = async (): Promise<void> => {
     await dataSource.query(
       'TRUNCATE "menu_dietary_regimes", "menu_dishes", "dish_allergens", "menus", "dishes", "dietary_regimes", "allergens" RESTART IDENTITY CASCADE',
     );
+    await dataSource.query('TRUNCATE "delivery_zones" RESTART IDENTITY CASCADE');
 
     // 2. Allergens
     const allergenRepository = dataSource.getRepository(AllergenSchema);
@@ -151,7 +155,23 @@ const setupFixtures = async (): Promise<void> => {
     }
     console.log(`✅ ${menuCount} menus inserted`);
 
-    // 6. Admin user (idempotent upsert) for smoke tests / back-office login.
+    // 6. Delivery zones (distanceKm-based; fees are derived server-side).
+    const deliveryZoneRepository = dataSource.getRepository(DeliveryZoneSchema);
+    let deliveryZoneCount = 0;
+    for (const fixture of DELIVERY_ZONES) {
+      await deliveryZoneRepository.save({
+        id: uuidv4(),
+        name: fixture.name,
+        postalCode: fixture.postalCode,
+        city: fixture.city,
+        distanceKm: fixture.distanceKm,
+        isActive: fixture.isActive,
+      } as DeliveryZoneInterface);
+      deliveryZoneCount += 1;
+    }
+    console.log(`✅ ${deliveryZoneCount} delivery zones inserted`);
+
+    // 7. Admin user (idempotent upsert) for smoke tests / back-office login.
     const userRepository = dataSource.getRepository(UserSchema);
     const existingAdmin = await userRepository.findOne({ where: { email: ADMIN_EMAIL } });
     if (!existingAdmin) {

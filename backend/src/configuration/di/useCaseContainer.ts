@@ -11,6 +11,11 @@ import { RegisterUseCaseInterface } from '@/application/useCases/auth/register/r
 import { ResendValidationEmailUseCaseInterface } from '@/application/useCases/auth/resendValidationEmail/resendValidationEmail.useCase.interface';
 import { ResetPasswordUseCaseInterface } from '@/application/useCases/auth/resetPassword/resetPassword.useCase.interface';
 import { ValidateAccountUseCaseInterface } from '@/application/useCases/auth/validateAccount/validateAccount.useCase.interface';
+import { CalculateDeliveryPriceUseCaseInterface } from '@/application/useCases/deliveryZone/calculateDeliveryPrice/calculateDeliveryPrice.useCase.interface';
+import { CreateDeliveryZoneUseCaseInterface } from '@/application/useCases/deliveryZone/createDeliveryZone/createDeliveryZone.useCase.interface';
+import { DeleteDeliveryZoneUseCaseInterface } from '@/application/useCases/deliveryZone/deleteDeliveryZone/deleteDeliveryZone.useCase.interface';
+import { GetAllDeliveryZonesUseCaseInterface } from '@/application/useCases/deliveryZone/getAllDeliveryZones/getAllDeliveryZones.useCase.interface';
+import { UpdateDeliveryZoneUseCaseInterface } from '@/application/useCases/deliveryZone/updateDeliveryZone/updateDeliveryZone.useCase.interface';
 import { CreateDietaryRegimeUseCaseInterface } from '@/application/useCases/dietaryRegime/createDietaryRegime/createDietaryRegime.useCase.interface';
 import { DeleteDietaryRegimeUseCaseInterface } from '@/application/useCases/dietaryRegime/deleteDietaryRegime/deleteDietaryRegime.useCase.interface';
 import { GetAllDietaryRegimesUseCaseInterface } from '@/application/useCases/dietaryRegime/getAllDietaryRegimes/getAllDietaryRegimes.useCase.interface';
@@ -39,6 +44,11 @@ import { RegisterUseCase } from '@/application/useCases/auth/register/register.u
 import { ResendValidationEmailUseCase } from '@/application/useCases/auth/resendValidationEmail/resendValidationEmail.useCase';
 import { ResetPasswordUseCase } from '@/application/useCases/auth/resetPassword/resetPassword.useCase';
 import { ValidateAccountUseCase } from '@/application/useCases/auth/validateAccount/validateAccount.useCase';
+import { CalculateDeliveryPriceUseCase } from '@/application/useCases/deliveryZone/calculateDeliveryPrice/calculateDeliveryPrice.useCase';
+import { CreateDeliveryZoneUseCase } from '@/application/useCases/deliveryZone/createDeliveryZone/createDeliveryZone.useCase';
+import { DeleteDeliveryZoneUseCase } from '@/application/useCases/deliveryZone/deleteDeliveryZone/deleteDeliveryZone.useCase';
+import { GetAllDeliveryZonesUseCase } from '@/application/useCases/deliveryZone/getAllDeliveryZones/getAllDeliveryZones.useCase';
+import { UpdateDeliveryZoneUseCase } from '@/application/useCases/deliveryZone/updateDeliveryZone/updateDeliveryZone.useCase';
 import { CreateDietaryRegimeUseCase } from '@/application/useCases/dietaryRegime/createDietaryRegime/createDietaryRegime.useCase';
 import { DeleteDietaryRegimeUseCase } from '@/application/useCases/dietaryRegime/deleteDietaryRegime/deleteDietaryRegime.useCase';
 import { GetAllDietaryRegimesUseCase } from '@/application/useCases/dietaryRegime/getAllDietaryRegimes/getAllDietaryRegimes.useCase';
@@ -99,6 +109,13 @@ const useCaseContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<DeleteMenuUseCaseInterface>(TYPES.DeleteMenuUseCase).to(DeleteMenuUseCase);
   bind<GetAllMenusUseCaseInterface>(TYPES.GetAllMenusUseCase).to(GetAllMenusUseCase);
   bind<GetMenuUseCaseInterface>(TYPES.GetMenuUseCase).to(GetMenuUseCase);
+
+  // DeliveryZone
+  bind<CreateDeliveryZoneUseCaseInterface>(TYPES.CreateDeliveryZoneUseCase).to(CreateDeliveryZoneUseCase);
+  bind<UpdateDeliveryZoneUseCaseInterface>(TYPES.UpdateDeliveryZoneUseCase).to(UpdateDeliveryZoneUseCase);
+  bind<DeleteDeliveryZoneUseCaseInterface>(TYPES.DeleteDeliveryZoneUseCase).to(DeleteDeliveryZoneUseCase);
+  bind<GetAllDeliveryZonesUseCaseInterface>(TYPES.GetAllDeliveryZonesUseCase).to(GetAllDeliveryZonesUseCase);
+  bind<CalculateDeliveryPriceUseCaseInterface>(TYPES.CalculateDeliveryPriceUseCase).to(CalculateDeliveryPriceUseCase);
 });
 
 export { useCaseContainer };

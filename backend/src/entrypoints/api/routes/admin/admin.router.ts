@@ -5,6 +5,10 @@ import { adminAllergenCreateRoute } from './adminAllergenCreate';
 import { adminAllergenDeleteRoute } from './adminAllergenDelete';
 import { adminAllergenGetAllRoute } from './adminAllergenGetAll';
 import { adminAllergenUpdateRoute } from './adminAllergenUpdate';
+import { adminDeliveryZoneCreateRoute } from './adminDeliveryZoneCreate';
+import { adminDeliveryZoneDeleteRoute } from './adminDeliveryZoneDelete';
+import { adminDeliveryZoneGetAllRoute } from './adminDeliveryZoneGetAll';
+import { adminDeliveryZoneUpdateRoute } from './adminDeliveryZoneUpdate';
 import { adminDietaryRegimeCreateRoute } from './adminDietaryRegimeCreate';
 import { adminDietaryRegimeDeleteRoute } from './adminDietaryRegimeDelete';
 import { adminDietaryRegimeGetAllRoute } from './adminDietaryRegimeGetAll';
@@ -50,6 +54,12 @@ adminRouter
   .route('/', adminMenuGetOneRoute)
   .route('/', adminMenuCreateRoute)
   .route('/', adminMenuUpdateRoute)
-  .route('/', adminMenuDeleteRoute);
+  .route('/', adminMenuDeleteRoute)
+
+  // Delivery Zone
+  .route('/', adminDeliveryZoneGetAllRoute)
+  .route('/', adminDeliveryZoneCreateRoute)
+  .route('/', adminDeliveryZoneUpdateRoute)
+  .route('/', adminDeliveryZoneDeleteRoute);
 
 export { adminRouter };

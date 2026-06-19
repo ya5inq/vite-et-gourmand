@@ -5,3 +5,4 @@ export * from './allergen.schema';
 export * from './dietaryRegime.schema';
 export * from './dish.schema';
 export * from './menu.schema';
+export * from './deliveryZone.schema';
