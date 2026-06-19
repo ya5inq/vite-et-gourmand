@@ -23,8 +23,18 @@ export interface SendContactEmailOptionsInterface {
   phone?: string;
 }
 
+export interface SendOrderConfirmationEmailOptions {
+  email: string;
+  orderId: string;
+  customerName: string | null;
+  totalPrice: number;
+  deliveryFee: number;
+  deliveryDate: Date | null;
+}
+
 export interface MailSenderInterface {
   sendRegisterEmail: (options: SendRegisterEmailOptions) => Promise<void>;
   sendResetPasswordEmail: (options: SendResetPasswordEmailOptions) => Promise<void>;
   sendEmployeeSetPasswordEmail: (options: SendEmployeeSetPasswordEmailOptions) => Promise<void>;
+  sendOrderConfirmationEmail: (options: SendOrderConfirmationEmailOptions) => Promise<void>;
 }

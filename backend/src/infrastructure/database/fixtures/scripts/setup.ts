@@ -33,11 +33,15 @@ import { ClientDatabaseInterface } from '@/infrastructure/database/clientDatabas
 
 import { mainContainer } from '@/configuration/di/mainContainer';
 import { TYPES } from '@/configuration/di/types';
+import { OrderStatusEnum } from '@/domain/entities/order/orderStatus';
 import { AllergenSchema } from '@/infrastructure/database/schema/allergen.schema';
 import { DeliveryZoneSchema } from '@/infrastructure/database/schema/deliveryZone.schema';
 import { DietaryRegimeSchema } from '@/infrastructure/database/schema/dietaryRegime.schema';
 import { DishSchema } from '@/infrastructure/database/schema/dish.schema';
 import { MenuSchema } from '@/infrastructure/database/schema/menu.schema';
+import { OrderSchema } from '@/infrastructure/database/schema/order.schema';
+import { OrderHistorySchema } from '@/infrastructure/database/schema/orderHistory.schema';
+import { OrderItemSchema } from '@/infrastructure/database/schema/orderItem.schema';
 import { UserSchema } from '@/infrastructure/database/schema/user.schema';
 
 import { ALLERGENS, DIETARY_REGIMES, DISHES, MENUS } from '../data/catalog.data';
@@ -64,6 +68,8 @@ const setupFixtures = async (): Promise<void> => {
       'TRUNCATE "menu_dietary_regimes", "menu_dishes", "dish_allergens", "menus", "dishes", "dietary_regimes", "allergens" RESTART IDENTITY CASCADE',
     );
     await dataSource.query('TRUNCATE "delivery_zones" RESTART IDENTITY CASCADE');
+    // Orders depend on menus/users; clear them too to keep the demo orders idempotent.
+    await dataSource.query('TRUNCATE "order_history", "order_items", "orders" RESTART IDENTITY CASCADE');
 
     // 2. Allergens
     const allergenRepository = dataSource.getRepository(AllergenSchema);
@@ -197,6 +203,86 @@ const setupFixtures = async (): Promise<void> => {
     } else {
       console.log(`ℹ️  Admin user already exists (${ADMIN_EMAIL})`);
     }
+
+    // 8. Demo customer + a couple of demo orders (idempotent: orders were truncated above).
+    const CUSTOMER_EMAIL = 'client@viteetgourmand.fr';
+    let customer = await userRepository.findOne({ where: { email: CUSTOMER_EMAIL } });
+    if (!customer) {
+      const hashedPassword = await passwordService.hashPassword(ADMIN_PASSWORD);
+      customer = await userRepository.save({
+        id: uuidv4(),
+        email: CUSTOMER_EMAIL,
+        password: hashedPassword,
+        role: RoleType.USER,
+        admin: false,
+        firstName: 'Camille',
+        lastName: 'Client',
+        phone: '0600000000',
+        address: '10 rue des Gourmets',
+        city: 'Bordeaux',
+        postalCode: '33000',
+        isActive: true,
+        emailVerified: true,
+        lastLoginAt: null,
+        preferredLanguage: 'fr',
+      } as Partial<UserInterface>);
+      console.log(`✅ Demo customer created (${CUSTOMER_EMAIL})`);
+    }
+
+    const orderRepository = dataSource.getRepository(OrderSchema);
+    const orderItemRepository = dataSource.getRepository(OrderItemSchema);
+    const orderHistoryRepository = dataSource.getRepository(OrderHistorySchema);
+    const demoMenus = await menuRepository.find({ take: 2 });
+    const bordeaux = await deliveryZoneRepository.findOne({ where: { postalCode: '33000' } });
+
+    let demoOrderCount = 0;
+    for (const menu of demoMenus) {
+      const quantity = menu.minPersons;
+      const lineTotal = Math.round(menu.price * quantity * 100) / 100;
+      const order = await orderRepository.save({
+        id: uuidv4(),
+        userId: customer.id,
+        status: OrderStatusEnum.PENDING,
+        guestEmail: null,
+        guestName: null,
+        guestPhone: null,
+        deliveryAddress: '10 rue des Gourmets',
+        deliveryCity: 'Bordeaux',
+        deliveryPostalCode: '33000',
+        deliveryZoneId: bordeaux?.id ?? null,
+        deliveryDate: null,
+        deliveryFee: 0,
+        totalPrice: lineTotal,
+        notes: 'Commande de démonstration',
+        rejectionReason: null,
+        rejectedBy: null,
+        rejectedAt: null,
+        materialReturnDeadline: null,
+      } as unknown as Record<string, unknown>);
+
+      await orderItemRepository.save({
+        id: uuidv4(),
+        orderId: (order as { id: string }).id,
+        menuId: menu.id,
+        quantity,
+        unitPrice: menu.price,
+        lineTotal,
+        discountApplied: false,
+      } as unknown as Record<string, unknown>);
+
+      await orderHistoryRepository.save({
+        id: uuidv4(),
+        orderId: (order as { id: string }).id,
+        oldStatus: null,
+        newStatus: OrderStatusEnum.PENDING,
+        changedBy: customer.id,
+        reason: null,
+        contactMode: null,
+      } as unknown as Record<string, unknown>);
+
+      demoOrderCount += 1;
+    }
+    console.log(`✅ ${demoOrderCount} demo orders inserted`);
 
     console.log('✅ Catalog fixtures setup completed.');
   } catch (error) {

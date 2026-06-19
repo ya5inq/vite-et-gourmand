@@ -15,6 +15,7 @@ import { publicDeliveryZoneGetAllRoute } from './publicDeliveryZoneGetAll';
 import { publicDietaryRegimeGetAllRoute } from './publicDietaryRegimeGetAll';
 import { publicMenuGetAllRoute } from './publicMenuGetAll';
 import { publicMenuGetOneRoute } from './publicMenuGetOne';
+import { publicOrderCreateRoute } from './publicOrderCreate';
 
 const publicRouter = getHonoApp();
 
@@ -38,6 +39,9 @@ publicRouter
   // Delivery zones (public, used by the storefront checkout)
   .route('/', publicDeliveryZoneGetAllRoute)
   .route('/', publicDeliveryZoneCalculatePriceRoute)
+
+  // Guest order (public checkout)
+  .route('/', publicOrderCreateRoute)
 
   // Healthcheck routes
   .route('/healthcheck', healthcheckRoute);

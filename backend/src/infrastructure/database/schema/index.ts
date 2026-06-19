@@ -6,3 +6,6 @@ export * from './dietaryRegime.schema';
 export * from './dish.schema';
 export * from './menu.schema';
 export * from './deliveryZone.schema';
+export * from './order.schema';
+export * from './orderItem.schema';
+export * from './orderHistory.schema';

@@ -4,6 +4,7 @@ import { EnvConfigInterface } from '@/domain/interfaces/adapters/envConfig.inter
 import {
   MailSenderInterface,
   SendEmployeeSetPasswordEmailOptions,
+  SendOrderConfirmationEmailOptions,
   SendRegisterEmailOptions,
   SendResetPasswordEmailOptions,
 } from '@/domain/interfaces/adapters/mailSender.interface';
@@ -44,6 +45,28 @@ export class MailSender implements MailSenderInterface {
       template: { type: 'alias', value: 'employee-set-password' },
       templateVariables: {
         setPasswordUrl: `${this.envConfig.backOfficeUrl}/set-password?token=${tokenValue}`,
+      },
+    });
+  }
+
+  async sendOrderConfirmationEmail({
+    email,
+    orderId,
+    customerName,
+    totalPrice,
+    deliveryFee,
+    deliveryDate,
+  }: SendOrderConfirmationEmailOptions): Promise<void> {
+    await this.templateMailer.sendTemplateEmail({
+      to: [email],
+      template: { type: 'alias', value: 'order-confirmation' },
+      templateVariables: {
+        customerName: customerName ?? '',
+        orderId,
+        totalPrice: totalPrice.toFixed(2),
+        deliveryFee: deliveryFee.toFixed(2),
+        deliveryDate: deliveryDate ? deliveryDate.toISOString().slice(0, 10) : '',
+        ordersUrl: `${this.envConfig.frontendUrl}/orders`,
       },
     });
   }

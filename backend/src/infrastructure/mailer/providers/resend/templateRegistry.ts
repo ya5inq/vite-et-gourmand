@@ -77,4 +77,23 @@ export const RESEND_TEMPLATE_REGISTRY: Record<string, TemplateRenderer> = {
           <tr><td style="padding-bottom:24px;">${button(variables.setPasswordUrl ?? '#', 'Définir mon mot de passe')}</td></tr>`,
       ),
     }) satisfies RenderedTemplate,
+
+  'order-confirmation': (variables) =>
+    ({
+      subject: 'Confirmation de votre commande Vite & Gourmand',
+      html: baseLayout(
+        'Confirmation de commande',
+        `<tr><td style="color:#444;line-height:1.6;padding-bottom:16px;">
+            ${variables.customerName ? `Bonjour ${variables.customerName},<br/>` : ''}
+            Nous avons bien reçu votre commande. Elle est en attente de validation par notre équipe.
+          </td></tr>
+          <tr><td style="color:#444;line-height:1.8;padding-bottom:24px;">
+            <strong>Référence&nbsp;:</strong> ${variables.orderId ?? ''}<br/>
+            ${variables.deliveryDate ? `<strong>Livraison&nbsp;:</strong> ${variables.deliveryDate}<br/>` : ''}
+            <strong>Frais de livraison&nbsp;:</strong> ${variables.deliveryFee ?? '0.00'} €<br/>
+            <strong>Total&nbsp;:</strong> ${variables.totalPrice ?? '0.00'} €
+          </td></tr>
+          <tr><td style="padding-bottom:24px;">${button(variables.ordersUrl ?? '#', 'Suivre ma commande')}</td></tr>`,
+      ),
+    }) satisfies RenderedTemplate,
 };

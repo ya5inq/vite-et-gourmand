@@ -27,6 +27,7 @@ const TYPES = {
   DishRepository: Symbol.for('DishRepository'),
   MenuRepository: Symbol.for('MenuRepository'),
   DeliveryZoneRepository: Symbol.for('DeliveryZoneRepository'),
+  OrderRepository: Symbol.for('OrderRepository'),
 
   // Use Cases - Auth
   LoginUseCase: Symbol.for('LoginUseCase'),
@@ -74,6 +75,11 @@ const TYPES = {
   DeleteDeliveryZoneUseCase: Symbol.for('DeleteDeliveryZoneUseCase'),
   GetAllDeliveryZonesUseCase: Symbol.for('GetAllDeliveryZonesUseCase'),
   CalculateDeliveryPriceUseCase: Symbol.for('CalculateDeliveryPriceUseCase'),
+
+  // Use Cases - Order
+  CreateOrderUseCase: Symbol.for('CreateOrderUseCase'),
+  GetUserOrdersUseCase: Symbol.for('GetUserOrdersUseCase'),
+  GetOrderUseCase: Symbol.for('GetOrderUseCase'),
 
   // Infra
   ClientDatabase: Symbol.for('ClientDatabase'),
