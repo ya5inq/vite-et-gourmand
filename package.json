@@ -17,6 +17,8 @@
     "migration:generate": "pnpm --filter backend migration:generate",
     "fixtures:load": "pnpm --filter backend fixtures:load",
     "generate-openapi-doc": "pnpm --filter backend generate-openapi-doc",
+    "generate-sdk": "pnpm generate-openapi-doc && pnpm --filter @vite-et-gourmand/sdk generate",
+    "typecheck:sdk": "pnpm --filter @vite-et-gourmand/sdk typecheck",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
