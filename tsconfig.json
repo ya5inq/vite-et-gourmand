@@ -14,9 +14,10 @@
     "sourceMap": true
   },
   "references": [
-    { "path": "./packages/supabase" },
     { "path": "./packages/ui" },
+    { "path": "./packages/sdk" },
     { "path": "./back-office" },
-    { "path": "./client" }
+    { "path": "./client" },
+    { "path": "./backend" }
   ]
 }
