@@ -36,6 +36,7 @@ export const getEnvConfigMock = (): Mocked<EnvConfigInterface> => {
     accountTokenExpiration: faker.number.int({ min: 300, max: 3600 }),
     resetTokenSecret: faker.string.alphanumeric(32),
     resetTokenExpiration: faker.number.int({ min: 300, max: 3600 }),
+    employeeSetPasswordTokenExpiration: faker.number.int({ min: 3600, max: 604800 }),
 
     // Email
     resendApiKey: faker.string.alphanumeric(32),

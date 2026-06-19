@@ -23,6 +23,7 @@ export interface EnvConfigInterface {
   accountTokenExpiration: number;
   resetTokenSecret: string;
   resetTokenExpiration: number;
+  employeeSetPasswordTokenExpiration: number;
 
   // Email
   resendApiKey: string;

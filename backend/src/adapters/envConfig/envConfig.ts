@@ -31,6 +31,7 @@ export class EnvConfig implements EnvConfigInterface {
   readonly accountTokenExpiration: number;
   readonly resetTokenSecret: string;
   readonly resetTokenExpiration: number;
+  readonly employeeSetPasswordTokenExpiration: number;
 
   // Email
   readonly resendApiKey: string;
@@ -67,6 +68,7 @@ export class EnvConfig implements EnvConfigInterface {
     this.accountTokenExpiration = config.ACCOUNT_TOKEN_EXPIRATION;
     this.resetTokenSecret = config.RESET_TOKEN_SECRET;
     this.resetTokenExpiration = config.RESET_TOKEN_EXPIRATION;
+    this.employeeSetPasswordTokenExpiration = config.EMPLOYEE_SET_PASSWORD_TOKEN_EXPIRATION;
 
     // Email
     this.resendApiKey = config.RESEND_API_KEY;
@@ -103,6 +105,8 @@ export class EnvConfig implements EnvConfigInterface {
     ACCOUNT_TOKEN_EXPIRATION: parseNumber(z.number()).default(1800),
     RESET_TOKEN_SECRET: z.string(),
     RESET_TOKEN_EXPIRATION: parseNumber(z.number()).default(1800),
+    // Employee set-password invite link is valid for 7 days by default.
+    EMPLOYEE_SET_PASSWORD_TOKEN_EXPIRATION: parseNumber(z.number()).default(604800),
 
     // Email
     RESEND_API_KEY: z.string().default(''),

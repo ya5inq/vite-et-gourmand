@@ -9,6 +9,8 @@
   "BAD_REQUEST_ORDER_MISSING_IDENTITY": "Une identité (utilisateur ou coordonnées invité) est requise pour passer commande",
   "BAD_REQUEST_INVALID_ORDER_TRANSITION": "Cette transition de statut de commande n'est pas autorisée",
   "BAD_REQUEST_ORDER_CONTACT_REQUIRED": "Un motif et un mode de contact (téléphone ou email) sont obligatoires pour annuler ou rejeter une commande",
+  "BAD_REQUEST_CANNOT_DEACTIVATE_ADMIN": "Un compte administrateur ne peut pas être désactivé",
+  "BAD_REQUEST_NOT_AN_EMPLOYEE": "Ce compte n'est pas un compte employé",
   "UNAUTHORIZED": "Vous devez être connecté pour accéder à cette ressource",
   "UNAUTHORIZED_INVALID_JWT": "Jeton d'authentification invalide",
   "UNAUTHORIZED_INVALID_TOKEN": "Jeton invalide",

@@ -44,6 +44,13 @@ const TYPES = {
   GetUserUseCase: Symbol.for('GetUserUseCase'),
   UpdateUserUseCase: Symbol.for('UpdateUserUseCase'),
 
+  // Use Cases - Employee
+  CreateEmployeeUseCase: Symbol.for('CreateEmployeeUseCase'),
+  SetEmployeePasswordUseCase: Symbol.for('SetEmployeePasswordUseCase'),
+  DeactivateEmployeeUseCase: Symbol.for('DeactivateEmployeeUseCase'),
+  ReactivateEmployeeUseCase: Symbol.for('ReactivateEmployeeUseCase'),
+  GetAllEmployeesUseCase: Symbol.for('GetAllEmployeesUseCase'),
+
   // Use Cases - Allergen
   CreateAllergenUseCase: Symbol.for('CreateAllergenUseCase'),
   UpdateAllergenUseCase: Symbol.for('UpdateAllergenUseCase'),

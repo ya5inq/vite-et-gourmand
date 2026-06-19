@@ -25,6 +25,11 @@ import { DeleteDishUseCaseInterface } from '@/application/useCases/dish/deleteDi
 import { GetAllDishesUseCaseInterface } from '@/application/useCases/dish/getAllDishes/getAllDishes.useCase.interface';
 import { GetDishUseCaseInterface } from '@/application/useCases/dish/getDish/getDish.useCase.interface';
 import { UpdateDishUseCaseInterface } from '@/application/useCases/dish/updateDish/updateDish.useCase.interface';
+import { CreateEmployeeUseCaseInterface } from '@/application/useCases/employee/createEmployee/createEmployee.useCase.interface';
+import { DeactivateEmployeeUseCaseInterface } from '@/application/useCases/employee/deactivateEmployee/deactivateEmployee.useCase.interface';
+import { GetAllEmployeesUseCaseInterface } from '@/application/useCases/employee/getAllEmployees/getAllEmployees.useCase.interface';
+import { ReactivateEmployeeUseCaseInterface } from '@/application/useCases/employee/reactivateEmployee/reactivateEmployee.useCase.interface';
+import { SetEmployeePasswordUseCaseInterface } from '@/application/useCases/employee/setEmployeePassword/setEmployeePassword.useCase.interface';
 import { CreateMenuUseCaseInterface } from '@/application/useCases/menu/createMenu/createMenu.useCase.interface';
 import { DeleteMenuUseCaseInterface } from '@/application/useCases/menu/deleteMenu/deleteMenu.useCase.interface';
 import { GetAllMenusUseCaseInterface } from '@/application/useCases/menu/getAllMenus/getAllMenus.useCase.interface';
@@ -64,6 +69,11 @@ import { DeleteDishUseCase } from '@/application/useCases/dish/deleteDish/delete
 import { GetAllDishesUseCase } from '@/application/useCases/dish/getAllDishes/getAllDishes.useCase';
 import { GetDishUseCase } from '@/application/useCases/dish/getDish/getDish.useCase';
 import { UpdateDishUseCase } from '@/application/useCases/dish/updateDish/updateDish.useCase';
+import { CreateEmployeeUseCase } from '@/application/useCases/employee/createEmployee/createEmployee.useCase';
+import { DeactivateEmployeeUseCase } from '@/application/useCases/employee/deactivateEmployee/deactivateEmployee.useCase';
+import { GetAllEmployeesUseCase } from '@/application/useCases/employee/getAllEmployees/getAllEmployees.useCase';
+import { ReactivateEmployeeUseCase } from '@/application/useCases/employee/reactivateEmployee/reactivateEmployee.useCase';
+import { SetEmployeePasswordUseCase } from '@/application/useCases/employee/setEmployeePassword/setEmployeePassword.useCase';
 import { CreateMenuUseCase } from '@/application/useCases/menu/createMenu/createMenu.useCase';
 import { DeleteMenuUseCase } from '@/application/useCases/menu/deleteMenu/deleteMenu.useCase';
 import { GetAllMenusUseCase } from '@/application/useCases/menu/getAllMenus/getAllMenus.useCase';
@@ -95,6 +105,13 @@ const useCaseContainer = new ContainerModule((bind: interfaces.Bind) => {
   // User
   bind<GetUserUseCaseInterface>(TYPES.GetUserUseCase).to(GetUserUseCase);
   bind<UpdateUserUseCaseInterface>(TYPES.UpdateUserUseCase).to(UpdateUserUseCase);
+
+  // Employee
+  bind<CreateEmployeeUseCaseInterface>(TYPES.CreateEmployeeUseCase).to(CreateEmployeeUseCase);
+  bind<SetEmployeePasswordUseCaseInterface>(TYPES.SetEmployeePasswordUseCase).to(SetEmployeePasswordUseCase);
+  bind<DeactivateEmployeeUseCaseInterface>(TYPES.DeactivateEmployeeUseCase).to(DeactivateEmployeeUseCase);
+  bind<ReactivateEmployeeUseCaseInterface>(TYPES.ReactivateEmployeeUseCase).to(ReactivateEmployeeUseCase);
+  bind<GetAllEmployeesUseCaseInterface>(TYPES.GetAllEmployeesUseCase).to(GetAllEmployeesUseCase);
 
   // Allergen
   bind<CreateAllergenUseCaseInterface>(TYPES.CreateAllergenUseCase).to(CreateAllergenUseCase);
