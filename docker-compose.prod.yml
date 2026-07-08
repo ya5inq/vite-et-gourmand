@@ -1,0 +1,132 @@
+# ------------------------------------------------------------
+# Orchestration de PRODUCTION — pile complète Vite & Gourmand
+#   backend (Hono) + PostgreSQL + MongoDB + client (Next.js) + back-office (nginx)
+#
+# Démarrage :
+#   cp .env.dist .env      # puis renseigner les secrets (JWT, mots de passe…)
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Les migrations TypeORM tournent au démarrage du backend (AUTO_MIGRATION=true).
+# Le service one-shot `fixtures` charge le jeu de données initial.
+# ------------------------------------------------------------
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pass}
+      POSTGRES_DB: ${DB_DATABASE:-vite_et_gourmand}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-vite_et_gourmand}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-pass}
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # Migrations jouées automatiquement au démarrage
+      AUTO_MIGRATION: 'true'
+      DATABASE_URL: postgres://${DB_USERNAME:-postgres}:${DB_PASSWORD:-pass}@postgres:5432/${DB_DATABASE:-vite_et_gourmand}
+      MONGO_URL: mongodb://${MONGO_ROOT_USERNAME:-root}:${MONGO_ROOT_PASSWORD:-pass}@mongo:27017/${DB_DATABASE:-vite_et_gourmand}?authSource=admin
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:?secret manquant}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET:?secret manquant}
+      ACCOUNT_TOKEN_SECRET: ${ACCOUNT_TOKEN_SECRET:?secret manquant}
+      RESET_TOKEN_SECRET: ${RESET_TOKEN_SECRET:?secret manquant}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      FROM_EMAIL: ${FROM_EMAIL:-no-reply@vite-et-gourmand.com}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-contact@vite-et-gourmand.com}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      BACK_OFFICE_URL: ${BACK_OFFICE_URL:-http://localhost:3001}
+    ports:
+      - '${BACKEND_PORT:-8080}:8080'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:8080/api/doc',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Chargement du jeu de données initial (exécution unique, puis sortie).
+  fixtures:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${DB_USERNAME:-postgres}:${DB_PASSWORD:-pass}@postgres:5432/${DB_DATABASE:-vite_et_gourmand}
+      MONGO_URL: mongodb://${MONGO_ROOT_USERNAME:-root}:${MONGO_ROOT_PASSWORD:-pass}@mongo:27017/${DB_DATABASE:-vite_et_gourmand}?authSource=admin
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:?secret manquant}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET:?secret manquant}
+      ACCOUNT_TOKEN_SECRET: ${ACCOUNT_TOKEN_SECRET:?secret manquant}
+      RESET_TOKEN_SECRET: ${RESET_TOKEN_SECRET:?secret manquant}
+    working_dir: /app/backend
+    command: ['node', 'dist/infrastructure/database/fixtures/scripts/setup.js']
+    restart: 'no'
+    profiles: ['seed']
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '${CLIENT_PORT:-3000}:3000'
+
+  back-office:
+    build:
+      context: .
+      dockerfile: back-office/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '${BACK_OFFICE_PORT:-3001}:80'
+
+volumes:
+  postgres_data:
+  mongo_data:

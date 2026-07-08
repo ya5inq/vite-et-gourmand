@@ -12,21 +12,22 @@ Légende : ☐ à faire · ◐ partiel · ☑ fait
 ## 1. Livrables OBLIGATOIRES de l'ECF
 
 ### Dépôt & démarche
-- ☑ Dépôt Git **public** avec bonnes pratiques (branches `main` / `develop` / une branche par feature mergée dans `develop`).
-  - ☐ **Pousser sur GitHub en public** (le dépôt est local pour l'instant) et récupérer le lien.
-  - ☐ Fusionner `develop` → `main` quand tout est validé (le code vit sur `develop`).
+- ◐ Dépôt Git avec bonnes pratiques (branches `main` / `develop` / une branche par feature mergée dans `develop`).
+  - ☑ **Poussé sur GitHub** : https://github.com/ya5inq/vite-et-gourmand
+  - ☑ Fusionné `develop` → `main`.
+  - ☐ **Passer le dépôt en PUBLIC** (il est encore en `PRIVATE` — l'ECF exige un dépôt public).
 - ☑ `README.md` : démarche pour déployer **en local**.
-- ☐ **Fichier SQL** de création de base **et** d'intégration de données.
-  - On utilise migrations TypeORM + fixtures programmatiques. Le sujet précise :
-    *« cela doit être un fichier SQL »*. → **Générer un export SQL** (`schema.sql` +
-    `seed.sql`) depuis la base initialisée (ex. `pg_dump --schema-only` puis un dump
-    des données, ou écrire un script qui exporte). À fournir à la racine ou dans `/docs`.
+- ☑ **Fichier SQL** de création de base **et** d'intégration de données.
+  - Export généré dans `docs/database/` : `schema.sql` (18 tables) + `seed.sql` (210 lignes).
+    Vérifiés : se rechargent sans erreur dans une base vierge (`psql -f`).
 
 ### Application déployée
 - ☐ **Déployer l'application en ligne** (le sujet impose le déploiement, avec pénalités si non en ligne à la livraison).
   - Cible possible : un PaaS (Render, Railway, Fly.io, Clever Cloud) ou un VPS avec Docker.
   - À déployer : **backend** (Node) + **PostgreSQL** + **MongoDB** + **client Next.js** + **back-office** (build statique servi).
-  - ☐ Documenter la **démarche de déploiement** (étapes, variables d'env, build) — voir doc technique ci-dessous.
+  - ☑ **Dockerfiles de prod** (backend / client Next standalone / back-office nginx) + `docker-compose.prod.yml` — les 3 images buildent et démarrent (testé).
+  - ☑ Documenter la **démarche de déploiement** → `docs/DEPLOYMENT.md`.
+  - ☐ **Choisir une cible et déployer** (PaaS ou VPS) — action manuelle (comptes).
   - ☐ Récupérer les **URLs publiques** (client + back-office) pour les livrables.
 
 ### Gestion de projet
@@ -83,8 +84,8 @@ Légende : ☐ à faire · ◐ partiel · ☑ fait
   envoyer de vrais mails (sinon ils sont journalisés en console — suffisant pour la démo).
 - ☐ **Tests fronts** : le backend a 191 tests ; les fronts n'en ont pas. Ajouter quelques
   tests (Vitest + Testing Library / MSW) sur les parcours clés serait un plus.
-- ☐ **CI** (GitHub Actions) : lint + typecheck + `test:be` à chaque push (bonne pratique).
-- ☐ **Dockerfile(s)** de production pour le déploiement (backend + fronts) — nécessaire pour §1.
+- ☑ **CI** (GitHub Actions) : lint + typecheck + `test:be` à chaque push → `.github/workflows/ci.yml`.
+- ☑ **Dockerfile(s)** de production (backend + fronts) — faits, cf. §1.
 - ☐ **Conteneurs Supabase obsolètes** : d'anciens `supabase_*_vite-et-gourmand` peuvent
   encore tourner localement ; les arrêter (`docker stop ...`) — purement local, sans impact code.
 
