@@ -44,22 +44,21 @@ Légende : ☐ à faire · ◐ partiel · ☑ fait
   - Réutiliser `DEMO.md` comme trame + captures d'écran. Identifiant admin de démo : `admin@viteetgourmand.fr` / `password123`.
 
 ### Charte graphique (PDF)
-- ☐ **Palette de couleurs** utilisée + **police(s)**.
-  - Extraire les couleurs/typo réelles du thème Tailwind (`client/` et `packages/ui`).
+- ☑ **Palette de couleurs** utilisée + **police(s)** → `docs/CHARTE_GRAPHIQUE.md` (valeurs réelles du thème Tailwind).
 - ☐ **Export des maquettes** (wireframes & mockups) : **3 maquettes bureautiques + 3 maquettes mobiles**.
-  - À faire dans Figma (ou équivalent) : accueil, liste menus + détail, checkout / espace client… en desktop ET mobile.
+  - À faire dans Figma (ou équivalent) — action manuelle. La charte ci-dessus sert de base.
 
-### Documentation de gestion de projet (voir §1)
+### Documentation de gestion de projet
+- ☑ Rédigée → `docs/GESTION_DE_PROJET.md` (méthodo, backlog des 14 phases, Git).
+  - ☐ Reporter le backlog dans un outil en ligne (Notion/Trello) + renseigner le lien.
 
 ### Documentation technique (PDF ou MD → PDF)
-- ☐ **Réflexions initiales technologiques** sur le sujet (choix de stack, pourquoi un vrai backend + NoSQL vs Supabase — déjà argumenté, à rédiger).
-- ☐ **Configuration de l'environnement de travail** (prérequis, outils, étapes).
-- ☐ **Modèle Conceptuel de Données (MCD)** ou diagramme de classes.
-  - Le MCD de référence est dans l'annexe 1 du sujet ; le nôtre en diffère légèrement
-    (3 rôles, `order_items` multi-menus, `distanceKm`, statuts étendus, collections Mongo).
-    → Produire un **MCD à jour** (Mermaid ER, dbdiagram.io, ou Looping).
-- ☐ **Diagramme de cas d'utilisation** + **diagramme de séquence** (ex. parcours commande, ou transition de statut + email).
-- ☐ **Documentation du déploiement** (démarche + étapes) — recoupe §1.
+- ☑ **Réflexions initiales technologiques** → `docs/technique/DOCUMENTATION_TECHNIQUE.md`.
+- ☑ **Configuration de l'environnement de travail** → même document.
+- ☑ **Modèle Conceptuel de Données (MCD)** → `docs/technique/MCD.md` (ER Mermaid, 18 tables + collections Mongo, validé).
+- ☑ **Diagramme de cas d'utilisation** + **diagrammes de séquence** → `docs/technique/DIAGRAMMES.md` (commande, cycle de statut, machine à états — validés).
+- ☑ **Documentation du déploiement** → `docs/DEPLOYMENT.md` + `docs/DEPLOYMENT_RENDER.md`.
+- ☐ **Convertir les .md en PDF** pour la remise (les diagrammes Mermaid se rendent sur GitHub / via un export).
 
 ---
 
