@@ -139,7 +139,21 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     section: 'mentions',
     content: {
       content:
-        "Mentions legales\n\nRaison sociale : Vite & Gourmand SARL\nSiege social : 12 Rue Sainte-Catherine, 33000 Bordeaux\nSIRET : 123 456 789 00012\nCapital social : 10 000 EUR\nDirecteur de la publication : Responsable Vite & Gourmand\nHebergeur : Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA\n\nConformement a la loi n°78-17 du 6 janvier 1978 relative a l'informatique, aux fichiers et aux libertes, vous disposez d'un droit d'acces, de rectification et de suppression des donnees vous concernant. Pour exercer ce droit, veuillez nous contacter a contact@viteetgourmand.fr.",
+        "Mentions legales\n\n" +
+        "Editeur du site\n" +
+        "Raison sociale : Vite & Gourmand SARL\n" +
+        "Siege social : 12 Rue Sainte-Catherine, 33000 Bordeaux, France\n" +
+        "SIRET : 123 456 789 00012\n" +
+        "Capital social : 10 000 EUR\n" +
+        "Telephone : 05 56 00 00 00\n" +
+        "Email : contact@viteetgourmand.fr\n" +
+        "Directeur de la publication : le representant legal de Vite & Gourmand SARL\n\n" +
+        "Hebergement\n" +
+        "L'application (backend et bases de donnees) est hebergee par Render (Render Services, Inc., San Francisco, CA, USA). La base de donnees non relationnelle est hebergee par MongoDB Atlas (MongoDB, Inc.). Ces prestataires peuvent operer des serveurs situes dans l'Union europeenne et aux Etats-Unis.\n\n" +
+        "Propriete intellectuelle\n" +
+        "L'ensemble des contenus presents sur ce site (textes, images, logos, charte graphique) est la propriete de Vite & Gourmand SARL, sauf mention contraire. Toute reproduction sans autorisation est interdite.\n\n" +
+        "Donnees personnelles\n" +
+        "Le traitement de vos donnees personnelles est decrit dans notre Politique de confidentialite. Conformement au Reglement (UE) 2016/679 (RGPD) et a la loi n°78-17 du 6 janvier 1978 modifiee, vous disposez de droits que vous pouvez exercer a contact@viteetgourmand.fr.",
     },
   },
   {
@@ -147,7 +161,25 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     section: 'cgv',
     content: {
       content:
-        "Conditions Generales de Vente\n\nArticle 1 - Objet\nLes presentes conditions generales de vente regissent les relations contractuelles entre Vite & Gourmand SARL et ses clients dans le cadre de prestations de traiteur.\n\nArticle 2 - Commandes\nToute commande doit etre passee au minimum 3 a 7 jours avant la date de l'evenement selon le menu choisi. Un acompte de 30% est demande a la confirmation de la commande.\n\nArticle 3 - Prix\nLes prix sont indiques en euros TTC. Ils comprennent la preparation des plats et, le cas echeant, les frais de livraison selon la zone geographique.\n\nArticle 4 - Livraison\nLa livraison est effectuee a l'adresse indiquee lors de la commande, dans les creneaux horaires convenus. Des frais de livraison peuvent s'appliquer selon la zone.\n\nArticle 5 - Annulation\nToute annulation effectuee plus de 48 heures avant la date prevue donne lieu au remboursement integral de l'acompte. En deca, l'acompte est conserve.\n\nArticle 6 - Responsabilite\nVite & Gourmand s'engage a fournir des prestations de qualite. Notre responsabilite est limitee au montant de la commande.\n\nArticle 7 - Litiges\nEn cas de litige, une solution amiable sera recherchee. A defaut, les tribunaux de Bordeaux seront competents.",
+        "Conditions generales de vente\n\n" +
+        "Article 1 - Objet\n" +
+        "Les presentes conditions generales de vente regissent les relations contractuelles entre Vite & Gourmand SARL et ses clients dans le cadre de prestations de traiteur.\n\n" +
+        "Article 2 - Commandes\n" +
+        "Toute commande doit etre passee dans le respect du delai de preparation indique sur chaque menu. Chaque menu impose un nombre minimum de personnes ; la commande ne peut etre validee en dessous de ce seuil.\n\n" +
+        "Article 3 - Prix et reductions\n" +
+        "Les prix sont indiques en euros. Une reduction de 10% est appliquee pour toute commande depassant d'au moins 5 personnes le nombre minimum indique sur le menu. Le detail du prix (menu et livraison) est presente avant la validation.\n\n" +
+        "Article 4 - Livraison\n" +
+        "La livraison est effectuee a l'adresse et a la date indiquees lors de la commande. Des frais de livraison de 5 EUR s'appliquent, majores de 0,59 EUR par kilometre lorsque la livraison est situee hors de Bordeaux.\n\n" +
+        "Article 5 - Suivi et statuts\n" +
+        "Le client authentifie peut suivre l'etat de sa commande (acceptee, en preparation, en cours de livraison, livree, terminee). La modification ou l'annulation reste possible tant que la commande n'a pas ete acceptee par l'equipe.\n\n" +
+        "Article 6 - Retour du materiel\n" +
+        "Lorsque du materiel est prete au client, celui-ci doit etre restitue dans un delai de 10 jours ouvres suivant la notification. A defaut de restitution dans ce delai, une penalite de 600 EUR sera facturee.\n\n" +
+        "Article 7 - Avis\n" +
+        "Une fois la commande terminee, le client peut laisser une note (de 1 a 5) et un commentaire. Les avis sont publies apres validation par l'equipe.\n\n" +
+        "Article 8 - Responsabilite\n" +
+        "Vite & Gourmand s'engage a fournir des prestations de qualite. Sa responsabilite est limitee au montant de la commande.\n\n" +
+        "Article 9 - Litiges\n" +
+        "En cas de litige, une solution amiable sera recherchee. A defaut, les tribunaux de Bordeaux seront competents.",
     },
   },
   {
@@ -155,7 +187,34 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     section: 'privacy',
     content: {
       content:
-        "Politique de Confidentialite\n\nVite & Gourmand SARL s'engage a proteger la vie privee de ses utilisateurs. Cette politique de confidentialite decrit comment nous collectons, utilisons et protegeons vos donnees personnelles.\n\nDonnees collectees\nNous collectons les donnees suivantes : nom, prenom, adresse email, numero de telephone, adresse de livraison, et historique de commandes.\n\nUtilisation des donnees\nVos donnees sont utilisees pour : traiter vos commandes, vous contacter concernant vos reservations, ameliorer nos services, et vous envoyer des communications commerciales (avec votre consentement).\n\nConservation\nVos donnees sont conservees pendant la duree de la relation commerciale et 3 ans apres la derniere commande.\n\nDroits\nConformement au RGPD, vous disposez d'un droit d'acces, de rectification, de suppression, de portabilite et d'opposition sur vos donnees. Pour exercer ces droits, contactez-nous a contact@viteetgourmand.fr.\n\nCookies\nNotre site utilise des cookies fonctionnels et analytiques. Vous pouvez gerer vos preferences via le bandeau cookies.",
+        "Politique de confidentialite\n\n" +
+        "Vite & Gourmand SARL accorde une grande importance a la protection de vos donnees personnelles. La presente politique explique quelles donnees nous traitons, pourquoi, combien de temps, et quels sont vos droits, conformement au Reglement (UE) 2016/679 (RGPD).\n\n" +
+        "1. Responsable du traitement\n" +
+        "Vite & Gourmand SARL, 12 Rue Sainte-Catherine, 33000 Bordeaux. Contact : contact@viteetgourmand.fr.\n\n" +
+        "2. Donnees collectees\n" +
+        "- Donnees de compte : nom, prenom, adresse email, mot de passe (stocke sous forme hachee, jamais en clair).\n" +
+        "- Donnees de contact et de livraison : numero de telephone, adresse postale, code postal, ville.\n" +
+        "- Donnees de commande : menus commandes, montants, dates, historique et statut des commandes.\n" +
+        "- Donnees de contact libre : messages envoyes via le formulaire de contact.\n\n" +
+        "3. Finalites et bases legales\n" +
+        "- Gestion des comptes et authentification : execution du contrat.\n" +
+        "- Traitement et suivi des commandes et livraisons : execution du contrat.\n" +
+        "- Reponse aux demandes de contact : interet legitime.\n" +
+        "- Envoi d'un email de bienvenue et d'emails transactionnels (confirmation, suivi) : execution du contrat.\n" +
+        "- Obligations comptables et legales : obligation legale.\n" +
+        "Aucune donnee n'est utilisee a des fins de prospection commerciale sans votre consentement.\n\n" +
+        "4. Destinataires et sous-traitants\n" +
+        "Vos donnees sont accessibles au personnel habilite de Vite & Gourmand. Elles sont hebergees chez nos sous-traitants techniques (Render pour l'application et la base relationnelle, MongoDB Atlas pour les statistiques). L'envoi des emails est assure par le prestataire Resend. Ces prestataires agissent sur instruction et presentent des garanties de securite appropriees.\n\n" +
+        "5. Durees de conservation\n" +
+        "- Compte utilisateur : pendant toute la duree de la relation, puis suppression ou anonymisation.\n" +
+        "- Donnees de commande : jusqu'a 3 ans apres la derniere commande a des fins de suivi, puis archivage legal (comptabilite) jusqu'a 10 ans.\n" +
+        "- Messages de contact : 1 an apres traitement.\n\n" +
+        "6. Securite\n" +
+        "Les mots de passe sont haches (bcrypt). L'authentification repose sur un cookie securise httpOnly. Les acces sont limites aux personnes habilitees et journalises.\n\n" +
+        "7. Vos droits\n" +
+        "Vous disposez d'un droit d'acces, de rectification, d'effacement, de limitation, de portabilite et d'opposition. Vous pouvez les exercer a contact@viteetgourmand.fr. Vous disposez egalement du droit d'introduire une reclamation aupres de la CNIL (www.cnil.fr).\n\n" +
+        "8. Cookies\n" +
+        "Le site utilise un cookie strictement necessaire au maintien de votre session authentifiee. Aucun cookie publicitaire tiers n'est depose.",
     },
   },
   {

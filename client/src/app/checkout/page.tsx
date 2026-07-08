@@ -449,7 +449,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
-              <Info className="text-blue-500 flex-shrink-0 mt-0.5" size={20} />
+              <Info className="text-blue-500 flex-shrink-0 mt-0.5" size={20} aria-hidden="true" />
               <div className="text-sm text-blue-800">
                 <p className="font-medium">Ceci est une demande de commande</p>
                 <p className="mt-1">

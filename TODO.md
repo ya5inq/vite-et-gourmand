@@ -64,13 +64,14 @@ Légende : ☐ à faire · ◐ partiel · ☑ fait
 
 ## 3. Conformité & qualité
 
-- ☐ **Accessibilité RGAA** (exigée par le sujet).
-  - Audit des pages du **site client** (contrastes, libellés de formulaires, alternatives
-    textuelles des images, navigation clavier, attributs ARIA, structure des titres).
-  - Corriger les écarts. Outils : axe DevTools, Lighthouse, WAVE.
-- ☐ **RGPD** : le code couvre l'essentiel (mots de passe hachés, cookie httpOnly, mail de
-  bienvenue, données limitées). À **documenter** dans les mentions légales / politique de
-  confidentialité (déjà présentes en CMS — relire et compléter si besoin).
+- ◐ **Accessibilité RGAA** (exigée par le sujet).
+  - ☑ Audit statique du site client + corrections : alternatives d'images, `aria-hidden`
+    des icônes décoratives, `role`/`aria-*` du panier (dialog) et de la notation (radiogroup),
+    hiérarchie des titres, focus visible. Récap : `docs/ACCESSIBILITE_RGAA.md`.
+  - ☐ Audit interactif final (axe / Lighthouse / WAVE) sur l'app déployée — action manuelle.
+- ☑ **RGPD** : mentions légales, politique de confidentialité et CGV complétées et mises en
+  conformité (responsable, finalités + bases légales, durées, sous-traitants, droits + CNIL,
+  cookies), et alignées sur les règles métier réelles → `backend/.../fixtures/data/cms.data.ts`.
 
 ---
 
