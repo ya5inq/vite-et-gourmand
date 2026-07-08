@@ -77,10 +77,10 @@ Légende : ☐ à faire · ◐ partiel · ☑ fait
 
 ## 4. Finitions techniques (optionnel mais recommandé)
 
-- ☐ **Filtre par régime alimentaire** sur la page `/menus` du client : la liste publique
-  (`publicMenuGetAll`) ne renvoie pas les régimes par menu, donc le filtre régime est
-  inopérant côté client. → Ajouter `dietaryRegimeId` en query SSR (le backend gère déjà ce
-  filtre) ou enrichir la réponse de liste. (Thème / prix / personnes fonctionnent.)
+- ☑ **Filtre par régime alimentaire** sur `/menus` (exigé page 5 du sujet). Le serializer de
+  liste publique renvoie désormais `dietaryRegimes` par menu → le filtre client fonctionne
+  sans rechargement (comme thème/prix/personnes). Backend + SDK régénéré + front branchés,
+  191 tests OK.
 - ☐ **Emails réels** : renseigner `RESEND_API_KEY` + un domaine expéditeur vérifié pour
   envoyer de vrais mails (sinon ils sont journalisés en console — suffisant pour la démo).
 - ☐ **Tests fronts** : le backend a 191 tests ; les fronts n'en ont pas. Ajouter quelques

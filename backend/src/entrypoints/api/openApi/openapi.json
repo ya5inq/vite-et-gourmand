@@ -1461,6 +1461,25 @@
                               "string",
                               "null"
                             ]
+                          },
+                          "dietaryRegimes": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name"
+                              ]
+                            }
                           }
                         },
                         "required": [
@@ -1473,7 +1492,8 @@
                           "maxPersons",
                           "stock",
                           "isAvailable",
-                          "imageUrl"
+                          "imageUrl",
+                          "dietaryRegimes"
                         ]
                       }
                     },
@@ -9829,6 +9849,25 @@
                               "string",
                               "null"
                             ]
+                          },
+                          "dietaryRegimes": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name"
+                              ]
+                            }
                           }
                         },
                         "required": [
@@ -9841,7 +9880,8 @@
                           "maxPersons",
                           "stock",
                           "isAvailable",
-                          "imageUrl"
+                          "imageUrl",
+                          "dietaryRegimes"
                         ]
                       }
                     },
