@@ -26,8 +26,9 @@ Légende : ☐ à faire · ◐ partiel · ☑ fait
   - Cible possible : un PaaS (Render, Railway, Fly.io, Clever Cloud) ou un VPS avec Docker.
   - À déployer : **backend** (Node) + **PostgreSQL** + **MongoDB** + **client Next.js** + **back-office** (build statique servi).
   - ☑ **Dockerfiles de prod** (backend / client Next standalone / back-office nginx) + `docker-compose.prod.yml` — les 3 images buildent et démarrent (testé).
-  - ☑ Documenter la **démarche de déploiement** → `docs/DEPLOYMENT.md`.
-  - ☐ **Choisir une cible et déployer** (PaaS ou VPS) — action manuelle (comptes).
+  - ☑ **Cible choisie : Render + MongoDB Atlas** (gratuit et pérenne). Blueprint `render.yaml` + guide `docs/DEPLOYMENT_RENDER.md`.
+  - ☑ Documenter la **démarche de déploiement** → `docs/DEPLOYMENT.md` (Docker) + `docs/DEPLOYMENT_RENDER.md` (Render).
+  - ☐ **Créer les comptes Render + Atlas et lancer le Blueprint** — action manuelle (suivre `docs/DEPLOYMENT_RENDER.md`).
   - ☐ Récupérer les **URLs publiques** (client + back-office) pour les livrables.
 
 ### Gestion de projet
