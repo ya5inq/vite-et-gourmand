@@ -108,7 +108,7 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <Link href="/menus" className="text-primary hover:underline mb-6 inline-block">
-        &larr; Retour aux menus
+        <span aria-hidden="true">&larr;</span> Retour aux menus
       </Link>
 
       <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">

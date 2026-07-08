@@ -166,23 +166,23 @@ export default function ContactPage() {
       <div className="mt-12 grid sm:grid-cols-3 gap-6 text-center">
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-3">
-            <MapPin size={24} />
+            <MapPin size={24} aria-hidden="true" />
           </div>
-          <h3 className="font-semibold text-foreground mb-2">Adresse</h3>
+          <h2 className="font-semibold text-foreground mb-2">Adresse</h2>
           <p className="text-muted-foreground text-sm">Bordeaux, France</p>
         </div>
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-3">
-            <Mail size={24} />
+            <Mail size={24} aria-hidden="true" />
           </div>
-          <h3 className="font-semibold text-foreground mb-2">Email</h3>
+          <h2 className="font-semibold text-foreground mb-2">Email</h2>
           <p className="text-muted-foreground text-sm">contact@viteetgourmand.fr</p>
         </div>
         <div className="bg-card rounded-xl border border-border p-6">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-3">
-            <Phone size={24} />
+            <Phone size={24} aria-hidden="true" />
           </div>
-          <h3 className="font-semibold text-foreground mb-2">Telephone</h3>
+          <h2 className="font-semibold text-foreground mb-2">Telephone</h2>
           <p className="text-muted-foreground text-sm">05 56 00 00 00</p>
         </div>
       </div>

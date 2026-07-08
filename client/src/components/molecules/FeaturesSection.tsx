@@ -65,7 +65,7 @@ export function FeaturesSection({ content }: FeaturesSectionProps) {
                 <div className="relative h-36 overflow-hidden">
                   <Image
                     src={imageUrl}
-                    alt={item.title || ''}
+                    alt={item.title ? `Illustration : ${item.title}` : ''}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                     sizes="(max-width: 768px) 100vw, 25vw"

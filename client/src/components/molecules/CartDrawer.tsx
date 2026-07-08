@@ -45,10 +45,17 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       />
 
       {/* Drawer */}
-      <div className="fixed top-0 right-0 h-full w-full max-w-md bg-background shadow-xl z-50 flex flex-col">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-drawer-title"
+        className="fixed top-0 right-0 h-full w-full max-w-md bg-background shadow-xl z-50 flex flex-col"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Mon panier</h2>
+          <h2 id="cart-drawer-title" className="text-lg font-semibold text-foreground">
+            Mon panier
+          </h2>
           <button
             onClick={onClose}
             className="p-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -62,7 +69,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <div className="flex-1 overflow-y-auto p-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <ShoppingBag size={48} className="text-muted-foreground mb-4" />
+              <ShoppingBag size={48} className="text-muted-foreground mb-4" aria-hidden="true" />
               <p className="text-muted-foreground mb-4">Votre panier est vide</p>
               <Link
                 href="/menus"

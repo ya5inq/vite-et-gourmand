@@ -11,7 +11,7 @@ export function RejectionNotice({ reason, rejectedAt }: RejectionNoticeProps) {
   return (
     <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-3">
       <div className="flex items-start gap-3">
-        <AlertTriangle className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
+        <AlertTriangle className="text-red-500 flex-shrink-0 mt-0.5" size={20} aria-hidden="true" />
         <div>
           <h4 className="font-medium text-red-800">Commande refusee</h4>
           {reason && (

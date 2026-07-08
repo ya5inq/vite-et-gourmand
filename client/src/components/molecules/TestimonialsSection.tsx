@@ -74,7 +74,7 @@ export function TestimonialsSection({ reviews }: TestimonialsSectionProps) {
                 key={review.id}
                 className="bg-card rounded-xl sm:rounded-2xl border border-border p-4 sm:p-6 hover:shadow-lg transition-all relative"
               >
-                <Quote className="absolute top-3 right-3 sm:top-4 sm:right-4 w-6 h-6 sm:w-8 sm:h-8 text-primary/10" />
+                <Quote className="absolute top-3 right-3 sm:top-4 sm:right-4 w-6 h-6 sm:w-8 sm:h-8 text-primary/10" aria-hidden="true" />
 
                 <div className="flex items-center gap-3 mb-3 sm:mb-4">
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 ${avatarColor} rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-base`}>

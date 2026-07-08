@@ -153,19 +153,27 @@ export default function AvisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Note</label>
-              <div className="flex gap-1">
+              <span id="rating-label" className="block text-sm font-medium text-foreground mb-2">
+                Note
+              </span>
+              <div className="flex gap-1" role="radiogroup" aria-labelledby="rating-label">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     type="button"
+                    role="radio"
+                    aria-checked={selectedRating === star}
+                    aria-label={`${star} etoile${star > 1 ? 's' : ''} sur 5`}
                     onClick={() => {
                       setSelectedRating(star);
                       setValue('rating', star);
                     }}
-                    className="text-2xl focus:outline-none"
+                    className="text-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                   >
-                    <span className={star <= selectedRating ? 'text-yellow-500' : 'text-gray-300'}>
+                    <span
+                      aria-hidden="true"
+                      className={star <= selectedRating ? 'text-yellow-500' : 'text-gray-300'}
+                    >
                       &#9733;
                     </span>
                   </button>

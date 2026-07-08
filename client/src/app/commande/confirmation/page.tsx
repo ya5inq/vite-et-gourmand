@@ -94,7 +94,7 @@ function ConfirmationContent() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-          <CheckCircle className="text-green-500" size={32} />
+          <CheckCircle className="text-green-500" size={32} aria-hidden="true" />
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Demande envoyee !</h1>
         <p className="text-muted-foreground">
@@ -161,7 +161,7 @@ function ConfirmationContent() {
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
         <div className="flex gap-3">
-          <Mail className="text-blue-500 flex-shrink-0 mt-0.5" size={20} />
+          <Mail className="text-blue-500 flex-shrink-0 mt-0.5" size={20} aria-hidden="true" />
           <div className="text-sm text-blue-800">
             <p className="font-medium">Et maintenant ?</p>
             <p className="mt-1">
