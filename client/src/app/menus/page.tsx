@@ -31,7 +31,7 @@ export default async function MenusPage() {
           min_persons: menu.minPersons,
           max_persons: menu.maxPersons ?? null,
           image_url: menu.imageUrl ?? null,
-          regimes: [] as Array<{ id: string; name: string }>,
+          regimes: (menu.dietaryRegimes ?? []).map((r) => ({ id: r.id, name: r.name })),
         }))
       : [];
 

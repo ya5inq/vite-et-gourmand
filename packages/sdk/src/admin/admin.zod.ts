@@ -475,6 +475,12 @@ export const zodAdminMenuGetAllResponse = zod.object({
       stock: zod.number().nullable(),
       isAvailable: zod.boolean(),
       imageUrl: zod.string().nullable(),
+      dietaryRegimes: zod.array(
+        zod.object({
+          id: zod.string().uuid(),
+          name: zod.string(),
+        }),
+      ),
     }),
   ),
   totalCount: zod.number(),

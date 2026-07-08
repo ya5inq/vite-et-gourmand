@@ -52,6 +52,7 @@ export const PublicMenuListItemSchemaParser = z.object({
   stock: z.number().nullable(),
   isAvailable: z.boolean(),
   imageUrl: z.string().nullable(),
+  dietaryRegimes: z.array(dietaryRegimeSubSchema),
 });
 
 export type PublicMenu = z.infer<typeof PublicMenuSchemaParser>;
@@ -104,6 +105,10 @@ export class MenuSerializer {
       stock: menu.stock,
       isAvailable: menu.isAvailable,
       imageUrl: menu.imageUrl,
+      dietaryRegimes: (menu.dietaryRegimes ?? []).map((regime) => ({
+        id: regime.id,
+        name: regime.name,
+      })),
     });
   }
 }

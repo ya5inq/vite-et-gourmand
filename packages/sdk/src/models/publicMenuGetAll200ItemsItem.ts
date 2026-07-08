@@ -9,6 +9,7 @@ import type { PublicMenuGetAll200ItemsItemTheme } from "./publicMenuGetAll200Ite
 import type { PublicMenuGetAll200ItemsItemMaxPersons } from "./publicMenuGetAll200ItemsItemMaxPersons";
 import type { PublicMenuGetAll200ItemsItemStock } from "./publicMenuGetAll200ItemsItemStock";
 import type { PublicMenuGetAll200ItemsItemImageUrl } from "./publicMenuGetAll200ItemsItemImageUrl";
+import type { PublicMenuGetAll200ItemsItemDietaryRegimesItem } from "./publicMenuGetAll200ItemsItemDietaryRegimesItem";
 
 export type PublicMenuGetAll200ItemsItem = {
   id: string;
@@ -21,4 +22,5 @@ export type PublicMenuGetAll200ItemsItem = {
   stock: PublicMenuGetAll200ItemsItemStock;
   isAvailable: boolean;
   imageUrl: PublicMenuGetAll200ItemsItemImageUrl;
+  dietaryRegimes: PublicMenuGetAll200ItemsItemDietaryRegimesItem[];
 };
