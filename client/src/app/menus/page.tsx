@@ -4,7 +4,7 @@ import { MenuFilter } from '@/components/molecules/MenuFilter';
 
 export const metadata = {
   title: 'Nos Menus - Vite & Gourmand',
-  description: 'Decouvrez nos menus traiteur pour tous vos evenements a Bordeaux.',
+  description: 'Découvrez nos menus traiteur pour tous vos évènements à Bordeaux.',
 };
 
 export const dynamic = 'force-dynamic';
@@ -61,8 +61,8 @@ export default async function MenusPage() {
           <div className="text-center px-4">
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 drop-shadow-lg">Nos Menus</h1>
             <p className="text-lg text-gray-200 max-w-2xl mx-auto drop-shadow">
-              Decouvrez notre selection de menus traiteur, prepares avec soin par notre chef
-              pour sublimer vos evenements.
+              Découvrez notre sélection de menus traiteur, préparés avec soin par notre chef
+              pour sublimer vos évènements.
             </p>
           </div>
         </div>

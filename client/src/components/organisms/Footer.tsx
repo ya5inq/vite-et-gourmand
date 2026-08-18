@@ -63,7 +63,7 @@ export async function Footer() {
             <h3 className="text-lg font-bold mb-4">{footer.company_name ?? 'Vite & Gourmand'}</h3>
             <p className="text-sm text-gray-400 mb-4">
               {footer.description ??
-                "Votre traiteur d'exception a Bordeaux. Des menus raffines pour tous vos evenements."}
+                'Votre traiteur d’exception à Bordeaux. Des menus raffinés pour tous vos évènements.'}
             </p>
             <div className="space-y-2 text-sm text-gray-400">
               <p>{address}</p>
@@ -88,7 +88,7 @@ export async function Footer() {
               </li>
               <li>
                 <Link href="/mentions-legales" className="text-gray-400 hover:text-background transition-colors">
-                  Mentions legales
+                  Mentions légales
                 </Link>
               </li>
               <li>
@@ -98,7 +98,7 @@ export async function Footer() {
               </li>
               <li>
                 <Link href="/politique-confidentialite" className="text-gray-400 hover:text-background transition-colors">
-                  Politique de confidentialite
+                  Politique de confidentialité
                 </Link>
               </li>
             </ul>
@@ -114,7 +114,7 @@ export async function Footer() {
                     <span>{DAY_NAMES[hour.dayOfWeek] ?? `Jour ${hour.dayOfWeek}`}</span>
                     <span>
                       {hour.isClosed
-                        ? 'Ferme'
+                        ? 'Fermé'
                         : `${hour.openTime?.slice(0, 5) ?? ''} - ${hour.closeTime?.slice(0, 5) ?? ''}`}
                     </span>
                   </li>
@@ -124,14 +124,14 @@ export async function Footer() {
               <ul className="space-y-1 text-sm text-gray-400">
                 <li className="flex justify-between"><span>Lundi - Vendredi</span><span>9h - 18h</span></li>
                 <li className="flex justify-between"><span>Samedi</span><span>10h - 17h</span></li>
-                <li className="flex justify-between"><span>Dimanche</span><span>Ferme</span></li>
+                <li className="flex justify-between"><span>Dimanche</span><span>Fermé</span></li>
               </ul>
             )}
           </div>
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Vite &amp; Gourmand. Tous droits reserves.
+          &copy; {new Date().getFullYear()} Vite &amp; Gourmand. Tous droits réservés.
         </div>
       </div>
     </footer>

@@ -72,7 +72,7 @@ export const DeliveryZoneListPage = () => {
   return (
     <DashboardPageLayout
       title="Zones de livraison"
-      description="Gestion des zones de livraison (le prix est calcule par le serveur a partir de la distance)"
+      description="Gestion des zones de livraison (le prix est calculé par le serveur à partir de la distance)"
       actions={
         <button onClick={openCreate} className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
           <Plus className="h-4 w-4" /> Nouvelle zone

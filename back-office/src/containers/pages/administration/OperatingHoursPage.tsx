@@ -70,7 +70,7 @@ export const OperatingHoursPage = () => {
   const watchedHours = watch('hours');
 
   return (
-    <DashboardPageLayout title="Horaires d'ouverture" description="Configuration des horaires du restaurant">
+    <DashboardPageLayout title="Horaires d’ouverture" description="Configuration des horaires du restaurant">
       {isLoading ? (
         <p className="text-muted-foreground">Chargement...</p>
       ) : (
@@ -82,7 +82,7 @@ export const OperatingHoursPage = () => {
                   <th className="px-4 py-3 text-left font-medium">Jour</th>
                   <th className="px-4 py-3 text-left font-medium">Ouverture</th>
                   <th className="px-4 py-3 text-left font-medium">Fermeture</th>
-                  <th className="px-4 py-3 text-center font-medium">Ferme</th>
+                  <th className="px-4 py-3 text-center font-medium">Fermé</th>
                 </tr>
               </thead>
               <tbody className="divide-y">

@@ -20,14 +20,14 @@ export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   [OrderStatus.PENDING]: 'En attente',
-  [OrderStatus.ACCEPTED]: 'Acceptee',
-  [OrderStatus.PREPARING]: 'En preparation',
+  [OrderStatus.ACCEPTED]: 'Acceptée',
+  [OrderStatus.PREPARING]: 'En préparation',
   [OrderStatus.DELIVERING]: 'En livraison',
-  [OrderStatus.DELIVERED]: 'Livree',
-  [OrderStatus.AWAITING_MATERIAL_RETURN]: 'Retour materiel',
-  [OrderStatus.COMPLETED]: 'Terminee',
-  [OrderStatus.REJECTED]: 'Refusee',
-  [OrderStatus.CANCELLED]: 'Annulee',
+  [OrderStatus.DELIVERED]: 'Livrée',
+  [OrderStatus.AWAITING_MATERIAL_RETURN]: 'Retour matériel',
+  [OrderStatus.COMPLETED]: 'Terminée',
+  [OrderStatus.REJECTED]: 'Refusée',
+  [OrderStatus.CANCELLED]: 'Annulée',
 };
 
 export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {

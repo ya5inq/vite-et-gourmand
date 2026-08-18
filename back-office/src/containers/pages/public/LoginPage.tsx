@@ -5,7 +5,7 @@ import { useLogin } from '@/api/hooks/useAuth';
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
-  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caracteres'),
+  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -29,7 +29,7 @@ export const LoginPage = () => {
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 shadow-sm">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-primary">Vite & Gourmand</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Panneau d'administration</p>
+          <p className="mt-1 text-sm text-muted-foreground">Panneau d’administration</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

@@ -30,7 +30,7 @@ export function HeroSection({ content }: HeroSectionProps) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="max-w-2xl mx-auto sm:mx-0 text-center sm:text-left">
           <p className="text-primary font-semibold mb-2 sm:mb-4 tracking-wide uppercase text-sm sm:text-base">
-            Traiteur a Bordeaux
+            Traiteur à Bordeaux
           </p>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
             {content.title ?? 'Vite & Gourmand'}

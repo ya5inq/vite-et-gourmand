@@ -29,7 +29,7 @@ export const useSaveOperatingHours = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.OPERATING_HOURS() });
-      toast.success('Horaires mis a jour');
+      toast.success('Horaires mis à jour');
     },
   });
 };

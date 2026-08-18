@@ -17,10 +17,10 @@ const FIELD_CONFIG: Record<TabKey, { name: string; label: string; type: 'text' |
     { name: 'schedule', label: 'Horaires (JSON: [{"day":"Lundi","hours":"11h-14h / 18h-22h"}])', type: 'textarea' },
   ],
   liens: [
-    { name: 'company_name', label: 'Nom de l\'entreprise', type: 'text' },
+    { name: 'company_name', label: 'Nom de l’entreprise', type: 'text' },
     { name: 'description', label: 'Description courte', type: 'textarea' },
     { name: 'address', label: 'Adresse', type: 'text' },
-    { name: 'phone', label: 'Telephone', type: 'text' },
+    { name: 'phone', label: 'Téléphone', type: 'text' },
     { name: 'email', label: 'Email', type: 'text' },
     { name: 'social_links', label: 'Liens sociaux (JSON: [{"name":"Facebook","url":"..."}])', type: 'textarea' },
     { name: 'nav_links', label: 'Liens de navigation (JSON: [{"label":"Accueil","url":"/"}])', type: 'textarea' },

@@ -61,7 +61,7 @@ export const useCreateMenu = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENUS() });
-      toast.success('Menu cree avec succes');
+      toast.success('Menu créé avec succès');
     },
   });
 };
@@ -77,7 +77,7 @@ export const useUpdateMenu = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENUS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENU(data.id) });
-      toast.success('Menu mis a jour');
+      toast.success('Menu mis à jour');
     },
   });
 };
@@ -91,7 +91,7 @@ export const useDeleteMenu = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.MENUS() });
-      toast.success('Menu supprime');
+      toast.success('Menu supprimé');
     },
   });
 };

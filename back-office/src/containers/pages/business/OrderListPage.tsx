@@ -14,12 +14,12 @@ import { OrderRejectModal } from '@/components/molecules/OrderRejectModal';
 const STATUS_TABS: { value: OrderStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'Toutes' },
   { value: 'PENDING', label: 'En attente' },
-  { value: 'ACCEPTED', label: 'Acceptees' },
-  { value: 'PREPARING', label: 'En preparation' },
+  { value: 'ACCEPTED', label: 'Acceptées' },
+  { value: 'PREPARING', label: 'En préparation' },
   { value: 'DELIVERING', label: 'En livraison' },
-  { value: 'COMPLETED', label: 'Terminees' },
-  { value: 'REJECTED', label: 'Refusees' },
-  { value: 'CANCELLED', label: 'Annulees' },
+  { value: 'COMPLETED', label: 'Terminées' },
+  { value: 'REJECTED', label: 'Refusées' },
+  { value: 'CANCELLED', label: 'Annulées' },
 ];
 
 export const OrderListPage = () => {
@@ -91,7 +91,7 @@ export const OrderListPage = () => {
                 <th className="px-4 py-3 text-left font-medium">Statut</th>
                 <th className="px-4 py-3 text-left font-medium">Total</th>
                 <th className="px-4 py-3 text-left font-medium">Livraison</th>
-                <th className="px-4 py-3 text-left font-medium">Cree le</th>
+                <th className="px-4 py-3 text-left font-medium">Créé le</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -121,7 +121,7 @@ export const OrderListPage = () => {
                         {ORDER_STATUS_LABELS[order.status]}
                       </span>
                     </td>
-                    <td className="px-4 py-3">{order.totalPrice.toFixed(2)} EUR</td>
+                    <td className="px-4 py-3">{order.totalPrice.toFixed(2)} €</td>
                     <td className="px-4 py-3">
                       <div>
                         <p>{formatDate(order.deliveryDate)}</p>

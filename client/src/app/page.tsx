@@ -67,10 +67,10 @@ export default async function HomePage() {
 
   const heroContent = sections['hero'] ?? {
     title: 'Vite & Gourmand',
-    subtitle: "Traiteur d'exception a Bordeaux",
+    subtitle: 'Traiteur d’exception à Bordeaux',
     description:
-      'Des menus raffines et savoureux pour tous vos evenements. Mariages, seminaires, anniversaires... nous sublimions chaque occasion.',
-    cta_text: 'Decouvrir nos menus',
+      'Des menus raffinés et savoureux pour tous vos évènements. Mariages, séminaires, anniversaires... nous sublimons chaque occasion.',
+    cta_text: 'Découvrir nos menus',
     cta_link: '/menus',
   };
 

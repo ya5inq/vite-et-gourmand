@@ -57,8 +57,8 @@ describe('CalculateDeliveryPriceUseCase', () => {
     });
   });
 
-  it('should calculate price from a postal code (Merignac 8km → 9.72€)', async () => {
-    const zone = deliveryZoneFactory({ name: 'Merignac', city: 'Merignac', postalCode: '33700', distanceKm: 8 });
+  it('should calculate price from a postal code (Mérignac 8km → 9.72€)', async () => {
+    const zone = deliveryZoneFactory({ name: 'Mérignac', city: 'Mérignac', postalCode: '33700', distanceKm: 8 });
     deliveryZoneRepositoryMock.findByPostalCode.mockResolvedValue(zone);
 
     const result = await calculateDeliveryPriceUseCase.executeCalculateDeliveryPrice({ postalCode: '33700' });

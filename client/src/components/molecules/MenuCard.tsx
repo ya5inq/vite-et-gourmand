@@ -91,7 +91,7 @@ export function MenuCard({
           </span>
         )}
         <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow">
-          {price.toFixed(0)}&euro;
+          {price.toFixed(0)}&nbsp;€
         </div>
       </div>
       <div className="p-3 sm:p-5">
@@ -134,7 +134,7 @@ export function MenuCard({
             {showSuccess ? (
               <>
                 <Check size={14} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="hidden sm:inline">Ajoute !</span>
+                <span className="hidden sm:inline">Ajouté !</span>
                 <span className="sm:hidden">OK</span>
               </>
             ) : (

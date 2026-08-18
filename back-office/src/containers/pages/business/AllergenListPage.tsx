@@ -58,21 +58,21 @@ export const AllergenListPage = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Supprimer cet allergene ?')) {
+    if (window.confirm('Supprimer cet allergène ?')) {
       deleteAllergen.mutate(id);
     }
   };
 
   return (
     <DashboardPageLayout
-      title="Allergenes"
-      description="Gestion des allergenes"
+      title="Allergènes"
+      description="Gestion des allergènes"
       actions={
         <button
           onClick={openCreate}
           className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
-          <Plus className="h-4 w-4" /> Nouvel allergene
+          <Plus className="h-4 w-4" /> Nouvel allergène
         </button>
       }
     >
@@ -84,7 +84,7 @@ export const AllergenListPage = () => {
             <thead className="border-b bg-muted/50">
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
-                <th className="px-4 py-3 text-left font-medium">Icone</th>
+                <th className="px-4 py-3 text-left font-medium">Icône</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -112,7 +112,7 @@ export const AllergenListPage = () => {
               {allergens?.length === 0 && (
                 <tr>
                   <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">
-                    Aucun allergene
+                    Aucun allergène
                   </td>
                 </tr>
               )}
@@ -124,7 +124,7 @@ export const AllergenListPage = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-md rounded-lg bg-card p-6 shadow-lg">
-            <h2 className="mb-4 text-lg font-bold">{editing ? 'Modifier l\'allergene' : 'Nouvel allergene'}</h2>
+            <h2 className="mb-4 text-lg font-bold">{editing ? 'Modifier l’allergène' : 'Nouvel allergène'}</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium">Nom</label>
@@ -135,11 +135,11 @@ export const AllergenListPage = () => {
                 {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Icone</label>
+                <label className="mb-1 block text-sm font-medium">Icône</label>
                 <input
                   {...register('icon')}
                   className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-                  placeholder="Ex: nom d'icone ou emoji"
+                  placeholder="Ex: nom d’icône ou emoji"
                 />
               </div>
               <div className="flex justify-end gap-2">

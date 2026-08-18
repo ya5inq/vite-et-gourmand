@@ -26,14 +26,14 @@ export type OrderDetail = AdminOrderGetOne200;
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   PENDING: 'En attente',
-  ACCEPTED: 'Acceptee',
-  PREPARING: 'En preparation',
+  ACCEPTED: 'Acceptée',
+  PREPARING: 'En préparation',
   DELIVERING: 'En livraison',
-  DELIVERED: 'Livree',
-  AWAITING_MATERIAL_RETURN: 'Retour materiel',
-  COMPLETED: 'Terminee',
-  REJECTED: 'Refusee',
-  CANCELLED: 'Annulee',
+  DELIVERED: 'Livrée',
+  AWAITING_MATERIAL_RETURN: 'Retour matériel',
+  COMPLETED: 'Terminée',
+  REJECTED: 'Refusée',
+  CANCELLED: 'Annulée',
 };
 
 export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
@@ -96,7 +96,7 @@ export const useUpdateOrderStatus = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDERS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDER(data.id) });
-      toast.success('Statut de la commande mis a jour');
+      toast.success('Statut de la commande mis à jour');
     },
   });
 };
@@ -112,7 +112,7 @@ export const useAcceptOrder = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDERS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDER(data.id) });
-      toast.success('Commande acceptee');
+      toast.success('Commande acceptée');
     },
   });
 };
@@ -140,7 +140,7 @@ export const useRejectOrder = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDERS() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.ORDER(data.id) });
-      toast.success('Commande refusee');
+      toast.success('Commande refusée');
     },
   });
 };

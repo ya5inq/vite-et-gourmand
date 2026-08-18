@@ -44,7 +44,7 @@ export const useCreateDeliveryZone = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.DELIVERY_ZONES() });
-      toast.success('Zone creee');
+      toast.success('Zone créée');
     },
   });
 };
@@ -58,7 +58,7 @@ export const useUpdateDeliveryZone = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.DELIVERY_ZONES() });
-      toast.success('Zone mise a jour');
+      toast.success('Zone mise à jour');
     },
   });
 };
@@ -71,7 +71,7 @@ export const useDeleteDeliveryZone = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.DELIVERY_ZONES() });
-      toast.success('Zone supprimee');
+      toast.success('Zone supprimée');
     },
   });
 };

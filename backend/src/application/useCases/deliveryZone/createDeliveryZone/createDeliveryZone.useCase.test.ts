@@ -14,12 +14,12 @@ describe('CreateDeliveryZoneUseCase', () => {
   });
 
   it('should create a delivery zone', async () => {
-    const zone = deliveryZoneFactory({ name: 'Merignac', city: 'Merignac', distanceKm: 8 });
+    const zone = deliveryZoneFactory({ name: 'Mérignac', city: 'Mérignac', distanceKm: 8 });
     deliveryZoneRepositoryMock.create.mockResolvedValue(zone);
 
     const result = await createDeliveryZoneUseCase.executeCreateDeliveryZone({
-      name: 'Merignac',
-      city: 'Merignac',
+      name: 'Mérignac',
+      city: 'Mérignac',
       distanceKm: 8,
     });
 

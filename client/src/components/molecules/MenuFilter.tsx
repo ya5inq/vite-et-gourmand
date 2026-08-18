@@ -51,7 +51,7 @@ export function MenuFilter({ themes, regimes, menus }: MenuFilterProps) {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label htmlFor="theme-filter" className="block text-sm font-medium text-foreground mb-1">
-              Theme
+              Thème
             </label>
             <select
               id="theme-filter"
@@ -59,7 +59,7 @@ export function MenuFilter({ themes, regimes, menus }: MenuFilterProps) {
               onChange={(e) => setSelectedTheme(e.target.value)}
               className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="">Tous les themes</option>
+              <option value="">Tous les thèmes</option>
               {themes.map((theme) => (
                 <option key={theme} value={theme}>
                   {theme}
@@ -70,7 +70,7 @@ export function MenuFilter({ themes, regimes, menus }: MenuFilterProps) {
 
           <div>
             <label htmlFor="regime-filter" className="block text-sm font-medium text-foreground mb-1">
-              Regime alimentaire
+              Régime alimentaire
             </label>
             <select
               id="regime-filter"
@@ -78,7 +78,7 @@ export function MenuFilter({ themes, regimes, menus }: MenuFilterProps) {
               onChange={(e) => setSelectedRegime(e.target.value)}
               className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="">Tous les regimes</option>
+              <option value="">Tous les régimes</option>
               {regimes.map((regime) => (
                 <option key={regime.id} value={regime.id}>
                   {regime.name}
@@ -122,7 +122,7 @@ export function MenuFilter({ themes, regimes, menus }: MenuFilterProps) {
         {hasFilters && (
           <div className="mt-3 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {filteredMenus.length} menu{filteredMenus.length !== 1 ? 's' : ''} trouve{filteredMenus.length !== 1 ? 's' : ''}
+              {filteredMenus.length} menu{filteredMenus.length !== 1 ? 's' : ''} trouvé{filteredMenus.length !== 1 ? 's' : ''}
             </p>
             <button
               onClick={() => {
@@ -133,7 +133,7 @@ export function MenuFilter({ themes, regimes, menus }: MenuFilterProps) {
               }}
               className="text-sm text-primary hover:underline"
             >
-              Reinitialiser les filtres
+              Réinitialiser les filtres
             </button>
           </div>
         )}
@@ -143,7 +143,7 @@ export function MenuFilter({ themes, regimes, menus }: MenuFilterProps) {
       {filteredMenus.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-muted-foreground text-lg">
-            Aucun menu ne correspond a vos criteres.
+            Aucun menu ne correspond à vos critères.
           </p>
           <button
             onClick={() => {

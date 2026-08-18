@@ -29,7 +29,7 @@ export const ReviewListPage = () => {
   };
 
   return (
-    <DashboardPageLayout title="Avis" description="Moderation des avis clients">
+    <DashboardPageLayout title="Avis" description="Modération des avis clients">
       {isLoading ? (
         <p className="text-muted-foreground">Chargement...</p>
       ) : (
@@ -61,7 +61,7 @@ export const ReviewListPage = () => {
                         review.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                       }`}
                     >
-                      {review.isApproved ? 'Approuve' : 'En attente'}
+                      {review.isApproved ? 'Approuvé' : 'En attente'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">

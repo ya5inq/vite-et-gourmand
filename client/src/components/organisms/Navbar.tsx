@@ -131,7 +131,7 @@ export function Navbar() {
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors cursor-pointer"
                       >
                         <LogOut size={16} />
-                        Deconnexion
+                        Déconnexion
                       </button>
                     </div>
                   )}
@@ -197,7 +197,7 @@ export function Navbar() {
                     }}
                     className="block py-2 text-sm font-medium text-muted-foreground hover:text-destructive"
                   >
-                    Deconnexion
+                    Déconnexion
                   </button>
                 </>
               ) : (

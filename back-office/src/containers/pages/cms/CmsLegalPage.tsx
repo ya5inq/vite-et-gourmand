@@ -4,9 +4,9 @@ import { DashboardPageLayout } from '@/components/templates/DashboardPageLayout'
 import { usePageContents, useUpsertPageContent } from '@/api/hooks/usePageContents';
 
 const TABS = [
-  { key: 'mentions-legales', label: 'Mentions legales' },
+  { key: 'mentions-legales', label: 'Mentions légales' },
   { key: 'cgv', label: 'CGV' },
-  { key: 'confidentialite', label: 'Politique de confidentialite' },
+  { key: 'confidentialite', label: 'Politique de confidentialité' },
 ] as const;
 
 type TabKey = (typeof TABS)[number]['key'];
@@ -15,17 +15,17 @@ const FIELD_CONFIG: Record<TabKey, { name: string; label: string; type: 'text' |
   'mentions-legales': [
     { name: 'title', label: 'Titre', type: 'text' },
     { name: 'content', label: 'Contenu (HTML/Markdown)', type: 'textarea' },
-    { name: 'last_updated', label: 'Derniere mise a jour', type: 'text' },
+    { name: 'last_updated', label: 'Dernière mise à jour', type: 'text' },
   ],
   cgv: [
     { name: 'title', label: 'Titre', type: 'text' },
     { name: 'content', label: 'Contenu (HTML/Markdown)', type: 'textarea' },
-    { name: 'last_updated', label: 'Derniere mise a jour', type: 'text' },
+    { name: 'last_updated', label: 'Dernière mise à jour', type: 'text' },
   ],
   confidentialite: [
     { name: 'title', label: 'Titre', type: 'text' },
     { name: 'content', label: 'Contenu (HTML/Markdown)', type: 'textarea' },
-    { name: 'last_updated', label: 'Derniere mise a jour', type: 'text' },
+    { name: 'last_updated', label: 'Dernière mise à jour', type: 'text' },
   ],
 };
 
@@ -59,7 +59,7 @@ export const CmsLegalPage = () => {
   };
 
   return (
-    <DashboardPageLayout title="CMS - Pages legales" description="Gestion des pages legales">
+    <DashboardPageLayout title="CMS - Pages légales" description="Gestion des pages légales">
       <div className="mb-4 flex gap-1 rounded-lg border border-border bg-muted/50 p-1">
         {TABS.map((tab) => (
           <button

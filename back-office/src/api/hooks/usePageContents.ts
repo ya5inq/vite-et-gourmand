@@ -34,7 +34,7 @@ export const useUpsertPageContent = () => {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.PAGE_CONTENTS(variables.page) });
-      toast.success('Contenu mis a jour');
+      toast.success('Contenu mis à jour');
     },
   });
 };

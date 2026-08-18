@@ -6,9 +6,9 @@ import { Footer } from '@/components/organisms/Footer';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
-  title: "Vite & Gourmand - Traiteur d'exception a Bordeaux",
+  title: 'Vite & Gourmand - Traiteur d’exception à Bordeaux',
   description:
-    "Vite & Gourmand, votre traiteur d'exception a Bordeaux. Menus raffines pour tous vos evenements.",
+    'Vite & Gourmand, votre traiteur d’exception à Bordeaux. Menus raffinés pour tous vos évènements.',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },

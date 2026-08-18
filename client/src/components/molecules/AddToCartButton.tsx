@@ -80,10 +80,10 @@ export function AddToCartButton({ menu }: AddToCartButtonProps) {
       {/* Price preview */}
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
-          {menu.price.toFixed(2)} &euro; x {quantity} personnes
+          {menu.price.toFixed(2)}&nbsp;€ x {quantity} personnes
         </p>
         <p className="text-xl font-bold text-primary mt-1">
-          {subtotal.toFixed(2)} &euro;
+          {subtotal.toFixed(2)}&nbsp;€
         </p>
       </div>
 
@@ -100,7 +100,7 @@ export function AddToCartButton({ menu }: AddToCartButtonProps) {
         {showSuccess ? (
           <>
             <Check size={20} />
-            Ajoute au panier
+            Ajouté au panier
           </>
         ) : (
           <>
@@ -112,7 +112,7 @@ export function AddToCartButton({ menu }: AddToCartButtonProps) {
 
       {existingItem && !showSuccess && (
         <p className="text-center text-sm text-muted-foreground">
-          Deja {existingItem.quantity} personne{existingItem.quantity > 1 ? 's' : ''} dans le
+          Déjà {existingItem.quantity} personne{existingItem.quantity > 1 ? 's' : ''} dans le
           panier
         </p>
       )}

@@ -13,8 +13,8 @@ interface CtaSectionProps {
 }
 
 export function CtaSection({
-  title = 'Votre evenement merite le meilleur',
-  description = 'Commandez en ligne en quelques clics ou contactez-nous pour un devis personnalise.',
+  title = 'Votre évènement mérite le meilleur',
+  description = 'Commandez en ligne en quelques clics ou contactez-nous pour un devis personnalisé.',
   ctaText = 'Commander en ligne',
   ctaLink = '/menus',
   phone = '05 56 00 00 00',
@@ -67,7 +67,7 @@ export function CtaSection({
                     <Phone size={18} className="text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400">Telephone</p>
+                    <p className="text-xs text-gray-400">Téléphone</p>
                     <p className="font-semibold text-sm">{phone}</p>
                   </div>
                 </a>
@@ -76,7 +76,7 @@ export function CtaSection({
                     <Calendar size={18} className="text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400">Disponibilite</p>
+                    <p className="text-xs text-gray-400">Disponibilité</p>
                     <p className="font-semibold text-sm">Lun - Sam, 9h - 18h</p>
                   </div>
                 </div>

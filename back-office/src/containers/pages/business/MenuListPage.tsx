@@ -10,8 +10,8 @@ const menuSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
   description: z.string().optional(),
   theme: z.string().optional(),
-  price: z.coerce.number().min(0, 'Le prix doit etre positif'),
-  stock: z.coerce.number().int().min(0, 'Le stock doit etre positif'),
+  price: z.coerce.number().min(0, 'Le prix doit être positif'),
+  stock: z.coerce.number().int().min(0, 'Le stock doit être positif'),
   isAvailable: z.boolean(),
 });
 
@@ -89,7 +89,7 @@ export const MenuListPage = () => {
             <thead className="border-b bg-muted/50">
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
-                <th className="px-4 py-3 text-left font-medium">Theme</th>
+                <th className="px-4 py-3 text-left font-medium">Thème</th>
                 <th className="px-4 py-3 text-left font-medium">Prix</th>
                 <th className="px-4 py-3 text-left font-medium">Stock</th>
                 <th className="px-4 py-3 text-left font-medium">Disponible</th>
@@ -101,7 +101,7 @@ export const MenuListPage = () => {
                 <tr key={menu.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3 font-medium">{menu.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{menu.theme ?? '-'}</td>
-                  <td className="px-4 py-3">{menu.price.toFixed(2)} EUR</td>
+                  <td className="px-4 py-3">{menu.price.toFixed(2)}&nbsp;€</td>
                   <td className="px-4 py-3">{menu.stock ?? '-'}</td>
                   <td className="px-4 py-3">
                     <span
@@ -163,7 +163,7 @@ export const MenuListPage = () => {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Theme</label>
+                <label className="mb-1 block text-sm font-medium">Thème</label>
                 <input
                   {...register('theme')}
                   className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
@@ -171,7 +171,7 @@ export const MenuListPage = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Prix (EUR)</label>
+                  <label className="mb-1 block text-sm font-medium">Prix (€)</label>
                   <input
                     type="number"
                     step="0.01"

@@ -20,7 +20,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
           <span className="text-xs text-muted-foreground">{item.theme}</span>
         )}
         <p className="text-sm text-muted-foreground mt-1">
-          {item.unitPrice.toFixed(2)} &euro; / personne
+          {item.unitPrice.toFixed(2)}&nbsp;€ / personne
         </p>
       </div>
 
@@ -28,7 +28,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
         <button
           onClick={() => updateQuantity(item.menuId, item.quantity - 1)}
           className="p-1 rounded-md border border-border hover:bg-accent transition-colors cursor-pointer"
-          aria-label="Diminuer la quantite"
+          aria-label="Diminuer la quantité"
         >
           <Minus size={16} />
         </button>
@@ -37,14 +37,14 @@ export function CartItemRow({ item }: CartItemRowProps) {
           onClick={() => updateQuantity(item.menuId, item.quantity + 1)}
           disabled={item.maxPersons !== null && item.quantity >= item.maxPersons}
           className="p-1 rounded-md border border-border hover:bg-accent transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Augmenter la quantite"
+          aria-label="Augmenter la quantité"
         >
           <Plus size={16} />
         </button>
       </div>
 
       <div className="text-right">
-        <p className="font-semibold text-foreground">{subtotal.toFixed(2)} &euro;</p>
+        <p className="font-semibold text-foreground">{subtotal.toFixed(2)}&nbsp;€</p>
         <button
           onClick={() => removeItem(item.menuId)}
           className="text-destructive hover:text-destructive/80 transition-colors mt-1 cursor-pointer"

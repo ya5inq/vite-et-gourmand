@@ -62,7 +62,7 @@ export const RESEND_TEMPLATE_REGISTRY: Record<string, TemplateRenderer> = {
             Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.
           </td></tr>
           <tr><td style="padding-bottom:24px;">${button(variables.resetPasswordUrl ?? '#', 'Réinitialiser mon mot de passe')}</td></tr>
-          <tr><td style="color:#888;font-size:12px;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</td></tr>`,
+          <tr><td style="color:#888;font-size:12px;">Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.</td></tr>`,
       ),
     }) satisfies RenderedTemplate,
 
@@ -90,8 +90,8 @@ export const RESEND_TEMPLATE_REGISTRY: Record<string, TemplateRenderer> = {
           <tr><td style="color:#444;line-height:1.8;padding-bottom:24px;">
             <strong>Référence&nbsp;:</strong> ${variables.orderId ?? ''}<br/>
             ${variables.deliveryDate ? `<strong>Livraison&nbsp;:</strong> ${variables.deliveryDate}<br/>` : ''}
-            <strong>Frais de livraison&nbsp;:</strong> ${variables.deliveryFee ?? '0.00'} €<br/>
-            <strong>Total&nbsp;:</strong> ${variables.totalPrice ?? '0.00'} €
+            <strong>Frais de livraison&nbsp;:</strong> ${variables.deliveryFee ?? '0.00'}&nbsp;€<br/>
+            <strong>Total&nbsp;:</strong> ${variables.totalPrice ?? '0.00'}&nbsp;€
           </td></tr>
           <tr><td style="padding-bottom:24px;">${button(variables.ordersUrl ?? '#', 'Suivre ma commande')}</td></tr>`,
       ),
@@ -109,7 +109,7 @@ export const RESEND_TEMPLATE_REGISTRY: Record<string, TemplateRenderer> = {
           <tr><td style="color:#444;line-height:1.8;padding-bottom:24px;">
             <strong>Référence&nbsp;:</strong> ${variables.orderId ?? ''}<br/>
             <strong>Date limite de restitution&nbsp;:</strong> ${variables.deadline ?? ''}<br/>
-            À défaut de restitution sous 10 jours ouvrés, des frais de ${variables.penaltyAmount ?? '600.00'} € seront facturés, conformément à nos CGV.
+            À défaut de restitution sous 10 jours ouvrés, des frais de ${variables.penaltyAmount ?? '600.00'}&nbsp;€ seront facturés, conformément à nos CGV.
           </td></tr>`,
       ),
     }) satisfies RenderedTemplate,
@@ -141,7 +141,7 @@ export const RESEND_TEMPLATE_REGISTRY: Record<string, TemplateRenderer> = {
           </td></tr>
           <tr><td style="color:#444;line-height:1.8;padding-bottom:24px;">
             <strong>Référence&nbsp;:</strong> ${variables.orderId ?? ''}<br/>
-            <strong>Montant de la pénalité&nbsp;:</strong> ${variables.penaltyAmount ?? '600.00'} €
+            <strong>Montant de la pénalité&nbsp;:</strong> ${variables.penaltyAmount ?? '600.00'}&nbsp;€
           </td></tr>`,
       ),
     }) satisfies RenderedTemplate,

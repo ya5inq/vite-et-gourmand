@@ -16,7 +16,7 @@ export default function PanierPage() {
           <ShoppingBag size={64} className="mx-auto text-muted-foreground mb-6" />
           <h1 className="text-2xl font-bold text-foreground mb-4">Votre panier est vide</h1>
           <p className="text-muted-foreground mb-8">
-            Decouvrez nos menus et ajoutez-les a votre panier.
+            Découvrez nos menus et ajoutez-les à votre panier.
           </p>
           <Link
             href="/menus"
@@ -55,15 +55,15 @@ export default function PanierPage() {
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Sous-total</span>
-            <span className="text-foreground font-medium">{total.toFixed(2)} &euro;</span>
+            <span className="text-foreground font-medium">{total.toFixed(2)}&nbsp;€</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Frais de livraison</span>
-            <span className="text-muted-foreground">Calcules a l&apos;etape suivante</span>
+            <span className="text-muted-foreground">Calculés à l’étape suivante</span>
           </div>
           <div className="border-t border-border pt-3 flex justify-between">
             <span className="font-semibold text-foreground">Total estimé</span>
-            <span className="text-xl font-bold text-primary">{total.toFixed(2)} &euro;</span>
+            <span className="text-xl font-bold text-primary">{total.toFixed(2)}&nbsp;€</span>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export default function PanierPage() {
         </div>
 
         <p className="text-xs text-center text-muted-foreground mt-4">
-          Ceci est une demande de commande. Nous confirmerons la disponibilite par email.
+          Ceci est une demande de commande. Nous confirmerons la disponibilité par email.
         </p>
       </div>
     </div>

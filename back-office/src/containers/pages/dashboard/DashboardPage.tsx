@@ -76,7 +76,7 @@ const statCards = [
     key: 'monthlyRevenue' as const,
     label: 'CA du mois',
     icon: Euro,
-    format: (v: number) => `${v.toFixed(2)} EUR`,
+    format: (v: number) => `${v.toFixed(2)} €`,
     color: 'text-green-600 bg-green-50',
   },
   {
@@ -99,7 +99,7 @@ export const DashboardPage = () => {
   const { data: stats, isLoading } = useDashboardStats();
 
   return (
-    <DashboardPageLayout title="Dashboard" description="Vue d'ensemble de votre activite">
+    <DashboardPageLayout title="Dashboard" description="Vue d’ensemble de votre activité">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((card) => (
           <div key={card.key} className="rounded-lg border border-border bg-card p-6">

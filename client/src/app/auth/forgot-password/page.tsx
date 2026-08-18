@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
     try {
       await PublicApi.publicAuthResetPasswordRequest({ email: data.email });
       setEmailSent(true);
-      toast.success('Email de reinitialisation envoye !');
+      toast.success('Email de réinitialisation envoyé !');
     } catch {
       // The axios interceptor already surfaces the backend error message.
     } finally {
@@ -42,9 +42,9 @@ export default function ForgotPasswordPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Mot de passe oublie</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Mot de passe oublié</h1>
           <p className="text-muted-foreground">
-            Entrez votre email pour recevoir un lien de reinitialisation
+            Entrez votre email pour recevoir un lien de réinitialisation
           </p>
         </div>
 
@@ -56,15 +56,15 @@ export default function ForgotPasswordPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <p className="text-foreground font-medium">Email envoye !</p>
+              <p className="text-foreground font-medium">Email envoyé !</p>
               <p className="text-muted-foreground text-sm">
-                Verifiez votre boite mail et suivez les instructions pour reinitialiser votre mot de passe.
+                Vérifiez votre boîte mail et suivez les instructions pour réinitialiser votre mot de passe.
               </p>
               <Link
                 href="/auth/login"
                 className="inline-block text-primary font-medium hover:underline mt-4"
               >
-                Retour a la connexion
+                Retour à la connexion
               </Link>
             </div>
           ) : (
@@ -98,7 +98,7 @@ export default function ForgotPasswordPage() {
 
         <p className="text-center mt-6 text-muted-foreground">
           <Link href="/auth/login" className="text-primary font-medium hover:underline">
-            Retour a la connexion
+            Retour à la connexion
           </Link>
         </p>
       </div>

@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { ShoppingBag, ArrowLeft, Info } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Info, ChevronDown } from 'lucide-react';
 import { PublicApi, ProtectedApi } from '@/lib/api/axios';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,11 +21,11 @@ const checkoutSchema = z.object({
   guest_name: z.string().optional(),
   guest_email: z.string().optional(),
   guest_phone: z.string().optional(),
-  delivery_address: z.string().min(5, "L'adresse est requise"),
+  delivery_address: z.string().min(5, 'L’adresse est requise'),
   delivery_city: z.string().min(2, 'La ville est requise'),
   delivery_postal_code: z.string().min(5, 'Le code postal est requis'),
-  delivery_zone_id: z.string().min(1, 'Selectionnez une zone de livraison'),
-  delivery_date: z.string().min(1, 'Selectionnez une date de livraison'),
+  delivery_zone_id: z.string().min(1, 'Sélectionnez une zone de livraison'),
+  delivery_date: z.string().min(1, 'Sélectionnez une date de livraison'),
   notes: z.string().optional(),
 });
 
@@ -36,6 +36,7 @@ export default function CheckoutPage() {
   const { items, getTotal, clearCart } = useCart();
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const [zones, setZones] = useState<PublicDeliveryZoneGetAll200ItemsItem[]>([]);
+  const [zonesError, setZonesError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [deliveryFee, setDeliveryFee] = useState(0);
@@ -67,9 +68,17 @@ export default function CheckoutPage() {
     async function loadZones() {
       try {
         const { data } = await PublicApi.publicDeliveryZoneGetAll();
-        if (isMounted) setZones(data.items);
-      } catch {
-        // interceptor surfaces errors
+        if (isMounted) {
+          setZones(data.items);
+          setZonesError(null);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setZonesError(
+            'Impossible de charger les zones de livraison. Veuillez réessayer.',
+          );
+        }
+        console.error('Échec du chargement des zones de livraison', error);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -126,7 +135,7 @@ export default function CheckoutPage() {
         hasError = true;
       }
       if (!data.guest_phone || data.guest_phone.length < 10) {
-        setError('guest_phone', { message: 'Telephone invalide' });
+        setError('guest_phone', { message: 'Téléphone invalide' });
         hasError = true;
       }
       if (hasError) return;
@@ -229,7 +238,7 @@ export default function CheckoutPage() {
           <ShoppingBag size={64} className="mx-auto text-muted-foreground mb-6" />
           <h1 className="text-2xl font-bold text-foreground mb-4">Votre panier est vide</h1>
           <p className="text-muted-foreground mb-8">
-            Ajoutez des menus a votre panier pour passer commande.
+            Ajoutez des menus à votre panier pour passer commande.
           </p>
           <Link
             href="/menus"
@@ -262,7 +271,7 @@ export default function CheckoutPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {isGuest && (
               <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
-                <h2 className="text-lg font-semibold text-foreground mb-4">Vos coordonnees</h2>
+                <h2 className="text-lg font-semibold text-foreground mb-4">Vos coordonnées</h2>
                 <p className="text-sm text-muted-foreground mb-4">
                   <Link href="/auth/login" className="text-primary hover:underline">
                     Connectez-vous
@@ -303,7 +312,7 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <label htmlFor="guest_phone" className="block text-sm font-medium text-foreground mb-2">
-                      Telephone *
+                      Téléphone *
                     </label>
                     <input
                       id="guest_phone"
@@ -322,7 +331,7 @@ export default function CheckoutPage() {
 
             {isAuthenticated && user && (
               <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
-                <h2 className="text-lg font-semibold text-foreground mb-4">Vos coordonnees</h2>
+                <h2 className="text-lg font-semibold text-foreground mb-4">Vos coordonnées</h2>
                 <p className="text-muted-foreground">
                   <span className="font-medium text-foreground">
                     {user.firstName} {user.lastName}
@@ -355,7 +364,7 @@ export default function CheckoutPage() {
                     className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                   />
                   <p className="text-sm text-muted-foreground mt-1">
-                    Commande minimum 48h a l&apos;avance
+                    Commande minimum 48h à l’avance
                   </p>
                   {errors.delivery_date && (
                     <p className="text-destructive text-sm mt-1">{errors.delivery_date.message}</p>
@@ -415,19 +424,23 @@ export default function CheckoutPage() {
                   <label htmlFor="delivery_zone_id" className="block text-sm font-medium text-foreground mb-2">
                     Zone de livraison *
                   </label>
-                  <select
-                    id="delivery_zone_id"
-                    {...register('delivery_zone_id')}
-                    className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                  >
-                    <option value="">Selectionnez une zone</option>
-                    {zones.map((zone) => (
-                      <option key={zone.id} value={zone.id}>
-                        {zone.name}
-                        {zone.city ? ` (${zone.city})` : ''}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="delivery_zone_id"
+                      {...register('delivery_zone_id')}
+                      className="w-full appearance-none pl-4 pr-10 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+                    >
+                      <option value="">Sélectionnez une zone</option>
+                      {zones.map((zone) => (
+                        <option key={zone.id} value={zone.id}>
+                          {zone.name}
+                          {zone.city ? ` (${zone.city})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  </div>
+                  {zonesError && <p className="text-destructive text-sm mt-1">{zonesError}</p>}
                   {errors.delivery_zone_id && (
                     <p className="text-destructive text-sm mt-1">{errors.delivery_zone_id.message}</p>
                   )}
@@ -435,14 +448,14 @@ export default function CheckoutPage() {
 
                 <div>
                   <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-2">
-                    Notes / Instructions speciales
+                    Notes / Instructions spéciales
                   </label>
                   <textarea
                     id="notes"
                     rows={3}
                     {...register('notes')}
                     className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground resize-none"
-                    placeholder="Allergies, acces, horaire souhaite..."
+                    placeholder="Allergies, accès, horaire souhaité..."
                   />
                 </div>
               </div>
@@ -453,8 +466,8 @@ export default function CheckoutPage() {
               <div className="text-sm text-blue-800">
                 <p className="font-medium">Ceci est une demande de commande</p>
                 <p className="mt-1">
-                  Nous vous contacterons pour confirmer la disponibilite et finaliser votre commande.
-                  Aucun paiement n&apos;est requis pour le moment.
+                  Nous vous contacterons pour confirmer la disponibilité et finaliser votre commande.
+                  Aucun paiement n’est requis pour le moment.
                 </p>
               </div>
             </div>
@@ -471,7 +484,7 @@ export default function CheckoutPage() {
 
         <div className="lg:col-span-1">
           <div className="bg-card rounded-2xl shadow-sm border border-border p-6 sticky top-24">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Recapitulatif</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">Récapitulatif</h2>
 
             <div className="space-y-3 mb-4">
               {items.map((item) => (
@@ -480,7 +493,7 @@ export default function CheckoutPage() {
                     {item.menuName} x {item.quantity}
                   </span>
                   <span className="text-foreground font-medium">
-                    {(item.unitPrice * item.quantity).toFixed(2)} &euro;
+                    {(item.unitPrice * item.quantity).toFixed(2)}&nbsp;€
                   </span>
                 </div>
               ))}
@@ -489,7 +502,7 @@ export default function CheckoutPage() {
             <div className="border-t border-border pt-3 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Sous-total</span>
-                <span className="text-foreground">{cartTotal.toFixed(2)} &euro;</span>
+                <span className="text-foreground">{cartTotal.toFixed(2)}&nbsp;€</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Frais de livraison</span>
@@ -503,7 +516,7 @@ export default function CheckoutPage() {
               </div>
               <div className="border-t border-border pt-2 flex justify-between font-bold">
                 <span className="text-foreground">Total</span>
-                <span className="text-primary text-lg">{totalPrice.toFixed(2)} &euro;</span>
+                <span className="text-primary text-lg">{totalPrice.toFixed(2)}&nbsp;€</span>
               </div>
             </div>
           </div>

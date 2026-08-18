@@ -9,7 +9,7 @@ import { isAxiosError } from 'axios';
 export const dynamic = 'force-dynamic';
 
 const DISH_CATEGORY_LABELS: Record<string, string> = {
-  entree: 'Entree',
+  entree: 'Entrée',
   plat: 'Plat',
   dessert: 'Dessert',
 };
@@ -126,7 +126,7 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
               <h1 className="text-3xl font-bold text-foreground mb-2">{menu.name}</h1>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-primary">{menu.price.toFixed(2)} &euro;</p>
+              <p className="text-3xl font-bold text-primary">{menu.price.toFixed(2)}&nbsp;€</p>
               <p className="text-sm text-muted-foreground">par personne</p>
             </div>
           </div>
@@ -153,7 +153,7 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
 
           {regimes.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-foreground mb-3">Regimes alimentaires</h2>
+              <h2 className="text-lg font-semibold text-foreground mb-3">Régimes alimentaires</h2>
               <div className="flex flex-wrap gap-2">
                 {regimes.map((regime) => (
                   <span
@@ -228,7 +228,7 @@ export default async function MenuDetailPage({ params }: { params: Promise<{ id:
       </div>
 
       <div className="mt-8 bg-card rounded-2xl shadow-sm border border-border p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Legende des allergenes</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Légende des allergènes</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {Object.entries(ALLERGEN_ICONS)
             .filter(([key]) => !key.includes('é') && !key.includes('à'))

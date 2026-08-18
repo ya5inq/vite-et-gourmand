@@ -14,7 +14,7 @@ export const useLogin = () => {
     },
     onSuccess: () => {
       queryClient.clear();
-      toast.success('Connexion reussie');
+      toast.success('Connexion réussie');
       navigate('/dashboard');
     },
     onError: (error: Error) => {
@@ -31,7 +31,7 @@ export const useLogout = () => {
       await signOut();
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Erreur de deconnexion');
+      toast.error(error.message || 'Erreur de déconnexion');
     },
   });
 };

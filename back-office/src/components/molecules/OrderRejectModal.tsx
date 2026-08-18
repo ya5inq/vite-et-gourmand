@@ -17,7 +17,7 @@ export const OrderRejectModal = ({ orderId, onClose }: OrderRejectModalProps) =>
     setError('');
 
     if (reason.trim().length < 10) {
-      setError('La raison doit contenir au moins 10 caracteres');
+      setError('La raison doit contenir au moins 10 caractères');
       return;
     }
 
@@ -46,10 +46,10 @@ export const OrderRejectModal = ({ orderId, onClose }: OrderRejectModalProps) =>
               onChange={(e) => setReason(e.target.value)}
               rows={4}
               className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              placeholder="Expliquez la raison du refus (min. 10 caracteres)..."
+              placeholder="Expliquez la raison du refus (min. 10 caractères)..."
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Cette raison sera communiquee au client.
+              Cette raison sera communiquée au client.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export const OrderRejectModal = ({ orderId, onClose }: OrderRejectModalProps) =>
               className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="EMAIL">Email</option>
-              <option value="PHONE">Telephone</option>
+              <option value="PHONE">Téléphone</option>
             </select>
           </div>
 

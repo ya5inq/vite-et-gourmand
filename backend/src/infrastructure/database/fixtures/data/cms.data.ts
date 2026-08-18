@@ -33,11 +33,11 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     section: 'hero',
     content: {
       title: 'Vite & Gourmand',
-      subtitle: "Traiteur d'exception a Bordeaux",
+      subtitle: 'Traiteur d’exception à Bordeaux',
       description:
-        'Des menus raffines pour vos evenements professionnels et prives. Notre equipe de chefs passionnes met son savoir-faire au service de vos receptions pour creer des moments gustatifs inoubliables.',
+        'Des menus raffinés pour vos événements professionnels et privés. Notre équipe de chefs passionnés met son savoir-faire au service de vos réceptions pour créer des moments gustatifs inoubliables.',
       image: '/images/hero-bg.jpg',
-      cta_text: 'Decouvrir nos menus',
+      cta_text: 'Découvrir nos menus',
       cta_link: '/menus',
     },
   },
@@ -48,27 +48,27 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
       items: [
         {
           icon: 'award',
-          title: 'Qualite premium',
+          title: 'Qualité premium',
           description:
-            'Des ingredients soigneusement selectionnes aupres de producteurs locaux et des preparations realisees par des chefs experimentes.',
+            'Des ingrédients soigneusement sélectionnés auprès de producteurs locaux et des préparations réalisées par des chefs expérimentés.',
         },
         {
           icon: 'leaf',
           title: 'Produits frais',
           description:
-            'Tous nos plats sont prepares le jour meme avec des produits frais de saison, pour garantir une fraicheur et des saveurs optimales.',
+            'Tous nos plats sont préparés le jour même avec des produits frais de saison, pour garantir une fraîcheur et des saveurs optimales.',
         },
         {
           icon: 'truck',
-          title: 'Livraison soignee',
+          title: 'Livraison soignée',
           description:
-            'Une livraison ponctuelle et soignee dans toute la metropole bordelaise, avec un conditionnement adapte pour preserver la qualite.',
+            'Une livraison ponctuelle et soignée dans toute la métropole bordelaise, avec un conditionnement adapté pour préserver la qualité.',
         },
         {
           icon: 'settings',
           title: 'Sur mesure',
           description:
-            'Chaque evenement est unique. Nous adaptons nos menus a vos besoins, preferences alimentaires et contraintes specifiques.',
+            'Chaque événement est unique. Nous adaptons nos menus à vos besoins, préférences alimentaires et contraintes spécifiques.',
         },
       ],
     },
@@ -82,25 +82,25 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
           icon: 'map-pin',
           title: 'Circuit court',
           description:
-            "Nous privilegions les producteurs locaux et les circuits courts pour soutenir l'economie regionale et reduire notre empreinte carbone.",
+            'Nous privilégions les producteurs locaux et les circuits courts pour soutenir l’économie régionale et réduire notre empreinte carbone.',
         },
         {
           icon: 'chef-hat',
           title: 'Excellence culinaire',
           description:
-            'Notre equipe de chefs diplomes met tout son savoir-faire au service de la gastronomie francaise pour sublimer chaque plat.',
+            'Notre équipe de chefs diplômés met tout son savoir-faire au service de la gastronomie française pour sublimer chaque plat.',
         },
         {
           icon: 'heart',
           title: 'Satisfaction client',
           description:
-            'Votre satisfaction est notre priorite. Nous vous accompagnons de la commande a la degustation pour un service irreprochable.',
+            'Votre satisfaction est notre priorité. Nous vous accompagnons de la commande à la dégustation pour un service irréprochable.',
         },
         {
           icon: 'recycle',
-          title: 'Eco-responsabilite',
+          title: 'Éco-responsabilité',
           description:
-            'Emballages recyclables, lutte contre le gaspillage alimentaire et gestion responsable des dechets : nous nous engageons pour la planete.',
+            'Emballages recyclables, lutte contre le gaspillage alimentaire et gestion responsable des déchets : nous nous engageons pour la planète.',
         },
       ],
     },
@@ -119,7 +119,7 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     content: {
       title: 'Nos Menus',
       description:
-        'Decouvrez notre selection de menus soigneusement composes pour ravir les palais de vos convives. Du brunch decontracte au diner gastronomique, trouvez la formule ideale pour votre evenement.',
+        'Découvrez notre sélection de menus soigneusement composés pour ravir les palais de vos convives. Du brunch décontracté au dîner gastronomique, trouvez la formule idéale pour votre événement.',
     },
   },
   {
@@ -128,7 +128,7 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     content: {
       title: 'Contactez-nous',
       description:
-        "Une question ? Un devis personnalise ? Notre equipe est a votre ecoute pour vous accompagner dans l'organisation de votre evenement.",
+        'Une question ? Un devis personnalisé ? Notre équipe est à votre écoute pour vous accompagner dans l’organisation de votre événement.',
       email: 'contact@viteetgourmand.fr',
       phone: '05 56 00 00 00',
       address: '12 Rue Sainte-Catherine, 33000 Bordeaux',
@@ -139,21 +139,21 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     section: 'mentions',
     content: {
       content:
-        'Mentions legales\n\n' +
-        'Editeur du site\n' +
+        'Mentions légales\n\n' +
+        'Éditeur du site\n' +
         'Raison sociale : Vite & Gourmand SARL\n' +
-        'Siege social : 12 Rue Sainte-Catherine, 33000 Bordeaux, France\n' +
+        'Siège social : 12 Rue Sainte-Catherine, 33000 Bordeaux, France\n' +
         'SIRET : 123 456 789 00012\n' +
-        'Capital social : 10 000 EUR\n' +
-        'Telephone : 05 56 00 00 00\n' +
+        'Capital social : 10 000 €\n' +
+        'Téléphone : 05 56 00 00 00\n' +
         'Email : contact@viteetgourmand.fr\n' +
-        'Directeur de la publication : le representant legal de Vite & Gourmand SARL\n\n' +
-        'Hebergement\n' +
-        "L'application (backend et bases de donnees) est hebergee par Render (Render Services, Inc., San Francisco, CA, USA). La base de donnees non relationnelle est hebergee par MongoDB Atlas (MongoDB, Inc.). Ces prestataires peuvent operer des serveurs situes dans l'Union europeenne et aux Etats-Unis.\n\n" +
-        'Propriete intellectuelle\n' +
-        "L'ensemble des contenus presents sur ce site (textes, images, logos, charte graphique) est la propriete de Vite & Gourmand SARL, sauf mention contraire. Toute reproduction sans autorisation est interdite.\n\n" +
-        'Donnees personnelles\n' +
-        'Le traitement de vos donnees personnelles est decrit dans notre Politique de confidentialite. Conformement au Reglement (UE) 2016/679 (RGPD) et a la loi n°78-17 du 6 janvier 1978 modifiee, vous disposez de droits que vous pouvez exercer a contact@viteetgourmand.fr.',
+        'Directeur de la publication : le représentant légal de Vite & Gourmand SARL\n\n' +
+        'Hébergement\n' +
+        'L’application (backend et bases de données) est hébergée par Render (Render Services, Inc., San Francisco, CA, USA). La base de données non relationnelle est hébergée par MongoDB Atlas (MongoDB, Inc.). Ces prestataires peuvent opérer des serveurs situés dans l’Union européenne et aux États-Unis.\n\n' +
+        'Propriété intellectuelle\n' +
+        'L’ensemble des contenus présents sur ce site (textes, images, logos, charte graphique) est la propriété de Vite & Gourmand SARL, sauf mention contraire. Toute reproduction sans autorisation est interdite.\n\n' +
+        'Données personnelles\n' +
+        'Le traitement de vos données personnelles est décrit dans notre Politique de confidentialité. Conformément au Règlement (UE) 2016/679 (RGPD) et à la loi n°78-17 du 6 janvier 1978 modifiée, vous disposez de droits que vous pouvez exercer à contact@viteetgourmand.fr.',
     },
   },
   {
@@ -161,25 +161,25 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     section: 'cgv',
     content: {
       content:
-        'Conditions generales de vente\n\n' +
+        'Conditions générales de vente\n\n' +
         'Article 1 - Objet\n' +
-        'Les presentes conditions generales de vente regissent les relations contractuelles entre Vite & Gourmand SARL et ses clients dans le cadre de prestations de traiteur.\n\n' +
+        'Les présentes conditions générales de vente régissent les relations contractuelles entre Vite & Gourmand SARL et ses clients dans le cadre de prestations de traiteur.\n\n' +
         'Article 2 - Commandes\n' +
-        'Toute commande doit etre passee dans le respect du delai de preparation indique sur chaque menu. Chaque menu impose un nombre minimum de personnes ; la commande ne peut etre validee en dessous de ce seuil.\n\n' +
-        'Article 3 - Prix et reductions\n' +
-        "Les prix sont indiques en euros. Une reduction de 10% est appliquee pour toute commande depassant d'au moins 5 personnes le nombre minimum indique sur le menu. Le detail du prix (menu et livraison) est presente avant la validation.\n\n" +
+        'Toute commande doit être passée dans le respect du délai de préparation indiqué sur chaque menu. Chaque menu impose un nombre minimum de personnes ; la commande ne peut être validée en dessous de ce seuil.\n\n' +
+        'Article 3 - Prix et réductions\n' +
+        'Les prix sont indiqués en euros. Une réduction de 10 % est appliquée pour toute commande dépassant d’au moins 5 personnes le nombre minimum indiqué sur le menu. Le détail du prix (menu et livraison) est présenté avant la validation.\n\n' +
         'Article 4 - Livraison\n' +
-        "La livraison est effectuee a l'adresse et a la date indiquees lors de la commande. Des frais de livraison de 5 EUR s'appliquent, majores de 0,59 EUR par kilometre lorsque la livraison est situee hors de Bordeaux.\n\n" +
+        'La livraison est effectuée à l’adresse et à la date indiquées lors de la commande. Des frais de livraison de 5 € s’appliquent, majorés de 0,59 € par kilomètre lorsque la livraison est située hors de Bordeaux.\n\n' +
         'Article 5 - Suivi et statuts\n' +
-        "Le client authentifie peut suivre l'etat de sa commande (acceptee, en preparation, en cours de livraison, livree, terminee). La modification ou l'annulation reste possible tant que la commande n'a pas ete acceptee par l'equipe.\n\n" +
-        'Article 6 - Retour du materiel\n' +
-        'Lorsque du materiel est prete au client, celui-ci doit etre restitue dans un delai de 10 jours ouvres suivant la notification. A defaut de restitution dans ce delai, une penalite de 600 EUR sera facturee.\n\n' +
+        'Le client authentifié peut suivre l’état de sa commande (acceptée, en préparation, en cours de livraison, livrée, terminée). La modification ou l’annulation reste possible tant que la commande n’a pas été acceptée par l’équipe.\n\n' +
+        'Article 6 - Retour du matériel\n' +
+        'Lorsque du matériel est prêté au client, celui-ci doit être restitué dans un délai de 10 jours ouvrés suivant la notification. À défaut de restitution dans ce délai, une pénalité de 600 € sera facturée.\n\n' +
         'Article 7 - Avis\n' +
-        "Une fois la commande terminee, le client peut laisser une note (de 1 a 5) et un commentaire. Les avis sont publies apres validation par l'equipe.\n\n" +
-        'Article 8 - Responsabilite\n' +
-        "Vite & Gourmand s'engage a fournir des prestations de qualite. Sa responsabilite est limitee au montant de la commande.\n\n" +
+        'Une fois la commande terminée, le client peut laisser une note (de 1 à 5) et un commentaire. Les avis sont publiés après validation par l’équipe.\n\n' +
+        'Article 8 - Responsabilité\n' +
+        'Vite & Gourmand s’engage à fournir des prestations de qualité. Sa responsabilité est limitée au montant de la commande.\n\n' +
         'Article 9 - Litiges\n' +
-        'En cas de litige, une solution amiable sera recherchee. A defaut, les tribunaux de Bordeaux seront competents.',
+        'En cas de litige, une solution amiable sera recherchée. À défaut, les tribunaux de Bordeaux seront compétents.',
     },
   },
   {
@@ -187,34 +187,34 @@ export const PAGE_CONTENTS: PageContentFixture[] = [
     section: 'privacy',
     content: {
       content:
-        'Politique de confidentialite\n\n' +
-        'Vite & Gourmand SARL accorde une grande importance a la protection de vos donnees personnelles. La presente politique explique quelles donnees nous traitons, pourquoi, combien de temps, et quels sont vos droits, conformement au Reglement (UE) 2016/679 (RGPD).\n\n' +
+        'Politique de confidentialité\n\n' +
+        'Vite & Gourmand SARL accorde une grande importance à la protection de vos données personnelles. La présente politique explique quelles données nous traitons, pourquoi, combien de temps, et quels sont vos droits, conformément au Règlement (UE) 2016/679 (RGPD).\n\n' +
         '1. Responsable du traitement\n' +
         'Vite & Gourmand SARL, 12 Rue Sainte-Catherine, 33000 Bordeaux. Contact : contact@viteetgourmand.fr.\n\n' +
-        '2. Donnees collectees\n' +
-        '- Donnees de compte : nom, prenom, adresse email, mot de passe (stocke sous forme hachee, jamais en clair).\n' +
-        '- Donnees de contact et de livraison : numero de telephone, adresse postale, code postal, ville.\n' +
-        '- Donnees de commande : menus commandes, montants, dates, historique et statut des commandes.\n' +
-        '- Donnees de contact libre : messages envoyes via le formulaire de contact.\n\n' +
-        '3. Finalites et bases legales\n' +
-        '- Gestion des comptes et authentification : execution du contrat.\n' +
-        '- Traitement et suivi des commandes et livraisons : execution du contrat.\n' +
-        '- Reponse aux demandes de contact : interet legitime.\n' +
-        "- Envoi d'un email de bienvenue et d'emails transactionnels (confirmation, suivi) : execution du contrat.\n" +
-        '- Obligations comptables et legales : obligation legale.\n' +
-        "Aucune donnee n'est utilisee a des fins de prospection commerciale sans votre consentement.\n\n" +
+        '2. Données collectées\n' +
+        '- Données de compte : nom, prénom, adresse email, mot de passe (stocké sous forme hachée, jamais en clair).\n' +
+        '- Données de contact et de livraison : numéro de téléphone, adresse postale, code postal, ville.\n' +
+        '- Données de commande : menus commandés, montants, dates, historique et statut des commandes.\n' +
+        '- Données de contact libre : messages envoyés via le formulaire de contact.\n\n' +
+        '3. Finalités et bases légales\n' +
+        '- Gestion des comptes et authentification : exécution du contrat.\n' +
+        '- Traitement et suivi des commandes et livraisons : exécution du contrat.\n' +
+        '- Réponse aux demandes de contact : intérêt légitime.\n' +
+        '- Envoi d’un email de bienvenue et d’emails transactionnels (confirmation, suivi) : exécution du contrat.\n' +
+        '- Obligations comptables et légales : obligation légale.\n' +
+        'Aucune donnée n’est utilisée à des fins de prospection commerciale sans votre consentement.\n\n' +
         '4. Destinataires et sous-traitants\n' +
-        "Vos donnees sont accessibles au personnel habilite de Vite & Gourmand. Elles sont hebergees chez nos sous-traitants techniques (Render pour l'application et la base relationnelle, MongoDB Atlas pour les statistiques). L'envoi des emails est assure par le prestataire Resend. Ces prestataires agissent sur instruction et presentent des garanties de securite appropriees.\n\n" +
-        '5. Durees de conservation\n' +
-        '- Compte utilisateur : pendant toute la duree de la relation, puis suppression ou anonymisation.\n' +
-        "- Donnees de commande : jusqu'a 3 ans apres la derniere commande a des fins de suivi, puis archivage legal (comptabilite) jusqu'a 10 ans.\n" +
-        '- Messages de contact : 1 an apres traitement.\n\n' +
-        '6. Securite\n' +
-        "Les mots de passe sont haches (bcrypt). L'authentification repose sur un cookie securise httpOnly. Les acces sont limites aux personnes habilitees et journalises.\n\n" +
+        'Vos données sont accessibles au personnel habilité de Vite & Gourmand. Elles sont hébergées chez nos sous-traitants techniques (Render pour l’application et la base relationnelle, MongoDB Atlas pour les statistiques). L’envoi des emails est assuré par le prestataire Resend. Ces prestataires agissent sur instruction et présentent des garanties de sécurité appropriées.\n\n' +
+        '5. Durées de conservation\n' +
+        '- Compte utilisateur : pendant toute la durée de la relation, puis suppression ou anonymisation.\n' +
+        '- Données de commande : jusqu’à 3 ans après la dernière commande à des fins de suivi, puis archivage légal (comptabilité) jusqu’à 10 ans.\n' +
+        '- Messages de contact : 1 an après traitement.\n\n' +
+        '6. Sécurité\n' +
+        'Les mots de passe sont hachés (bcrypt). L’authentification repose sur un cookie sécurisé httpOnly. Les accès sont limités aux personnes habilitées et journalisés.\n\n' +
         '7. Vos droits\n' +
-        "Vous disposez d'un droit d'acces, de rectification, d'effacement, de limitation, de portabilite et d'opposition. Vous pouvez les exercer a contact@viteetgourmand.fr. Vous disposez egalement du droit d'introduire une reclamation aupres de la CNIL (www.cnil.fr).\n\n" +
+        'Vous disposez d’un droit d’accès, de rectification, d’effacement, de limitation, de portabilité et d’opposition. Vous pouvez les exercer à contact@viteetgourmand.fr. Vous disposez également du droit d’introduire une réclamation auprès de la CNIL (www.cnil.fr).\n\n' +
         '8. Cookies\n' +
-        "Le site utilise un cookie strictement necessaire au maintien de votre session authentifiee. Aucun cookie publicitaire tiers n'est depose.",
+        'Le site utilise un cookie strictement nécessaire au maintien de votre session authentifiée. Aucun cookie publicitaire tiers n’est déposé.',
     },
   },
   {

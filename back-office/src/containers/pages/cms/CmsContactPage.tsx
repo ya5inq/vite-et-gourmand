@@ -16,14 +16,14 @@ const FIELD_CONFIG: Record<TabKey, { name: string; label: string; type: 'text' |
     { name: 'subtitle', label: 'Sous-titre', type: 'text' },
     { name: 'description', label: 'Description', type: 'textarea' },
     { name: 'address', label: 'Adresse', type: 'text' },
-    { name: 'phone', label: 'Telephone', type: 'text' },
+    { name: 'phone', label: 'Téléphone', type: 'text' },
     { name: 'email', label: 'Email', type: 'text' },
     { name: 'map_embed_url', label: 'URL embed carte', type: 'text' },
   ],
   formulaire: [
     { name: 'title', label: 'Titre du formulaire', type: 'text' },
     { name: 'description', label: 'Description', type: 'textarea' },
-    { name: 'success_message', label: 'Message de succes', type: 'text' },
+    { name: 'success_message', label: 'Message de succès', type: 'text' },
     { name: 'subjects', label: 'Sujets disponibles (un par ligne)', type: 'textarea' },
   ],
 };

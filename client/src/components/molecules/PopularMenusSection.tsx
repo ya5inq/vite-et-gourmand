@@ -24,8 +24,8 @@ interface PopularMenusSectionProps {
 
 export function PopularMenusSection({
   menus,
-  title = 'Composez votre evenement',
-  subtitle = 'Mariage, seminaire, anniversaire... Choisissez le menu qui sublimera votre occasion',
+  title = 'Composez votre évènement',
+  subtitle = 'Mariage, séminaire, anniversaire... Choisissez le menu qui sublimera votre occasion',
 }: PopularMenusSectionProps) {
   if (menus.length === 0) return null;
 

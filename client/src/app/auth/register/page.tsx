@@ -10,8 +10,8 @@ import { PublicApi } from '@/lib/api/axios';
 
 const registerSchema = z
   .object({
-    firstName: z.string().min(2, 'Le prenom doit contenir au moins 2 caracteres'),
-    lastName: z.string().min(2, 'Le nom doit contenir au moins 2 caracteres'),
+    firstName: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
+    lastName: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
     email: z.string().email('Email invalide'),
     phone: z.string().optional(),
     // Backend requires >=8 chars with an upper, a lower and a digit/special char.
@@ -19,7 +19,7 @@ const registerSchema = z
       .string()
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W_])[a-zA-Z\d\W_]{8,}$/,
-        'Min. 8 caracteres avec majuscule, minuscule et chiffre/symbole',
+        'Min. 8 caractères avec majuscule, minuscule et chiffre/symbole',
       ),
     confirmPassword: z.string(),
   })
@@ -53,7 +53,7 @@ export default function RegisterPage() {
       });
 
       toast.success(
-        'Compte cree avec succes ! Verifiez votre email pour confirmer votre inscription.',
+        'Compte créé avec succès ! Vérifiez votre email pour confirmer votre inscription.',
       );
       window.location.href = '/auth/login';
     } catch {
@@ -67,7 +67,7 @@ export default function RegisterPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Creer un compte</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Créer un compte</h1>
           <p className="text-muted-foreground">
             Rejoignez Vite & Gourmand pour passer vos commandes
           </p>
@@ -78,7 +78,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-2">
-                  Prenom *
+                  Prénom *
                 </label>
                 <input
                   id="firstName"
@@ -126,7 +126,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-                Telephone
+                Téléphone
               </label>
               <input
                 id="phone"
@@ -146,7 +146,7 @@ export default function RegisterPage() {
                 type="password"
                 {...register('password')}
                 className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                placeholder="Min. 8 caracteres, 1 maj, 1 min, 1 chiffre"
+                placeholder="Min. 8 caractères, 1 maj, 1 min, 1 chiffre"
               />
               {errors.password && (
                 <p className="text-destructive text-sm mt-1">{errors.password.message}</p>
@@ -162,7 +162,7 @@ export default function RegisterPage() {
                 type="password"
                 {...register('confirmPassword')}
                 className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                placeholder="Repetez le mot de passe"
+                placeholder="Répétez le mot de passe"
               />
               {errors.confirmPassword && (
                 <p className="text-destructive text-sm mt-1">{errors.confirmPassword.message}</p>
@@ -174,13 +174,13 @@ export default function RegisterPage() {
               disabled={isLoading}
               className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {isLoading ? 'Creation en cours...' : 'Creer mon compte'}
+              {isLoading ? 'Création en cours...' : 'Créer mon compte'}
             </button>
           </form>
         </div>
 
         <p className="text-center mt-6 text-muted-foreground">
-          Deja un compte ?{' '}
+          Déjà un compte ?{' '}
           <Link href="/auth/login" className="text-primary font-medium hover:underline">
             Se connecter
           </Link>

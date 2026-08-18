@@ -16,12 +16,12 @@ const FIELD_CONFIG: Record<TabKey, { name: string; label: string; type: 'text' |
     { name: 'title', label: 'Titre', type: 'text' },
     { name: 'subtitle', label: 'Sous-titre', type: 'text' },
     { name: 'description', label: 'Description', type: 'textarea' },
-    { name: 'image_url', label: 'URL de l\'image', type: 'text' },
+    { name: 'image_url', label: 'URL de l’image', type: 'text' },
   ],
   filtres: [
     { name: 'title', label: 'Titre de la section filtres', type: 'text' },
-    { name: 'categories', label: 'Categories (JSON)', type: 'textarea' },
-    { name: 'dietary_labels', label: 'Labels regimes (JSON)', type: 'textarea' },
+    { name: 'categories', label: 'Catégories (JSON)', type: 'textarea' },
+    { name: 'dietary_labels', label: 'Labels régimes (JSON)', type: 'textarea' },
   ],
 };
 

@@ -13,13 +13,13 @@ export function RejectionNotice({ reason, rejectedAt }: RejectionNoticeProps) {
       <div className="flex items-start gap-3">
         <AlertTriangle className="text-red-500 flex-shrink-0 mt-0.5" size={20} aria-hidden="true" />
         <div>
-          <h4 className="font-medium text-red-800">Commande refusee</h4>
+          <h4 className="font-medium text-red-800">Commande refusée</h4>
           {reason && (
             <p className="text-sm text-red-700 mt-1">{reason}</p>
           )}
           {rejectedAt && (
             <p className="text-xs text-red-600 mt-2">
-              Refusee le {new Date(rejectedAt).toLocaleDateString('fr-FR', {
+              Refusée le {new Date(rejectedAt).toLocaleDateString('fr-FR', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',

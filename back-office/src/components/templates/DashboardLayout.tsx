@@ -36,7 +36,7 @@ type NavGroup = {
 
 const navGroups: NavGroup[] = [
   {
-    title: 'General',
+    title: 'Général',
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
     ],
@@ -47,16 +47,16 @@ const navGroups: NavGroup[] = [
       { label: 'Accueil', icon: Home, to: '/cms/home' },
       { label: 'Page Menus', icon: BookOpen, to: '/cms/menu' },
       { label: 'Contact', icon: Mail, to: '/cms/contact' },
-      { label: 'Pages legales', icon: Scale, to: '/cms/legal' },
+      { label: 'Pages légales', icon: Scale, to: '/cms/legal' },
       { label: 'Footer', icon: PanelBottom, to: '/cms/footer' },
     ],
   },
   {
-    title: 'Metier',
+    title: 'Métier',
     items: [
       { label: 'Menus', icon: UtensilsCrossed, to: '/menus' },
       { label: 'Plats', icon: ChefHat, to: '/dishes' },
-      { label: 'Allergenes', icon: AlertTriangle, to: '/allergens' },
+      { label: 'Allergènes', icon: AlertTriangle, to: '/allergens' },
       { label: 'Commandes', icon: ShoppingCart, to: '/orders' },
       { label: 'Avis', icon: Star, to: '/reviews' },
     ],
@@ -64,7 +64,7 @@ const navGroups: NavGroup[] = [
   {
     title: 'Administration',
     items: [
-      { label: 'Employes', icon: Users, to: '/users' },
+      { label: 'Employés', icon: Users, to: '/users' },
       { label: 'Zones livraison', icon: MapPin, to: '/delivery-zones' },
       { label: 'Messages contact', icon: MessageSquare, to: '/contact-messages' },
       { label: 'Horaires', icon: Clock, to: '/operating-hours' },
@@ -129,7 +129,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           <button
             onClick={signOut}
             className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-destructive"
-            title="Se deconnecter"
+            title="Se déconnecter"
           >
             <LogOut className="h-4 w-4" />
           </button>

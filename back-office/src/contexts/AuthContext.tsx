@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Not a staff member: drop the session and refuse access.
       setAccessToken(null);
       await PublicApi.publicAuthLogout().catch(() => undefined);
-      throw new Error('Acces refuse. Vous devez etre employe ou administrateur.');
+      throw new Error('Accès refusé. Vous devez être employé ou administrateur.');
     }
 
     setUser(me);

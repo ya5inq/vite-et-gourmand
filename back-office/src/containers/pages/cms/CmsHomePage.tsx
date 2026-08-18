@@ -8,7 +8,7 @@ const TABS = [
   { key: 'hero', label: 'Hero' },
   { key: 'atouts', label: 'Nos atouts' },
   { key: 'valeurs', label: 'Nos valeurs' },
-  { key: 'temoignages', label: 'Temoignages' },
+  { key: 'temoignages', label: 'Témoignages' },
 ] as const;
 
 type TabKey = (typeof TABS)[number]['key'];
@@ -20,7 +20,7 @@ const FIELD_CONFIG: Record<TabKey, { name: string; label: string; type: 'text' |
     { name: 'description', label: 'Description', type: 'textarea' },
     { name: 'cta_text', label: 'Texte du bouton', type: 'text' },
     { name: 'cta_link', label: 'Lien du bouton', type: 'text' },
-    { name: 'image_url', label: 'URL de l\'image', type: 'text' },
+    { name: 'image_url', label: 'URL de l’image', type: 'text' },
   ],
   atouts: [
     { name: 'title', label: 'Titre de la section', type: 'text' },
@@ -35,7 +35,7 @@ const FIELD_CONFIG: Record<TabKey, { name: string; label: string; type: 'text' |
   temoignages: [
     { name: 'title', label: 'Titre de la section', type: 'text' },
     { name: 'subtitle', label: 'Sous-titre', type: 'text' },
-    { name: 'items', label: 'Temoignages (JSON)', type: 'textarea' },
+    { name: 'items', label: 'Témoignages (JSON)', type: 'textarea' },
   ],
 };
 
@@ -84,7 +84,7 @@ export const CmsHomePage = () => {
   };
 
   return (
-    <DashboardPageLayout title="CMS - Accueil" description="Gestion du contenu de la page d'accueil">
+    <DashboardPageLayout title="CMS - Accueil" description="Gestion du contenu de la page d’accueil">
       <div className="mb-4 flex gap-1 rounded-lg border border-border bg-muted/50 p-1">
         {TABS.map((tab) => (
           <button

@@ -32,8 +32,8 @@ describe('CreateOrderUseCase', () => {
     vi.clearAllMocks();
     calculateDeliveryPriceUseCaseMock.executeCalculateDeliveryPrice.mockResolvedValue({
       zoneId: 'zone-1',
-      zoneName: 'Merignac',
-      city: 'Merignac',
+      zoneName: 'Mérignac',
+      city: 'Mérignac',
       distanceKm: 8,
       deliveryFee: 9.72,
     });

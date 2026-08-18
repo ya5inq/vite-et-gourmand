@@ -15,8 +15,8 @@ import type {
 } from '@vite-et-gourmand/sdk';
 
 const reviewSchema = z.object({
-  order_id: z.string().min(1, 'Selectionnez une commande'),
-  rating: z.number().min(1, 'Selectionnez une note').max(5),
+  order_id: z.string().min(1, 'Sélectionnez une commande'),
+  rating: z.number().min(1, 'Sélectionnez une note').max(5),
   comment: z.string().optional(),
 });
 
@@ -98,7 +98,7 @@ export default function AvisPage() {
         comment: data.comment || undefined,
       });
 
-      toast.success('Avis envoye ! Il sera visible apres moderation.');
+      toast.success('Avis envoyé ! Il sera visible après modération.');
       reset();
       setSelectedRating(0);
 
@@ -139,7 +139,7 @@ export default function AvisPage() {
                 {...register('order_id')}
                 className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               >
-                <option value="">Selectionnez une commande</option>
+                <option value="">Sélectionnez une commande</option>
                 {completedOrders.map((order) => (
                   <option key={order.id} value={order.id}>
                     Commande #{order.id.slice(0, 8).toUpperCase()} -{' '}
@@ -163,7 +163,7 @@ export default function AvisPage() {
                     type="button"
                     role="radio"
                     aria-checked={selectedRating === star}
-                    aria-label={`${star} etoile${star > 1 ? 's' : ''} sur 5`}
+                    aria-label={`${star} étoile${star > 1 ? 's' : ''} sur 5`}
                     onClick={() => {
                       setSelectedRating(star);
                       setValue('rating', star);
@@ -193,7 +193,7 @@ export default function AvisPage() {
                 rows={4}
                 {...register('comment')}
                 className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground resize-none"
-                placeholder="Partagez votre experience..."
+                placeholder="Partagez votre expérience..."
               />
             </div>
 
@@ -210,12 +210,12 @@ export default function AvisPage() {
 
       <div className="bg-card rounded-2xl shadow-sm border border-border">
         <div className="p-6 border-b border-border">
-          <h2 className="text-xl font-semibold text-foreground">Mes avis precedents</h2>
+          <h2 className="text-xl font-semibold text-foreground">Mes avis précédents</h2>
         </div>
 
         {reviews.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-muted-foreground">Vous n&apos;avez pas encore laisse d&apos;avis.</p>
+            <p className="text-muted-foreground">Vous n’avez pas encore laissé d’avis.</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -231,7 +231,7 @@ export default function AvisPage() {
                           : 'bg-yellow-100 text-yellow-700'
                       }`}
                     >
-                      {review.isApproved ? 'Approuve' : 'En attente'}
+                      {review.isApproved ? 'Approuvé' : 'En attente'}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       {new Date(review.createdAt).toLocaleDateString('fr-FR')}

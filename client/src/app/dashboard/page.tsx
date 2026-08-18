@@ -105,17 +105,17 @@ export default function DashboardPage() {
               onClick={() => window.location.reload()}
               className="text-primary hover:underline"
             >
-              Reessayer
+              Réessayer
             </button>
           </div>
         ) : orders.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-muted-foreground mb-4">Vous n&apos;avez pas encore de commande.</p>
+            <p className="text-muted-foreground mb-4">Vous n’avez pas encore de commande.</p>
             <Link
               href="/menus"
               className="inline-block bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity"
             >
-              Passer ma premiere commande
+              Passer ma première commande
             </Link>
           </div>
         ) : (
@@ -144,11 +144,11 @@ export default function DashboardPage() {
                   <div className="text-right">
                     <OrderStatusBadge status={order.status} />
                     <p className="font-bold text-foreground mt-2">
-                      {order.totalPrice.toFixed(2)} &euro;
+                      {order.totalPrice.toFixed(2)}&nbsp;€
                     </p>
                     {order.deliveryFee > 0 && (
                       <p className="text-xs text-muted-foreground">
-                        dont {order.deliveryFee.toFixed(2)} &euro; de livraison
+                        dont {order.deliveryFee.toFixed(2)}&nbsp;€ de livraison
                       </p>
                     )}
                   </div>

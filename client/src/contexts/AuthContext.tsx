@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAccessToken(data.accessToken);
       const me = await loadMe();
       if (!me) {
-        throw new Error('Impossible de recuperer le profil utilisateur');
+        throw new Error('Impossible de récupérer le profil utilisateur');
       }
       return me;
     },

@@ -10,11 +10,11 @@ import { MapPin, Mail, Phone } from 'lucide-react';
 import { PublicApi } from '@/lib/api/axios';
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Le nom doit contenir au moins 2 caracteres'),
+  name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
   email: z.string().email('Email invalide'),
   phone: z.string().optional(),
   subject: z.string().optional(),
-  message: z.string().min(10, 'Le message doit contenir au moins 10 caracteres'),
+  message: z.string().min(10, 'Le message doit contenir au moins 10 caractères'),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
@@ -43,7 +43,7 @@ export default function ContactPage() {
         message: data.message,
       });
 
-      toast.success('Message envoye avec succes ! Nous vous repondrons rapidement.');
+      toast.success('Message envoyé avec succès ! Nous vous répondrons rapidement.');
       reset();
     } catch {
       // The axios interceptor already surfaces the backend error message.
@@ -67,7 +67,7 @@ export default function ContactPage() {
           <div className="text-center px-4">
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 drop-shadow-lg">Contactez-nous</h1>
             <p className="text-lg text-gray-200 drop-shadow">
-              Une question, un devis, une demande particuliere ?
+              Une question, un devis, une demande particulière ?
             </p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function ContactPage() {
           <div className="grid sm:grid-cols-2 gap-6">
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-                Telephone
+                Téléphone
               </label>
               <input
                 id="phone"
@@ -146,7 +146,7 @@ export default function ContactPage() {
               rows={6}
               {...register('message')}
               className="w-full px-4 py-2.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground resize-none"
-              placeholder="Decrivez votre demande..."
+              placeholder="Décrivez votre demande..."
             />
             {errors.message && (
               <p className="text-destructive text-sm mt-1">{errors.message.message}</p>
@@ -182,7 +182,7 @@ export default function ContactPage() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-3">
             <Phone size={24} aria-hidden="true" />
           </div>
-          <h2 className="font-semibold text-foreground mb-2">Telephone</h2>
+          <h2 className="font-semibold text-foreground mb-2">Téléphone</h2>
           <p className="text-muted-foreground text-sm">05 56 00 00 00</p>
         </div>
       </div>

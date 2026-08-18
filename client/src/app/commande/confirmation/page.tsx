@@ -96,7 +96,7 @@ function ConfirmationContent() {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
           <CheckCircle className="text-green-500" size={32} aria-hidden="true" />
         </div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Demande envoyee !</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Demande envoyée !</h1>
         <p className="text-muted-foreground">
           Merci{!isGuest ? '' : ` ${customerName}`} pour votre demande de commande.
         </p>
@@ -106,7 +106,7 @@ function ConfirmationContent() {
         {order && (
           <>
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
-              <span className="text-sm text-muted-foreground">Numero de commande</span>
+              <span className="text-sm text-muted-foreground">Numéro de commande</span>
               <span className="font-mono text-sm font-medium">
                 {order.id.slice(0, 8).toUpperCase()}
               </span>
@@ -119,7 +119,7 @@ function ConfirmationContent() {
                     {item.menuName} x {item.quantity}
                   </span>
                   <span className="text-muted-foreground">
-                    {(item.unitPrice * item.quantity).toFixed(2)} &euro;
+                    {(item.unitPrice * item.quantity).toFixed(2)}&nbsp;€
                   </span>
                 </div>
               ))}
@@ -127,13 +127,13 @@ function ConfirmationContent() {
 
             <div className="border-t border-border pt-3 flex justify-between font-semibold">
               <span>Total</span>
-              <span className="text-primary">{order.totalPrice.toFixed(2)} &euro;</span>
+              <span className="text-primary">{order.totalPrice.toFixed(2)}&nbsp;€</span>
             </div>
 
             {order.deliveryDate && (
               <div className="mt-4 pt-4 border-t border-border">
                 <p className="text-sm text-muted-foreground">
-                  Livraison prevue le{' '}
+                  Livraison prévue le{' '}
                   <span className="font-medium text-foreground">
                     {new Date(order.deliveryDate).toLocaleDateString('fr-FR', {
                       weekday: 'long',
@@ -154,7 +154,7 @@ function ConfirmationContent() {
         )}
         {!order && (
           <p className="text-sm text-muted-foreground text-center">
-            Votre demande a bien ete enregistree. Vous recevrez un email de confirmation.
+            Votre demande a bien été enregistrée. Vous recevrez un email de confirmation.
           </p>
         )}
       </div>
@@ -168,10 +168,10 @@ function ConfirmationContent() {
               Nous allons examiner votre demande et vous contacter
               {customerEmail ? (
                 <>
-                  {' '}a <span className="font-medium">{customerEmail}</span>
+                  {' '}à <span className="font-medium">{customerEmail}</span>
                 </>
               ) : null}{' '}
-              pour confirmer la disponibilite et finaliser votre commande.
+              pour confirmer la disponibilité et finaliser votre commande.
             </p>
           </div>
         </div>
@@ -191,7 +191,7 @@ function ConfirmationContent() {
             href="/auth/register"
             className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
           >
-            Creer un compte
+            Créer un compte
             <ArrowRight size={18} />
           </Link>
         )}

@@ -54,7 +54,7 @@ export function TestimonialsSection({ reviews }: TestimonialsSectionProps) {
             Ils nous ont fait confiance
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Decouvrez pourquoi nos clients nous recommandent
+            Découvrez pourquoi nos clients nous recommandent
           </p>
         </div>
 

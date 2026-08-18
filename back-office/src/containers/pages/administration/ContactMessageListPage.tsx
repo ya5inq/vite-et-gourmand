@@ -20,7 +20,7 @@ export const ContactMessageListPage = () => {
   };
 
   return (
-    <DashboardPageLayout title="Messages de contact" description="Messages recus depuis le formulaire de contact">
+    <DashboardPageLayout title="Messages de contact" description="Messages reçus depuis le formulaire de contact">
       {isLoading ? (
         <p className="text-muted-foreground">Chargement...</p>
       ) : (
@@ -91,7 +91,7 @@ export const ContactMessageListPage = () => {
                   De: {viewingMessage.name} ({viewingMessage.email})
                 </p>
                 {viewingMessage.phone && (
-                  <p className="text-xs text-muted-foreground">Tel: {viewingMessage.phone}</p>
+                  <p className="text-xs text-muted-foreground">Tél: {viewingMessage.phone}</p>
                 )}
                 <p className="text-xs text-muted-foreground">
                   {new Date(viewingMessage.createdAt).toLocaleDateString('fr-FR', {

@@ -10,7 +10,7 @@ const dishSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
   description: z.string().optional(),
   category: z.enum(['entree', 'plat', 'dessert']),
-  price: z.coerce.number().min(0, 'Le prix doit etre positif'),
+  price: z.coerce.number().min(0, 'Le prix doit être positif'),
   isAvailable: z.boolean(),
   imageUrl: z.string().optional(),
 });
@@ -18,7 +18,7 @@ const dishSchema = z.object({
 type DishForm = z.infer<typeof dishSchema>;
 
 const CATEGORY_LABELS: Record<DishForm['category'], string> = {
-  entree: 'Entree',
+  entree: 'Entrée',
   plat: 'Plat',
   dessert: 'Dessert',
 };
@@ -95,7 +95,7 @@ export const DishListPage = () => {
             <thead className="border-b bg-muted/50">
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
-                <th className="px-4 py-3 text-left font-medium">Categorie</th>
+                <th className="px-4 py-3 text-left font-medium">Catégorie</th>
                 <th className="px-4 py-3 text-left font-medium">Prix</th>
                 <th className="px-4 py-3 text-left font-medium">Disponible</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
@@ -108,7 +108,7 @@ export const DishListPage = () => {
                   <td className="px-4 py-3 text-muted-foreground">
                     {dish.category ? CATEGORY_LABELS[dish.category] : '-'}
                   </td>
-                  <td className="px-4 py-3">{dish.price != null ? `${dish.price.toFixed(2)} EUR` : '-'}</td>
+                  <td className="px-4 py-3">{dish.price != null ? `${dish.price.toFixed(2)} €` : '-'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -169,18 +169,18 @@ export const DishListPage = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Categorie</label>
+                  <label className="mb-1 block text-sm font-medium">Catégorie</label>
                   <select
                     {...register('category')}
                     className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
                   >
-                    <option value="entree">Entree</option>
+                    <option value="entree">Entrée</option>
                     <option value="plat">Plat</option>
                     <option value="dessert">Dessert</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Prix (EUR)</label>
+                  <label className="mb-1 block text-sm font-medium">Prix (€)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -191,7 +191,7 @@ export const DishListPage = () => {
                 </div>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">URL de l'image</label>
+                <label className="mb-1 block text-sm font-medium">URL de l’image</label>
                 <input
                   {...register('imageUrl')}
                   className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"

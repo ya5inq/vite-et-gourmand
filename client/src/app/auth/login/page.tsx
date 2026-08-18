@@ -32,7 +32,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await login(data.email, data.password);
-      toast.success('Connexion reussie !');
+      toast.success('Connexion réussie !');
       // Full reload so the dashboard mounts with a hydrated auth context.
       window.location.href = '/dashboard';
     } catch (error: unknown) {
@@ -55,7 +55,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Connexion</h1>
           <p className="text-muted-foreground">
-            Connectez-vous a votre compte Vite & Gourmand
+            Connectez-vous à votre compte Vite & Gourmand
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export default function LoginPage() {
 
             <div className="text-right">
               <Link href="/auth/forgot-password" className="text-sm text-primary hover:underline">
-                Mot de passe oublie ?
+                Mot de passe oublié ?
               </Link>
             </div>
 
@@ -112,7 +112,7 @@ export default function LoginPage() {
         <p className="text-center mt-6 text-muted-foreground">
           Pas encore de compte ?{' '}
           <Link href="/auth/register" className="text-primary font-medium hover:underline">
-            Creer un compte
+            Créer un compte
           </Link>
         </p>
       </div>

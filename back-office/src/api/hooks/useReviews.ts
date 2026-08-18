@@ -26,7 +26,7 @@ export const useApproveReview = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.REVIEWS() });
-      toast.success('Avis approuve');
+      toast.success('Avis approuvé');
     },
   });
 };
@@ -40,7 +40,7 @@ export const useRejectReview = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.REVIEWS() });
-      toast.success('Avis supprime');
+      toast.success('Avis supprimé');
     },
   });
 };

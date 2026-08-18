@@ -29,7 +29,7 @@ export const useCreateEmployee = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.USERS() });
-      toast.success('Employe cree. Un email de configuration du mot de passe a ete envoye.');
+      toast.success('Employé créé. Un email de configuration du mot de passe a été envoyé.');
     },
   });
 };
@@ -43,7 +43,7 @@ export const useDeactivateEmployee = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.USERS() });
-      toast.success('Employe desactive');
+      toast.success('Employé désactivé');
     },
   });
 };
@@ -57,7 +57,7 @@ export const useReactivateEmployee = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.USERS() });
-      toast.success('Employe reactive');
+      toast.success('Employé réactivé');
     },
   });
 };

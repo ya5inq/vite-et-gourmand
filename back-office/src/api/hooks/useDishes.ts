@@ -62,7 +62,7 @@ export const useCreateDish = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.DISHES() });
-      toast.success('Plat cree avec succes');
+      toast.success('Plat créé avec succès');
     },
   });
 };
@@ -78,7 +78,7 @@ export const useUpdateDish = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.DISHES() });
       queryClient.invalidateQueries({ queryKey: CacheKeys.DISH(data.id) });
-      toast.success('Plat mis a jour');
+      toast.success('Plat mis à jour');
     },
   });
 };
@@ -92,7 +92,7 @@ export const useDeleteDish = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.DISHES() });
-      toast.success('Plat supprime');
+      toast.success('Plat supprimé');
     },
   });
 };
@@ -117,7 +117,7 @@ export const useCreateAllergen = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ALLERGENS() });
-      toast.success('Allergene cree');
+      toast.success('Allergène créé');
     },
   });
 };
@@ -132,7 +132,7 @@ export const useUpdateAllergen = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ALLERGENS() });
-      toast.success('Allergene mis a jour');
+      toast.success('Allergène mis à jour');
     },
   });
 };
@@ -146,7 +146,7 @@ export const useDeleteAllergen = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CacheKeys.ALLERGENS() });
-      toast.success('Allergene supprime');
+      toast.success('Allergène supprimé');
     },
   });
 };

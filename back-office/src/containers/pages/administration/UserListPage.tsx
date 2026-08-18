@@ -20,12 +20,12 @@ const ROLE_COLORS: Record<string, string> = {
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: 'Administrateur',
-  EMPLOYEE: 'Employe',
+  EMPLOYEE: 'Employé',
 };
 
 const employeeSchema = z.object({
   email: z.string().email('Email invalide'),
-  firstName: z.string().min(1, 'Le prenom est requis'),
+  firstName: z.string().min(1, 'Le prénom est requis'),
   lastName: z.string().min(1, 'Le nom est requis'),
   phone: z.string().optional(),
 });
@@ -68,7 +68,7 @@ export const UserListPage = () => {
 
   const toggleActive = (employee: EmployeeRow) => {
     if (employee.isActive) {
-      if (window.confirm(`Desactiver ${employee.firstName} ${employee.lastName} ?`)) {
+      if (window.confirm(`Désactiver ${employee.firstName} ${employee.lastName} ?`)) {
         deactivate.mutate(employee.id);
       }
     } else {
@@ -78,15 +78,15 @@ export const UserListPage = () => {
 
   return (
     <DashboardPageLayout
-      title="Employes"
-      description="Gestion des employes (la creation envoie un email de configuration du mot de passe)"
+      title="Employés"
+      description="Gestion des employés (la création envoie un email de configuration du mot de passe)"
       actions={
         isAdmin ? (
           <button
             onClick={openCreate}
             className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            <Plus className="h-4 w-4" /> Nouvel employe
+            <Plus className="h-4 w-4" /> Nouvel employé
           </button>
         ) : undefined
       }
@@ -100,9 +100,9 @@ export const UserListPage = () => {
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Email</th>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
-                <th className="px-4 py-3 text-left font-medium">Role</th>
+                <th className="px-4 py-3 text-left font-medium">Rôle</th>
                 <th className="px-4 py-3 text-left font-medium">Statut</th>
-                <th className="px-4 py-3 text-left font-medium">Date de creation</th>
+                <th className="px-4 py-3 text-left font-medium">Date de création</th>
                 {isAdmin && <th className="px-4 py-3 text-right font-medium">Actions</th>}
               </tr>
             </thead>
@@ -124,7 +124,7 @@ export const UserListPage = () => {
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${employee.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
                     >
-                      {employee.isActive ? 'Actif' : 'Desactive'}
+                      {employee.isActive ? 'Actif' : 'Désactivé'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
@@ -136,7 +136,7 @@ export const UserListPage = () => {
                         onClick={() => toggleActive(employee)}
                         disabled={deactivate.isPending || reactivate.isPending}
                         className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-50"
-                        title={employee.isActive ? 'Desactiver' : 'Reactiver'}
+                        title={employee.isActive ? 'Désactiver' : 'Réactiver'}
                       >
                         {employee.isActive ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
                       </button>
@@ -147,7 +147,7 @@ export const UserListPage = () => {
               {employees?.length === 0 && (
                 <tr>
                   <td colSpan={isAdmin ? 6 : 5} className="px-4 py-8 text-center text-muted-foreground">
-                    Aucun employe
+                    Aucun employé
                   </td>
                 </tr>
               )}
@@ -159,11 +159,11 @@ export const UserListPage = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-md rounded-lg bg-card p-6 shadow-lg">
-            <h2 className="mb-4 text-lg font-bold">Nouvel employe</h2>
+            <h2 className="mb-4 text-lg font-bold">Nouvel employé</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Prenom</label>
+                  <label className="mb-1 block text-sm font-medium">Prénom</label>
                   <input
                     {...register('firstName')}
                     className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
@@ -189,14 +189,14 @@ export const UserListPage = () => {
                 {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>}
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">Telephone (optionnel)</label>
+                <label className="mb-1 block text-sm font-medium">Téléphone (optionnel)</label>
                 <input
                   {...register('phone')}
                   className="w-full rounded-md border border-input px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Un email sera envoye a l'employe pour qu'il definisse son mot de passe.
+                Un email sera envoyé à l’employé pour qu’il définisse son mot de passe.
               </p>
               <div className="flex justify-end gap-2">
                 <button
@@ -211,7 +211,7 @@ export const UserListPage = () => {
                   disabled={createEmployee.isPending}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                 >
-                  {createEmployee.isPending ? 'Creation...' : 'Creer'}
+                  {createEmployee.isPending ? 'Création...' : 'Créer'}
                 </button>
               </div>
             </form>

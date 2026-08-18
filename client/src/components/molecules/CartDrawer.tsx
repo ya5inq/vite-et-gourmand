@@ -76,7 +76,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 onClick={onClose}
                 className="text-primary hover:underline font-medium"
               >
-                Decouvrir nos menus
+                Découvrir nos menus
               </Link>
             </div>
           ) : (
@@ -103,11 +103,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Sous-total</span>
               <span className="text-xl font-bold text-foreground">
-                {total.toFixed(2)} &euro;
+                {total.toFixed(2)}&nbsp;€
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Frais de livraison calcules a l&apos;etape suivante
+              Frais de livraison calculés à l’étape suivante
             </p>
             <div className="grid gap-2">
               <Link
