@@ -83,9 +83,12 @@ services:
   - type: web
     name: veg-back-office
     runtime: static
-    buildCommand: corepack enable && pnpm install --frozen-lockfile --filter back-office... && VITE_API_URL=$VITE_API_URL pnpm --filter back-office build
+    buildCommand: pnpm install --frozen-lockfile --filter back-office... && VITE_API_URL=$VITE_API_URL pnpm --filter back-office build
     staticPublishPath: ./back-office/dist
     envVars:
+      # Épingle Node 20 (Render prend une version très récente par défaut)
+      - key: NODE_VERSION
+        value: '20'
       - key: VITE_API_URL
         sync: false
     routes:
