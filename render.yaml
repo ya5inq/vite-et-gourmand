@@ -12,6 +12,7 @@
 databases:
   - name: veg-postgres
     plan: free
+    region: frankfurt
     databaseName: vite_et_gourmand
     user: veg
 
@@ -23,6 +24,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
     plan: free
+    region: frankfurt
     healthCheckPath: /api/doc
     envVars:
       - key: NODE_ENV
@@ -71,6 +73,7 @@ services:
     dockerfilePath: ./client/Dockerfile
     dockerContext: .
     plan: free
+    region: frankfurt
     envVars:
       # URL publique de l'API (figée au build via l'ARG du Dockerfile)
       - key: NEXT_PUBLIC_API_URL
