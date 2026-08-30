@@ -54,17 +54,15 @@ services:
         value: no-reply@vite-et-gourmand.com
       - key: CONTACT_EMAIL
         value: contact@vite-et-gourmand.com
-      # Origines CORS — URLs publiques des deux fronts (à ajuster après 1er déploiement)
+      # Origines CORS — URLs publiques complètes des deux fronts.
+      # NB: on ne peut PAS utiliser `fromService/property: host` ici : Render
+      # renvoie le hostname SANS le schéma `https://`, ce qui casse le CORS
+      # (le backend compare l'Origin complet du navigateur). On renseigne donc
+      # les URLs complètes à la main (Environment de veg-backend).
       - key: FRONTEND_URL
-        fromService:
-          type: web
-          name: veg-client
-          property: host
+        sync: false
       - key: BACK_OFFICE_URL
-        fromService:
-          type: web
-          name: veg-back-office
-          property: host
+        sync: false
 
   # ---------- Client (Next.js SSR) ----------
   - type: web
