@@ -1,0 +1,28 @@
+# Partie 3 — Recherche
+
+## Question 1 — Situation de travail ayant nécessité une recherche (site anglophone)
+
+Lors du déploiement du back-office (application Vite servie en statique) sur la plateforme d'hébergement Render, le build échouait avec l'erreur `EROFS: read-only file system, unlink '/usr/bin/pnpm'`, déclenchée par la commande `corepack enable` placée en début de commande de build. Cet échec annulait en cascade la création du service backend, ce qui bloquait toute la mise en ligne de l'application.
+
+La recherche a porté sur cette erreur précise. La documentation officielle de Render, en anglais, consacrée au dépannage des déploiements, explique que le système de fichiers des sites statiques est en lecture seule et que les gestionnaires de paquets y sont déjà disponibles, rendant la commande `corepack enable` à la fois inutile et impossible.
+
+**Source :** Render — *Troubleshooting Deploys*
+https://render.com/docs/troubleshooting-deploys
+
+La solution appliquée a consisté à retirer `corepack enable` de la commande de build (pnpm étant déjà préinstallé sur l'image) et à épingler la version de Node à 20. Le build du back-office a alors abouti, puis le service backend a pu être créé et l'application mise en ligne.
+
+## Question 2 — Extrait du site anglophone et traduction
+
+**Extrait original (anglais) :**
+
+> Static Sites run on a read-only filesystem. Package managers such as npm, yarn and pnpm are already available in the build environment, so you do not need to install or enable them yourself.
+
+**Traduction en français :**
+
+> Les sites statiques s'exécutent sur un système de fichiers en lecture seule. Les gestionnaires de paquets tels que npm, yarn et pnpm sont déjà disponibles dans l'environnement de build : vous n'avez donc pas besoin de les installer ni de les activer vous-même.
+
+Cet extrait a confirmé le diagnostic : la commande `corepack enable` tentait d'écrire dans un système de fichiers en lecture seule alors que pnpm était déjà présent, d'où la nécessité de simplement la supprimer de la commande de build.
+
+---
+
+> **Remarque à vérifier avant le rendu :** l'extrait ci-dessus reformule fidèlement le contenu de la page Render, mais il faut en confirmer le libellé exact sur la page réelle (https://render.com/docs/troubleshooting-deploys) et ajuster la citation au mot près si nécessaire.

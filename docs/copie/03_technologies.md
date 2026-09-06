@@ -1,0 +1,53 @@
+# Partie 2 — Spécifications techniques
+
+## Question 1 — Technologies utilisées et justification des choix
+
+Le sujet impose deux contraintes fortes : une base de données relationnelle et une base de données non relationnelle. Le reste de la pile technique a été choisi au regard de la qualité attendue (sécurité, maintenabilité) et du périmètre fonctionnel (trois rôles, cycle de commande complet, gestion de contenu, e-mails transactionnels).
+
+### PostgreSQL 16 — base relationnelle
+
+Choisi pour son intégrité référentielle forte entre les commandes, les menus et les utilisateurs, ses types riches (numériques, énumérations) et ses transactions ACID, indispensables pour créer une commande (commande, lignes de commande et historique) de façon atomique.
+
+### MongoDB 7 — base non relationnelle
+
+Imposée par le sujet pour les statistiques. Elle est adaptée aux vues dénormalisées interrogées en lecture (statistiques par menu, journal d'audit), découplées du modèle transactionnel relationnel.
+
+### TypeScript — langage unique
+
+Utilisé de bout en bout (front, back et SDK). Un seul langage réduit le coût de contexte, et le typage statique diminue les erreurs tout en améliorant la maintenabilité.
+
+### Hono — framework backend
+
+Framework léger, rapide et natif TypeScript. Associé à `@hono/zod-openapi`, il permet de générer la validation Zod et la spécification OpenAPI à partir du même schéma, garantissant leur cohérence.
+
+### TypeORM — accès aux données
+
+ORM mature offrant des migrations versionnées et un bon support de PostgreSQL. Il répond directement à la compétence « développer des composants d'accès aux données SQL ».
+
+### Clean Architecture + Inversify — architecture backend
+
+Séparation des couches domaine, application et infrastructure, avec injection de dépendances. Les règles métier (calcul du prix, transitions de statut) sont isolées et testables : 191 tests unitaires.
+
+### Next.js 15 — site client
+
+Rendu côté serveur (SSR) pour le référencement d'un site vitrine de traiteur et pour la performance. L'authentification par cookie httpOnly est compatible avec ce rendu serveur.
+
+### React 19 + Vite — back-office
+
+Interface interne sans besoin de référencement : une application monopage (SPA) rapide, servie en statique, est suffisante et simple à construire.
+
+### Orval — SDK d'API
+
+Les deux fronts consomment l'API via un SDK TypeScript typé, généré automatiquement depuis l'OpenAPI (axios et Zod). Cela garantit la cohérence entre le backend et les fronts.
+
+### Resend — e-mails transactionnels
+
+API d'envoi transactionnelle simple. En l'absence de clé, les e-mails sont journalisés, ce qui est pratique en développement et pour la démonstration.
+
+### pg-boss — jobs planifiés
+
+File d'attente adossée à PostgreSQL, sans infrastructure supplémentaire, utilisée pour la pénalité de retour de matériel.
+
+### Choix d'un backend dédié plutôt qu'un service clé en main
+
+Le projet a d'abord été prototypé avec un service de type *Backend-as-a-Service*, puis migré vers un backend Node dédié. Ce choix se justifie par les compétences évaluées : le TP exige de développer des composants métier côté serveur et des composants d'accès aux données SQL et NoSQL, ce qu'un service clé en main masque. Un backend propre permet en outre de maîtriser finement les règles métier (remise, machine à états, pénalités) et la sécurité (authentification maison, autorisation par rôle, hachage des mots de passe).
