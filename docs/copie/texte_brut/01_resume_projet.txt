@@ -1,0 +1,9 @@
+Partie 1 — Analyse des besoins
+
+Question 1 — Résumé du projet (200 à 250 mots)
+
+Vite & Gourmand est une entreprise de traiteur bordelaise, tenue par Julie et José, qui existe depuis vingt-cinq ans et propose des menus pour tout type d'événement, des repas de fête aux réceptions d'entreprise. Jusqu'ici, ces menus étaient envoyés par courriel aux habitués. L'objectif du projet est de leur donner une application web pour gagner en visibilité et permettre aux clients de commander plus facilement.
+
+L'application se compose de trois parties. Un site public, où les visiteurs consultent la présentation de l'entreprise, parcourent l'ensemble des menus avec des filtres dynamiques (prix, thème, régime alimentaire, nombre de personnes), consultent le détail d'un menu et passent commande après s'être créé un compte. Un back-office, réservé aux employés et à l'administrateur, pour gérer les menus, les plats, les horaires, traiter les commandes selon un cycle de statuts précis, valider les avis et consulter des statistiques. Enfin un backend, qui porte toute la logique métier : authentification, règles de tarification et de livraison, gestion des commandes et envoi d'e-mails transactionnels.
+
+Le projet respecte les contraintes du sujet : une base relationnelle pour les données métier et une base non relationnelle pour les statistiques. Il intègre les aspects réglementaires attendus, à savoir la conformité RGPD (mentions légales, CGV, politique de confidentialité) et l'accessibilité selon le RGAA. L'application est déployée en ligne et fonctionnelle, comme l'exige le cahier des charges.

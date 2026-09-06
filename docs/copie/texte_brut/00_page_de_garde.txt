@@ -1,0 +1,20 @@
+Copie à rendre — TP Développeur Web et Web Mobile
+
+NOM : Avci
+
+Prénom : Yasin
+
+Date de naissance : 14/09/1994
+
+Lien du git : https://github.com/ya5inq/vite-et-gourmand
+
+Lien de l'outil de gestion de projet : https://trello.com/b/QsQPGCHa/vite-gourmand-ecf
+
+Lien du déploiement :
+
+•  Site client : https://veg-client-kr9d.onrender.com/
+•  Back-office : https://veg-back-office.onrender.com/
+
+Login et mot de passe administrateur : admin@viteetgourmand.fr / password123
+
+*Compte client de démonstration (parcours utilisateur) : client@viteetgourmand.fr / password123*
