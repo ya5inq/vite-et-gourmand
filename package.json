@@ -20,7 +20,10 @@
     "generate-sdk": "pnpm generate-openapi-doc && pnpm --filter @vite-et-gourmand/sdk generate",
     "typecheck:sdk": "pnpm --filter @vite-et-gourmand/sdk typecheck",
     "lint": "pnpm --parallel run lint",
-    "typecheck": "pnpm --parallel run typecheck"
+    "typecheck": "pnpm --parallel run typecheck",
+    "db:export": "./scripts/db-export.sh",
+    "db:import": "./scripts/db-import.sh",
+    "db:seed": "./scripts/db-seed.sh"
   },
   "devDependencies": {
     "typescript": "^5.7.3"
