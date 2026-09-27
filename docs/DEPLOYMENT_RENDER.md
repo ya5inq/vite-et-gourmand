@@ -1,15 +1,17 @@
-# Déploiement gratuit — Render + MongoDB Atlas
+# Déploiement gratuit — Render + Neon + MongoDB Atlas
 
 Procédure pas-à-pas pour mettre Vite & Gourmand en ligne **gratuitement et
 durablement**, telle qu'elle a été réellement effectuée, y compris les écueils
 rencontrés et leur résolution.
 
-- **Render** (gratuit, région **Frankfurt** / UE) : backend (Hono), PostgreSQL,
-  client (Next.js), back-office (SPA statique).
+- **Render** (gratuit, région **Frankfurt** / UE) : backend (Hono), client
+  (Next.js), back-office (SPA statique).
+- **Neon** (PostgreSQL serverless, gratuit à vie sans expiration) : base
+  relationnelle. Région AWS `eu-central-1` (Frankfurt).
 - **MongoDB Atlas M0** (gratuit à vie) : base NoSQL (statistiques admin :
   commandes par menu, chiffre d'affaires).
 
-> ℹ️ Le fichier `render.yaml` à la racine décrit automatiquement les 4 services
+> ℹ️ Le fichier `render.yaml` à la racine décrit automatiquement les 3 services
 > Render (Infrastructure as Code). La région Frankfurt y est fixée
 > (`region: frankfurt`) pour un hébergement dans l'Union européenne (cohérence
 > RGPD + latence depuis la France).
@@ -35,7 +37,7 @@ Connexion back-office : `admin@viteetgourmand.fr` / `password123`.
 
 | Composant                  | Hébergeur                       | Runtime Render |
 | -------------------------- | ------------------------------- | -------------- |
-| Base relationnelle (Postgres) | Render PostgreSQL (free)     | PostgreSQL     |
+| Base relationnelle (Postgres) | Neon (free, sans expiration) | — (externe)    |
 | Base NoSQL (MongoDB)       | MongoDB Atlas M0 (free)         | —              |
 | Backend (API Hono)         | Render Web Service (free)       | Docker         |
 | Site client (Next.js SSR)  | Render Web Service (free)       | Docker         |
@@ -68,12 +70,15 @@ Connexion back-office : `admin@viteetgourmand.fr` / `password123`.
 1. Créer un compte sur <https://render.com> (connexion via GitHub), autoriser
    l'accès au dépôt `vite-et-gourmand` (**public**).
 2. Dashboard → **+ New → Blueprint** (⚠️ *pas* « Web Service » : le Blueprint
-   crée les 4 services d'un coup depuis `render.yaml`). À défaut, aller sur
+   crée les 3 services d'un coup depuis `render.yaml`). À défaut, aller sur
    <https://dashboard.render.com/blueprints> → **New Blueprint Instance**.
 3. Sélectionner le dépôt, branche **`main`**. Render lit `render.yaml` et propose
-   `veg-postgres`, `veg-backend`, `veg-client`, `veg-back-office`.
+   `veg-backend`, `veg-client`, `veg-back-office`. (La base PostgreSQL est
+   externe, sur Neon — voir étape 2-bis.)
 4. Renseigner les variables marquées `sync: false` :
    - `veg-backend` → **`MONGO_URL`** = l'URI Atlas de l'étape 1.
+   - `DATABASE_URL` : laisser **vide** ici — on le renseignera à l'étape 3a
+     après avoir provisionné Neon.
    - `RESEND_API_KEY` : laisser **vide** (emails journalisés à défaut de clé).
    - `NEXT_PUBLIC_API_URL` / `VITE_API_URL` : laisser **vides** pour l'instant
      (on ne connaît pas encore l'URL publique du backend — voir étape 3).
@@ -84,6 +89,30 @@ Connexion back-office : `admin@viteetgourmand.fr` / `password123`.
 > au build, `veg-backend` est *canceled* et n'apparaît pas. Corriger la cause
 > (voir « Écueils » ci-dessous), pousser sur `main` : Render redéploie
 > automatiquement et crée les services manquants.
+
+---
+
+## Étape 2-bis — Provisionner Neon (PostgreSQL)
+
+> Render a mis fin à son offre gratuite de PostgreSQL — les bases gratuites
+> sont supprimées fin septembre 2026. On migre donc la base vers **Neon**, qui
+> reste gratuit à vie sans expiration ni carte bancaire.
+
+1. Créer un compte sur <https://console.neon.tech> (login GitHub, sans CB).
+2. **Create project** → nom `vite-et-gourmand` → région **AWS Frankfurt
+   (`eu-central-1`)** (cohérence latence avec `veg-backend` qui tourne à
+   Render Frankfurt).
+3. Postgres 16 par défaut → valider.
+4. Sur le dashboard Neon → **Connection Details** → branche `main` → copier la
+   **pooled connection string**. Format attendu :
+   ```
+   postgresql://neondb_owner:<pwd>@ep-xxxxx.eu-central-1.aws.neon.tech/neondb?sslmode=require
+   ```
+   ⚠️ Vérifier que `?sslmode=require` est bien présent (Neon exige SSL).
+5. On collera cette valeur dans `veg-backend` à l'**étape 3a** ci-dessous.
+
+> Sauvegarde de l'existant : avant de couper Render, faire un dump de la DB
+> avec `pnpm db:export` (scripts versionnés, voir `scripts/README.md`).
 
 ---
 
@@ -110,6 +139,20 @@ Le backend, lui, redémarre seul après *Save* (pas de rebuild nécessaire).
 
 ---
 
+## Étape 3a — Coller le `DATABASE_URL` Neon dans `veg-backend`
+
+1. Render Dashboard → `veg-backend` → onglet **Environment**.
+2. **Add Environment Variable** :
+   - **Key** : `DATABASE_URL`
+   - **Value** : la connection string Neon copiée à l'étape 2-bis
+     (doit contenir `?sslmode=require`).
+3. **Save** → Render redémarre `veg-backend` automatiquement (pas de rebuild
+   : juste un changement d'env, restart du conteneur). Vérifier dans les
+   **Logs** que la connexion Postgres s'établit et que `PgBoss started`
+   apparaît.
+
+---
+
 ## Étape 4 — Charger le jeu de données initial (seed)
 
 Les migrations tournent automatiquement au démarrage (`AUTO_MIGRATION=true`), donc
@@ -123,11 +166,9 @@ commande).
 > ⚠️ **Le Shell Render n'est PAS disponible en plan gratuit** (« Shell is not
 > supported for free compute plans »). On ne peut donc pas lancer le seed
 > *dans* le conteneur. On le lance **depuis la machine locale**, en pointant sur
-> la base Postgres externe de Render.
+> la base Postgres externe (Neon, URL récupérée à l'étape 3a).
 
-1. `veg-postgres` → onglet **Info** → copier l'**External Database URL**
-   (`postgresql://veg:<password>@dpg-...frankfurt-postgres.render.com/vite_et_gourmand_xxxx`).
-2. Lancer, depuis la racine du dépôt :
+1. Depuis la racine du dépôt :
    ```bash
    DATABASE_URL="<EXTERNAL_DATABASE_URL>" PGSSLMODE=require NODE_ENV=production \
      pnpm --filter backend exec ts-node -r tsconfig-paths/register \
@@ -200,8 +241,9 @@ publiques complètes** (`https://...onrender.com`) dans l'Environment du backend
 
 ### 3. Région
 `render.yaml` ne fixait pas de région → Render déployait en Oregon (US) par
-défaut. Ajout de `region: frankfurt` sur `veg-postgres`, `veg-backend`,
-`veg-client` (le back-office statique reste servi en global via le CDN).
+défaut. Ajout de `region: frankfurt` sur `veg-backend` et `veg-client`
+(le back-office statique reste servi en global via le CDN ; `veg-postgres`
+n'existe plus dans le Blueprint depuis la migration vers Neon).
 
 ---
 
