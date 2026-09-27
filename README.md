@@ -111,4 +111,5 @@ pnpm test:be             # Tests unitaires backend (Vitest)
 ## Déploiement
 
 L'application est conteneurisable (PostgreSQL + MongoDB + backend + fronts).
-Voir la documentation technique pour la démarche de déploiement détaillée.
+Voir `docs/DEPLOYMENT_RENDER.md` pour la procédure complète (Render + Neon
+pour Postgres + MongoDB Atlas).
