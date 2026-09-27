@@ -1,20 +1,15 @@
 # ============================================================
 # Blueprint Render — Vite & Gourmand
 # ------------------------------------------------------------
-# Déploie en une fois : backend + PostgreSQL + client + back-office.
+# Déploie en une fois : backend + client + back-office.
+# La base PostgreSQL est hébergée sur Neon (Free tier, sans expiration).
+#   → Render Dashboard → veg-backend → Environment → DATABASE_URL=<URL Neon>
 # MongoDB est fourni séparément par MongoDB Atlas (M0 gratuit) :
 #   renseigner MONGO_URL dans les variables du service `backend`.
 #
 # Mise en place : Render Dashboard → New → Blueprint → sélectionner ce dépôt.
 # Voir docs/DEPLOYMENT_RENDER.md pour la procédure détaillée.
 # ============================================================
-
-databases:
-  - name: veg-postgres
-    plan: free
-    region: frankfurt
-    databaseName: vite_et_gourmand
-    user: veg
 
 services:
   # ---------- Backend (API Hono) ----------
@@ -32,9 +27,7 @@ services:
       - key: AUTO_MIGRATION
         value: 'true'
       - key: DATABASE_URL
-        fromDatabase:
-          name: veg-postgres
-          property: connectionString
+        sync: false
       # MongoDB Atlas — à renseigner manuellement (secret)
       - key: MONGO_URL
         sync: false
